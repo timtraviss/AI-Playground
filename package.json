@@ -1,0 +1,19 @@
+{
+  "name": "investigative-interviewing-tutor",
+  "version": "1.0.0",
+  "description": "PEACE model investigative interviewing practice tool with ElevenLabs AI witness",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "convert-pdf": "node scripts/convert-pdf.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@elevenlabs/client": "^1.1.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pdf-parse": "^1.1.1"
+  }
+}

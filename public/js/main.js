@@ -15,8 +15,8 @@ const WITNESS_ID = 'witness-catherine';
 // ── State ──────────────────────────────────────────────
 let conversationId = null;
 let conversation = null;
-let witnessName = 'Catherine';
-let witnessInitials = 'C';
+let witnessName = 'Catherine Johnson';
+let witnessInitials = 'CJ';
 
 // ── DOM refs ───────────────────────────────────────────
 const btnStart  = document.getElementById('btn-start');

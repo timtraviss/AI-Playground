@@ -24,7 +24,19 @@ const jobs = new Map();
 export const podcastReviewRouter = Router();
 
 // ── POST /api/podcast-review/upload ────────────────────────────────────────
-podcastReviewRouter.post('/upload', upload.single('audio'), (req, res) => {
+podcastReviewRouter.post('/upload', (req, res, next) => {
+  upload.single('audio')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({
+          error: 'File exceeds the 25 MB limit. Please compress or trim your audio before uploading.',
+        });
+      }
+      return res.status(400).json({ error: err.message || 'Upload failed' });
+    }
+    next();
+  });
+}, (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No audio file uploaded' });
 
   const jobId = randomUUID();

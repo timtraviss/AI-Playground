@@ -1,5 +1,15 @@
 /* ── Podcast Reviewer — Page Styles ───────────────────────────────────────── */
 
+/* Dark base — styles.css is not loaded on this page */
+html, body {
+  background: #0d1117;
+  color: #e2e8f0;
+  font-family: system-ui, -apple-system, 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+}
+
 /* Screens */
 .pr-screen[hidden] { display: none !important; }
 

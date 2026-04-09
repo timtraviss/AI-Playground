@@ -13,6 +13,7 @@ const { sessionRouter } = await import('./routes/session.js');
 const { critiqueRouter } = await import('./routes/critique.js');
 const { witnessRouter } = await import('./routes/witness.js');
 const { latestConversationRouter } = await import('./routes/latestConversation.js');
+const { podcastReviewRouter } = await import('./routes/podcastReview.js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.use('/api/session', sessionRouter);
 app.use('/api/critique', critiqueRouter);
 app.use('/api/witness', witnessRouter);
 app.use('/api/latest-conversation', latestConversationRouter);
+app.use('/api/podcast-review', podcastReviewRouter);
 
 // Interview subpage
 app.get('/interview', (req, res) => {
@@ -31,6 +33,14 @@ app.get('/interview', (req, res) => {
 });
 app.get('/interview/', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'interview', 'index.html'));
+});
+
+// Podcast Reviewer subpage
+app.get('/podcast-reviewer', (req, res) => {
+  res.redirect('/podcast-reviewer/');
+});
+app.get('/podcast-reviewer/', (req, res) => {
+  res.sendFile(resolve(projectRoot, 'public', 'podcast-reviewer', 'index.html'));
 });
 
 // Landing page fallback

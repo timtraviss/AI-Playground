@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Podcast Legislation Reviewer — Traviss.org</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/nav.css" />
+  <link rel="stylesheet" href="/css/podcast-reviewer.css" />
+</head>
+<body>
+
+  <!-- Shared nav -->
+  <nav class="site-nav" id="site-nav">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-drawer" id="nav-drawer">
+      <div class="nav-logo"><a href="/">Traviss.org</a></div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+        <li><a href="/podcast-reviewer/" class="active">Podcast Reviewer</a></li>
+      </ul>
+    </div>
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </nav>
+
+  <!-- ── Screen 1: Upload ── -->
+  <main class="pr-screen" id="screen-upload">
+    <div class="pr-center">
+      <div class="pr-tag">AI + Legislation</div>
+      <h1 class="pr-title">Podcast Legislation<br>Reviewer</h1>
+      <p class="pr-desc">Upload a NZ Police DDP podcast audio file to check every legislative claim against current in-force legislation via legislation.govt.nz.</p>
+
+      <div class="drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Upload audio file">
+        <div class="drop-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <p class="drop-label">Drag &amp; drop audio here</p>
+        <p class="drop-sub">MP3 · M4A · WAV · up to 200MB</p>
+        <input type="file" id="file-input" accept=".mp3,.m4a,.wav,.ogg,.flac" hidden />
+        <button class="btn-ghost" id="btn-browse" type="button">Choose file</button>
+      </div>
+
+      <div class="file-selected" id="file-selected" hidden>
+        <span class="file-name" id="file-name"></span>
+        <button class="btn-clear" id="btn-clear" type="button" aria-label="Remove file">✕</button>
+      </div>
+
+      <button class="btn-primary" id="btn-upload" type="button" disabled>Upload &amp; Review</button>
+    </div>
+  </main>
+
+  <!-- ── Screen 2: Progress ── -->
+  <main class="pr-screen" id="screen-progress" hidden>
+    <div class="pr-center">
+      <h2 class="pr-subtitle">Reviewing your podcast…</h2>
+      <div class="step-list" id="step-list">
+        <div class="step-item" id="step-transcribing" data-step="transcribing">
+          <div class="step-dot"></div>
+          <div class="step-body">
+            <div class="step-name">Transcribing audio</div>
+            <div class="step-note" id="note-transcribing"></div>
+          </div>
+        </div>
+        <div class="step-item" id="step-extracting" data-step="extracting">
+          <div class="step-dot"></div>
+          <div class="step-body">
+            <div class="step-name">Extracting legislative claims</div>
+            <div class="step-note" id="note-extracting"></div>
+          </div>
+        </div>
+        <div class="step-item" id="step-checking" data-step="checking">
+          <div class="step-dot"></div>
+          <div class="step-body">
+            <div class="step-name">Checking against legislation</div>
+            <div class="step-note" id="note-checking"></div>
+          </div>
+        </div>
+        <div class="step-item" id="step-done" data-step="done">
+          <div class="step-dot"></div>
+          <div class="step-body">
+            <div class="step-name">Complete</div>
+          </div>
+        </div>
+      </div>
+      <div class="pr-error" id="progress-error" hidden></div>
+    </div>
+  </main>
+
+  <!-- ── Screen 3: Results ── -->
+  <main class="pr-screen" id="screen-results" hidden>
+    <div class="results-wrap">
+
+      <!-- Header -->
+      <div class="results-header">
+        <div class="results-meta">
+          <h2 class="pr-subtitle" id="result-filename"></h2>
+          <p class="results-date" id="result-date"></p>
+        </div>
+        <button class="btn-ghost" id="btn-again">Review another</button>
+      </div>
+
+      <!-- Summary pills -->
+      <div class="summary-bar" id="summary-bar"></div>
+
+      <!-- Priority Issues -->
+      <section class="priority-section" id="priority-section" hidden>
+        <h3 class="section-heading">Priority Issues</h3>
+        <div class="claims-list" id="priority-list"></div>
+      </section>
+
+      <!-- All claims -->
+      <section>
+        <h3 class="section-heading">All Claims</h3>
+        <div class="claims-list" id="all-claims"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="/js/nav.js" defer></script>
+  <script src="/js/podcast-reviewer.js" defer></script>
+</body>
+</html>

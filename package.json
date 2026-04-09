@@ -9,6 +9,9 @@
     "dev": "node --watch server/index.js",
     "convert-pdf": "node scripts/convert-pdf.js"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "@elevenlabs/client": "^1.1.2",

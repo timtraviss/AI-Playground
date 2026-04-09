@@ -1,72 +1,39 @@
-import { spawn } from 'child_process';
-import { readFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
-import { resolve, basename, extname } from 'path';
-
-const TMP_OUT = '/tmp/podcast_review';
-
-// Ensure output dir exists
-mkdirSync(TMP_OUT, { recursive: true });
+import { createReadStream } from 'fs';
+import { basename, extname } from 'path';
 
 /**
- * Transcribe an audio file using the local Whisper CLI.
+ * Transcribe an audio file using the OpenAI Whisper API.
  * Returns the plain-text transcript string.
- * Throws if Whisper is not installed or transcription fails.
+ * Requires OPENAI_API_KEY in environment.
  */
 export async function transcribe(audioPath) {
-  return new Promise((resolve2, reject) => {
-    // Try 'whisper' CLI first, fall back to 'python3 -m whisper'
-    const args = [
-      audioPath,
-      '--output_format', 'txt',
-      '--output_dir', TMP_OUT,
-      '--language', 'en',
-    ];
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('OPENAI_API_KEY is not set');
 
-    let proc = spawn('whisper', args, { stdio: ['ignore', 'pipe', 'pipe'] });
-    let usedFallback = false;
+  const formData = new FormData();
+  formData.append('model', 'whisper-1');
+  formData.append('language', 'en');
+  formData.append('response_format', 'text');
 
-    const tryFallback = () => {
-      usedFallback = true;
-      proc = spawn('python3', ['-m', 'whisper', ...args], { stdio: ['ignore', 'pipe', 'pipe'] });
-      attachListeners();
-    };
+  // Append the file stream — Node 22 fetch supports FormData with Blob/File
+  const { Blob } = await import('buffer');
+  const { readFileSync } = await import('fs');
+  const fileBuffer = readFileSync(audioPath);
+  const fileName = basename(audioPath);
+  const mimeMap = { '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.wav': 'audio/wav', '.ogg': 'audio/ogg', '.flac': 'audio/flac' };
+  const mime = mimeMap[extname(audioPath).toLowerCase()] ?? 'audio/mpeg';
+  formData.append('file', new Blob([fileBuffer], { type: mime }), fileName);
 
-    const attachListeners = () => {
-      let stderr = '';
-      proc.stderr.on('data', d => { stderr += d.toString(); });
-
-      proc.on('error', (err) => {
-        if (!usedFallback && (err.code === 'ENOENT' || err.code === 'EACCES')) {
-          tryFallback();
-        } else {
-          reject(new Error(
-            `Whisper not found. Install it with:\n  pip install openai-whisper --break-system-packages`
-          ));
-        }
-      });
-
-      proc.on('close', (code) => {
-        if (code !== 0) {
-          return reject(new Error(`Whisper exited with code ${code}:\n${stderr}`));
-        }
-
-        // Whisper writes {filename}.txt to TMP_OUT
-        const base = basename(audioPath, extname(audioPath));
-        const txtPath = `${TMP_OUT}/${base}.txt`;
-
-        if (!existsSync(txtPath)) {
-          return reject(new Error(`Whisper output not found at ${txtPath}`));
-        }
-
-        const transcript = readFileSync(txtPath, 'utf8').trim();
-
-        // Clean up transcript file
-        try { unlinkSync(txtPath); } catch {}
-
-        resolve2(transcript);
-      });
-    };
-
-    attachListeners();
+  const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}` },
+    body: formData,
   });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Whisper API error ${res.status}: ${err}`);
+  }
+
+  return (await res.text()).trim();
 }

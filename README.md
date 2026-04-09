@@ -65,6 +65,8 @@ Required environment variables: `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`, `OPEN
 - [x] Claude Code skill (`podcast-reviewer.skill`)
 - [x] Step-by-step progress indicators with checkmarks, error states, and retry
 - [x] 25 MB file size enforcement with clear error messaging
+- [x] Dark theme background fix (page now matches site-wide dark design)
+- [x] Descriptive upload error messages (file too large, wrong type, etc.)
 - [ ] Support for YouTube / podcast URL input (no file upload needed)
 - [ ] Exportable PDF report of findings
 

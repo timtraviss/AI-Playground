@@ -11,7 +11,7 @@ mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const upload = multer({
   dest: UPLOAD_DIR,
-  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB — OpenAI Whisper API limit
   fileFilter: (_req, file, cb) => {
     const ok = /\.(mp3|m4a|wav|ogg|flac)$/i.test(file.originalname);
     cb(ok ? null : new Error('Only MP3, M4A, WAV, OGG, FLAC files are supported'), ok);

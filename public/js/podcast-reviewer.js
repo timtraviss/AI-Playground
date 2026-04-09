@@ -78,6 +78,11 @@
     resetSteps();
     progressError.hidden = true;
 
+    // Activate upload step immediately so the user sees something happening
+    activateStep('uploading');
+    document.getElementById('note-uploading').textContent =
+      `${(selectedFile.size / 1024 / 1024).toFixed(1)} MB — sending to server…`;
+
     const formData = new FormData();
     formData.append('audio', selectedFile);
 
@@ -85,7 +90,7 @@
     try {
       const resp = await fetch('/api/podcast-review/upload', { method: 'POST', body: formData });
       if (!resp.ok) {
-        const err = await resp.json().catch(() => ({ error: 'Upload failed' }));
+        const err = await resp.json().catch(() => ({ error: 'Upload failed. Check your connection and try again.' }));
         throw new Error(err.error || `Upload error ${resp.status}`);
       }
       ({ jobId } = await resp.json());
@@ -93,6 +98,8 @@
       showError(err.message, currentStep);
       return;
     }
+
+    completeStep('uploading');
 
     // Open SSE stream
     const es = new EventSource(`/api/podcast-review/status/${jobId}`);

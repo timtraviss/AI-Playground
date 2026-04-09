@@ -64,34 +64,50 @@
       <h2 class="pr-subtitle">Reviewing your podcast…</h2>
       <div class="step-list" id="step-list">
         <div class="step-item" id="step-transcribing" data-step="transcribing">
-          <div class="step-dot"></div>
+          <div class="step-track">
+            <div class="step-dot"></div>
+            <div class="step-connector"></div>
+          </div>
           <div class="step-body">
             <div class="step-name">Transcribing audio</div>
             <div class="step-note" id="note-transcribing"></div>
           </div>
         </div>
         <div class="step-item" id="step-extracting" data-step="extracting">
-          <div class="step-dot"></div>
+          <div class="step-track">
+            <div class="step-dot"></div>
+            <div class="step-connector"></div>
+          </div>
           <div class="step-body">
             <div class="step-name">Extracting legislative claims</div>
             <div class="step-note" id="note-extracting"></div>
           </div>
         </div>
         <div class="step-item" id="step-checking" data-step="checking">
-          <div class="step-dot"></div>
+          <div class="step-track">
+            <div class="step-dot"></div>
+            <div class="step-connector"></div>
+          </div>
           <div class="step-body">
             <div class="step-name">Checking against legislation</div>
             <div class="step-note" id="note-checking"></div>
           </div>
         </div>
         <div class="step-item" id="step-done" data-step="done">
-          <div class="step-dot"></div>
+          <div class="step-track">
+            <div class="step-dot"></div>
+          </div>
           <div class="step-body">
             <div class="step-name">Complete</div>
+            <div class="step-note" id="note-done"></div>
           </div>
         </div>
       </div>
-      <div class="pr-error" id="progress-error" hidden></div>
+      <div class="pr-error" id="progress-error" hidden>
+        <div class="pr-error-icon">⚠</div>
+        <div class="pr-error-msg" id="progress-error-msg"></div>
+        <button class="btn-ghost pr-error-retry" id="btn-retry" type="button">Try again</button>
+      </div>
     </div>
   </main>
 

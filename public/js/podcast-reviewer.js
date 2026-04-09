@@ -13,10 +13,13 @@
   const btnUpload   = document.getElementById('btn-upload');
   const fileSelected = document.getElementById('file-selected');
   const fileName    = document.getElementById('file-name');
-  const btnAgain    = document.getElementById('btn-again');
+  const btnAgain      = document.getElementById('btn-again');
   const progressError = document.getElementById('progress-error');
+  const progressErrorMsg = document.getElementById('progress-error-msg');
+  const btnRetry      = document.getElementById('btn-retry');
 
   let selectedFile = null;
+  let currentStep  = null;
 
   // ── Screen management ─────────────────────────────────────────────────────
   function showScreen(id) {
@@ -43,6 +46,7 @@
   btnBrowse.addEventListener('click', () => fileInput.click());
   btnClear.addEventListener('click', clearFile);
   btnAgain.addEventListener('click', () => { clearFile(); showScreen('screen-upload'); });
+  btnRetry.addEventListener('click', () => { clearFile(); showScreen('screen-upload'); });
 
   fileInput.addEventListener('change', () => {
     if (fileInput.files[0]) setFile(fileInput.files[0]);
@@ -86,7 +90,7 @@
       }
       ({ jobId } = await resp.json());
     } catch (err) {
-      showError(err.message);
+      showError(err.message, currentStep);
       return;
     }
 
@@ -109,7 +113,7 @@
     switch (evt.step) {
       case 'transcribing':
         activateStep('transcribing');
-        document.getElementById('note-transcribing').textContent = 'Running Whisper on your audio…';
+        document.getElementById('note-transcribing').textContent = 'Sending audio to Whisper API…';
         break;
 
       case 'extracting':
@@ -140,7 +144,7 @@
 
       case 'error':
         es.close();
-        showError(evt.message || 'Unknown error');
+        showError(evt.message || 'Unknown error', currentStep);
         break;
     }
   }
@@ -153,7 +157,7 @@
       renderResults(data);
       showScreen('screen-results');
     } catch (err) {
-      showError(err.message);
+      showError(err.message, currentStep);
     }
   }
 
@@ -166,20 +170,29 @@
   }
 
   function activateStep(name) {
+    currentStep = name;
     const el = document.getElementById(`step-${name}`);
-    if (el) { el.classList.remove('complete'); el.classList.add('active'); }
+    if (el) { el.classList.remove('complete', 'error'); el.classList.add('active'); }
   }
 
   function completeStep(name) {
     const el = document.getElementById(`step-${name}`);
-    if (el) { el.classList.remove('active'); el.classList.add('complete'); }
+    if (el) { el.classList.remove('active', 'error'); el.classList.add('complete'); }
   }
 
-  function showError(msg) {
-    progressError.textContent = msg;
+  function showError(msg, failedStep) {
+    // Mark the failing step red
+    if (failedStep) {
+      const el = document.getElementById(`step-${failedStep}`);
+      if (el) {
+        el.classList.remove('active');
+        el.classList.add('error');
+        const note = el.querySelector('.step-note');
+        if (note) note.textContent = 'Failed — see details below';
+      }
+    }
+    progressErrorMsg.textContent = msg;
     progressError.hidden = false;
-    // Deactivate all steps
-    document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
   }
 
   // ── Results rendering ─────────────────────────────────────────────────────
@@ -244,7 +257,7 @@
     const cat = (claim.category || 'AMBIGUOUS').toUpperCase();
     const catCls = categoryClass(cat);
     const label = CATEGORY_LABELS[cat] || cat;
-    const isPriority = ['INACCURATE','MISSING CAVEAT','OUTDATED LAW','WRONG SECTION'].includes(cat);
+    // isPriority used by the priority section filter in renderResults above
 
     const card = document.createElement('div');
     card.className = `claim-card ${catCls}`;

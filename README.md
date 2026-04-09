@@ -45,3 +45,27 @@ npm start
 ```
 
 Required environment variables: `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`, `OPENAI_API_KEY`, `LEGISLATION_API_KEY`.
+
+## Roadmap
+
+### P.E.A.C.E. Interview Tutor
+- [x] AI witness with ElevenLabs voice synthesis
+- [x] Post-interview critique scored against NZ Police PEACE model
+- [x] Tiered witness disclosure model (4 tiers)
+- [x] Questioning technique breakdown (TEDS / closed / leading counts)
+- [x] Annotated full transcript in feedback screen
+- [ ] Additional witness scenarios beyond Catherine
+- [ ] Student session history and progress tracking
+- [ ] Instructor dashboard to review student submissions
+
+### Podcast Legislation Reviewer
+- [x] Audio upload and transcription via OpenAI Whisper API
+- [x] Legislative claim extraction via Claude
+- [x] Live claim verification against legislation.govt.nz
+- [x] Claude Code skill (`podcast-reviewer.skill`)
+- [ ] Support for YouTube / podcast URL input (no file upload needed)
+- [ ] Exportable PDF report of findings
+
+### Deployment
+- [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)
+- [ ] Deploy to Heroku

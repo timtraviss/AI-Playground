@@ -25,7 +25,15 @@ app.use('/api/critique', critiqueRouter);
 app.use('/api/witness', witnessRouter);
 app.use('/api/latest-conversation', latestConversationRouter);
 
-// Fallback — serve index.html for any unmatched route
+// Interview subpage
+app.get('/interview', (req, res) => {
+  res.redirect('/interview/');
+});
+app.get('/interview/', (req, res) => {
+  res.sendFile(resolve(projectRoot, 'public', 'interview', 'index.html'));
+});
+
+// Landing page fallback
 app.get('*', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'index.html'));
 });

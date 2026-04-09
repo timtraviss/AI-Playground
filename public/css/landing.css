@@ -1,0 +1,125 @@
+/* ───────────────────────────────────────────────
+   LANDING PAGE — Traviss.org
+─────────────────────────────────────────────── */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #0d1117;
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.landing {
+  min-height: calc(100vh - 52px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+}
+
+.landing-content {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+}
+
+/* ── Title ── */
+.landing-title {
+  font-family: 'Fugaz One', cursive;
+  font-size: clamp(52px, 12vw, 96px);
+  font-weight: 400;
+  color: #e8c96a;
+  letter-spacing: 0.02em;
+  margin: 0 0 16px;
+  line-height: 1;
+}
+
+/* ── Tagline ── */
+.landing-tagline {
+  font-size: 16px;
+  color: #64748b;
+  letter-spacing: 0.04em;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ── Divider ── */
+.landing-divider {
+  width: 40px;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  margin: 40px auto;
+}
+
+/* ── Project cards ── */
+.landing-projects {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 28px;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.project-card:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(232,201,106,0.3);
+  transform: translateY(-2px);
+}
+
+.project-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e8c96a;
+  background: rgba(232,201,106,0.1);
+  border: 1px solid rgba(232,201,106,0.2);
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+.project-title {
+  font-family: 'Fugaz One', cursive;
+  font-size: 22px;
+  font-weight: 400;
+  color: #e2e8f0;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.project-desc {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.project-cta {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8c96a;
+  margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+  .landing { padding: 40px 16px; }
+  .project-card { padding: 20px; }
+}

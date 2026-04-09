@@ -67,6 +67,7 @@ Required environment variables: `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`, `OPEN
 - [x] 25 MB file size enforcement with clear error messaging
 - [x] Dark theme background fix (page now matches site-wide dark design)
 - [x] Descriptive upload error messages (file too large, wrong type, etc.)
+- [x] Uploading step with file size indicator for immediate feedback on submit
 - [ ] Support for YouTube / podcast URL input (no file upload needed)
 - [ ] Exportable PDF report of findings
 

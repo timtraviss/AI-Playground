@@ -48,7 +48,9 @@ export async function extractClaims(transcript) {
     ],
   });
 
-  const raw = msg.content[0].text.trim();
+  const textBlock = msg.content?.find(b => b.type === 'text');
+  if (!textBlock) throw new Error('Claude returned no text content');
+  const raw = textBlock.text.trim();
 
   // Strip markdown fences if present
   const json = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();

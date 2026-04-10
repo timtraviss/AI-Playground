@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Code review orchestrator for Investigative Interviewing Demo.
 Runs three sub-agents in parallel: security, code quality, and API/integration.
@@ -12,8 +13,25 @@ Setup:
 """
 
 import sys
+import os
 import asyncio
 import anthropic
+from pathlib import Path
+
+# Load API key from project .env if not already in environment.
+# Supports both ANTHROPIC_API_KEY and the project's CLAUDE_API_KEY alias.
+if not os.environ.get("ANTHROPIC_API_KEY"):
+    env_file = Path(__file__).parent.parent / ".env"
+    if env_file.exists():
+        env_vars: dict[str, str] = {}
+        for line in env_file.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, _, v = line.partition("=")
+                env_vars[k.strip()] = v.strip()
+        api_key = env_vars.get("ANTHROPIC_API_KEY") or env_vars.get("CLAUDE_API_KEY")
+        if api_key:
+            os.environ["ANTHROPIC_API_KEY"] = api_key
 
 client = anthropic.Anthropic()
 MODEL = "claude-opus-4-6"

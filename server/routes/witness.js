@@ -9,7 +9,7 @@ const router = Router();
 function loadWitness(id) {
   const safePath = resolve(__dirname, '../data/witnesses', `${id}.json`);
   // Prevent path traversal
-  if (!safePath.startsWith(resolve(__dirname, '../data/witnesses'))) {
+  if (!safePath.startsWith(resolve(__dirname, '../data/witnesses') + '/')) {
     throw new Error('Invalid witness ID');
   }
   const raw = readFileSync(safePath, 'utf8');

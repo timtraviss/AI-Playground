@@ -145,7 +145,12 @@ ${witness.keyFacts.factList.map(f => `      { "fact": "${f.replace(/"/g, '\\"')}
     system: systemMessage,
   });
 
-  const content = response.content[0].text.trim();
+  if (response.stop_reason === 'max_tokens') {
+    throw new Error('Claude response was truncated — increase max_tokens');
+  }
+  const textBlock = response.content?.find(b => b.type === 'text');
+  if (!textBlock) throw new Error('Claude returned no text content');
+  const content = textBlock.text.trim();
 
   // Strip markdown code fences if Claude wrapped the JSON
   const jsonStr = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();

@@ -10,6 +10,10 @@ router.get('/', async (req, res) => {
     const apiKey = process.env.ELEVENLABS_API_KEY;
     const agentId = process.env.ELEVENLABS_AGENT_ID;
 
+    if (!apiKey || !agentId) {
+      return res.status(503).json({ error: 'ElevenLabs service not configured' });
+    }
+
     const url = `https://api.elevenlabs.io/v1/convai/conversations?agent_id=${encodeURIComponent(agentId)}&page_size=1`;
     const response = await fetch(url, {
       headers: { 'xi-api-key': apiKey },

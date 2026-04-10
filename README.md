@@ -71,6 +71,16 @@ Required environment variables: `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`, `OPEN
 - [ ] Support for YouTube / podcast URL input (no file upload needed)
 - [ ] Exportable PDF report of findings
 
+### Code Quality & Security
+- [x] Parallel three-agent code review orchestrator (`tools/review.py`)
+- [x] `/review` Claude Code slash command and VS Code task
+- [x] Path traversal fix in witness route (trailing `/` in startsWith check)
+- [x] Safe Claude response parsing (`.find(b => b.type === 'text')`) in all three Claude lib files
+- [x] `stop_reason` check in critique generator — descriptive error on `max_tokens` truncation
+- [x] ElevenLabs system prompt override implemented (POST with `conversation_config_override`)
+- [x] Env var guard in latest-conversation route — 503 if ElevenLabs not configured
+- [x] Input validation in `promptBuilder` — descriptive errors on missing witness fields
+
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)
 - [ ] Deploy to Heroku

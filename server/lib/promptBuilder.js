@@ -5,11 +5,16 @@
  */
 
 function bulletList(items) {
+  if (!Array.isArray(items) || items.length === 0) return '(none)';
   return items.map(item => `- ${item}`).join('\n');
 }
 
 export function buildPrompt(witness) {
+  if (!witness) throw new Error('buildPrompt called with no witness data');
   const { persona, scenario, openingStatement, knowledgeLevels, behavioralRules } = witness;
+  if (!persona || !scenario || !knowledgeLevels || !behavioralRules) {
+    throw new Error('buildPrompt: witness missing required fields (persona, scenario, knowledgeLevels, behavioralRules)');
+  }
 
   return `You are playing the role of ${persona.name}, a ${persona.age}-year-old ${persona.role} at ${persona.organization}.
 

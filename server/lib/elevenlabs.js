@@ -16,13 +16,24 @@ const ELEVENLABS_BASE = 'https://api.elevenlabs.io';
  * @returns {Promise<{ signed_url: string }>}
  */
 export async function generateSignedUrl(agentId, apiKey, systemPromptOverride) {
+  const body = {
+    agent_id: agentId,
+    conversation_config_override: {
+      agent: {
+        prompt: { prompt: systemPromptOverride },
+      },
+    },
+  };
+
   const response = await fetch(
-    `${ELEVENLABS_BASE}/v1/convai/conversation/get_signed_url?agent_id=${encodeURIComponent(agentId)}`,
+    `${ELEVENLABS_BASE}/v1/convai/conversation/get_signed_url`,
     {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'xi-api-key': apiKey,
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify(body),
     }
   );
 

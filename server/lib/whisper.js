@@ -94,8 +94,9 @@ export async function transcribe(audioPath, model) {
 }
 
 /**
- * Format a verbose_json diarize response into a speaker-labelled string.
+ * Format a diarize response into a speaker-labelled string with real timestamps.
  * Consecutive segments from the same speaker are merged into one block.
+ * Each block is prefixed with [MM:SS] using the first segment's start time.
  * Falls back to data.text if no segments are present.
  */
 function formatDiarizedTranscript(data) {
@@ -105,6 +106,7 @@ function formatDiarizedTranscript(data) {
   const lines = [];
   let currentSpeaker = null;
   let currentChunks = [];
+  let blockStartSecs = 0;
 
   for (const seg of segments) {
     const speaker = seg.speaker || 'Speaker';
@@ -113,18 +115,27 @@ function formatDiarizedTranscript(data) {
 
     if (speaker !== currentSpeaker) {
       if (currentSpeaker !== null) {
-        lines.push(`[${currentSpeaker}]: ${currentChunks.join(' ')}`);
+        lines.push(`[${formatTimestamp(blockStartSecs)}] [${currentSpeaker}]: ${currentChunks.join(' ')}`);
       }
       currentSpeaker = speaker;
       currentChunks = [text];
+      blockStartSecs = seg.start ?? 0;
     } else {
       currentChunks.push(text);
     }
   }
 
   if (currentSpeaker !== null && currentChunks.length > 0) {
-    lines.push(`[${currentSpeaker}]: ${currentChunks.join(' ')}`);
+    lines.push(`[${formatTimestamp(blockStartSecs)}] [${currentSpeaker}]: ${currentChunks.join(' ')}`);
   }
 
   return lines.join('\n\n');
+}
+
+/** Convert seconds to MM:SS string */
+function formatTimestamp(secs) {
+  const s = Math.floor(secs ?? 0);
+  const m = Math.floor(s / 60).toString().padStart(2, '0');
+  const r = (s % 60).toString().padStart(2, '0');
+  return `${m}:${r}`;
 }

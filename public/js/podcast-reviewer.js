@@ -520,6 +520,28 @@
     return lines;
   }
 
+  // ── Transcript download ───────────────────────────────
+  function downloadTranscript() {
+    const data = lastResults;
+    if (!data || !data.transcript) return;
+
+    const lines = [];
+    lines.push(`# Full Transcript`);
+    lines.push(`**File:** ${data.filename || 'Unknown'}`);
+    lines.push(`**Reviewed:** ${data.reviewedAt || new Date().toLocaleDateString()}`);
+    lines.push('');
+    lines.push(data.transcript);
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const baseName = (data.filename || 'podcast').replace(/\.[^.]+$/, '');
+    a.download = `${baseName}-transcript.md`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
   document.getElementById('btn-export-md').addEventListener('click', exportMarkdown);
+  document.getElementById('btn-export-transcript').addEventListener('click', downloadTranscript);
 
 })();

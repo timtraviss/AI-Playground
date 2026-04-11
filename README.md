@@ -145,6 +145,8 @@ git push heroku main
 - [x] Uploading step with file size indicator for immediate feedback on submit
 - [x] Configurable transcription model via `TRANSCRIPTION_MODEL` env var (whisper-1 / gpt-4o-mini-transcribe / gpt-4o-transcribe / gpt-4o-transcribe-diarize — defaults to diarize for speaker-labelled output)
 - [x] Export results as Markdown file (client-side, no server round-trip)
+- [x] Real audio timestamps ([MM:SS]) in diarized transcript — Claude uses these for accurate claim timestamps
+- [x] Download Transcript button — exports full timestamped transcript as Markdown for audio navigation
 - [x] Indeterminate shimmer progress bar on Transcribing step (Whisper API gives no incremental progress)
 - [x] "Transcript ready" step between Transcribing and Extracting — shows word count on completion
 - [x] 5-minute AbortController timeout on Whisper API fetch — surfaces clear error with model fallback hint instead of hanging indefinitely

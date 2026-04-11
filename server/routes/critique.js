@@ -6,11 +6,11 @@ import { loadWitness } from './witness.js';
 const router = Router();
 
 // POST /api/critique
-// Body: { conversationId: "...", witnessId: "witness-001" }
+// Body: { conversationId: "...", witnessId: "witness-catherine" }
 // Returns: structured critique JSON
 router.post('/', async (req, res) => {
   try {
-    const { conversationId, witnessId = 'witness-001' } = req.body;
+    const { conversationId, witnessId = 'witness-catherine' } = req.body;
 
     if (!conversationId) {
       return res.status(400).json({ error: 'conversationId is required' });
@@ -21,8 +21,8 @@ router.post('/', async (req, res) => {
       return res.status(500).json({ error: 'ELEVENLABS_API_KEY not configured' });
     }
 
-    if (!process.env.CLAUDE_API_KEY) {
-      return res.status(500).json({ error: 'CLAUDE_API_KEY not configured' });
+    if (!process.env.CLAUDE_API_KEY && !process.env.ANTHROPIC_API_KEY) {
+      return res.status(500).json({ error: 'CLAUDE_API_KEY (or ANTHROPIC_API_KEY) not configured' });
     }
 
     // Load witness and fetch transcript in parallel

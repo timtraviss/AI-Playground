@@ -20,6 +20,7 @@ const upload = multer({
 
 // In-memory job store  { jobId: { status, events, result } }
 const jobs = new Map();
+const JOB_TTL_MS = 10 * 60 * 1000;
 
 export const podcastReviewRouter = Router();
 
@@ -40,7 +41,7 @@ podcastReviewRouter.post('/upload', (req, res, next) => {
   if (!req.file) return res.status(400).json({ error: 'No audio file uploaded' });
 
   const jobId = randomUUID();
-  jobs.set(jobId, { events: [], result: null, done: false, error: null });
+  jobs.set(jobId, { events: [], result: null, done: false, error: null, cleanupTimer: null });
 
   // Kick off background pipeline — don't await
   runPipeline(jobId, req.file).catch(err => {
@@ -89,6 +90,8 @@ podcastReviewRouter.get('/result/:jobId', (req, res) => {
   if (!job.done) return res.status(202).json({ status: 'processing' });
   if (job.error) return res.status(500).json({ error: job.error });
   res.json(job.result);
+  clearTimeout(job.cleanupTimer);
+  job.cleanupTimer = setTimeout(() => jobs.delete(req.params.jobId), 60 * 1000);
 });
 
 // ── Pipeline ────────────────────────────────────────────────────────────────
@@ -164,6 +167,8 @@ function finishJob(jobId, result, error) {
   job.done = true;
   job.result = result;
   job.error = error;
+  clearTimeout(job.cleanupTimer);
+  job.cleanupTimer = setTimeout(() => jobs.delete(jobId), JOB_TTL_MS);
   if (job.subscribers) {
     for (const res of job.subscribers) {
       try { res.end(); } catch {}

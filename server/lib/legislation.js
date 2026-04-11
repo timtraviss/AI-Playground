@@ -13,8 +13,10 @@ const ACT_PATHS = {
 };
 
 function authHeaders(accept = 'application/xml') {
+  const apiKey = process.env.LEGISLATION_API_KEY || process.env.Legislation_API_KEY;
+  if (!apiKey) throw new Error('LEGISLATION_API_KEY (or Legislation_API_KEY) is not set');
   return {
-    Authorization: `Bearer ${process.env.Legislation_API_KEY}`,
+    Authorization: `Bearer ${apiKey}`,
     Accept: accept,
   };
 }

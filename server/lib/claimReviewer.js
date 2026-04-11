@@ -1,7 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { fetchStatutoryText } from './legislation.js';
 
-const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
+function getClient() {
+  const apiKey = process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('CLAUDE_API_KEY (or ANTHROPIC_API_KEY) is not set');
+  return new Anthropic({ apiKey });
+}
 
 const SYSTEM = `You are a senior NZ Police detective reviewing training podcast material for legislative accuracy.
 
@@ -34,6 +38,7 @@ const SCHEMA = `Return this exact JSON schema:
  * Returns: { ...claim, category, finding, correctStatement, statutoryText, actPath, retrievedAt }
  */
 export async function reviewClaim(claim) {
+  const client = getClient();
   const actName = claim.actsReferenced?.[0] || 'unknown Act';
   const sectionNumber = claim.sectionsReferenced?.[0] || null;
 

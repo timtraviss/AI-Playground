@@ -1,6 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
+function getClient() {
+  const apiKey = process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('CLAUDE_API_KEY (or ANTHROPIC_API_KEY) is not set');
+  return new Anthropic({ apiKey });
+}
 
 const SYSTEM = `You are a legislative accuracy analyst specialising in NZ Police law.
 
@@ -36,6 +40,7 @@ Rules:
  * Returns an array of claim objects.
  */
 export async function extractClaims(transcript) {
+  const client = getClient();
   const msg = await client.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 4096,

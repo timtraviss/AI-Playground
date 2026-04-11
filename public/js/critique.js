@@ -149,11 +149,15 @@ export function renderCritique(data, fullTranscriptTurns, witnessName) {
   }
 
   // Full transcript toggle
-  document.getElementById('btn-show-full-transcript').addEventListener('click', function () {
-    const el = document.getElementById('full-transcript');
-    const isHidden = el.classList.toggle('hidden');
-    this.textContent = isHidden ? 'Show Full Transcript ▾' : 'Hide Full Transcript ▴';
-  });
+  const transcriptToggleBtn = document.getElementById('btn-show-full-transcript');
+  if (transcriptToggleBtn && transcriptToggleBtn.dataset.bound !== 'true') {
+    transcriptToggleBtn.addEventListener('click', function () {
+      const el = document.getElementById('full-transcript');
+      const isHidden = el.classList.toggle('hidden');
+      this.textContent = isHidden ? 'Show Full Transcript ▾' : 'Hide Full Transcript ▴';
+    });
+    transcriptToggleBtn.dataset.bound = 'true';
+  }
 }
 
 function animateCounter(el, from, to, duration) {

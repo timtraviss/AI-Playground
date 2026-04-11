@@ -57,7 +57,9 @@ npm run convert-pdf    # converts the PEACE reference guide to markdown (run onc
 npm start
 ```
 
-Required environment variables: `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`, `OPENAI_API_KEY`, `LEGISLATION_API_KEY`.
+Required environment variables: `CLAUDE_API_KEY`, `ELEVENLABS_API_KEY`, `OPENAI_API_KEY`, `LEGISLATION_API_KEY`.
+
+Backward-compatible aliases still accepted in code: `ANTHROPIC_API_KEY` and `Legislation_API_KEY`.
 
 ### Running tests
 
@@ -66,6 +68,17 @@ npm test
 ```
 
 Tests cover `computeTargetKbps` edge cases and require no external dependencies (ffmpeg not needed).
+
+## Recent Updates (2026-04-11)
+
+- Interview page now starts sessions via `/api/session` signed URLs, ensuring witness-specific prompt overrides are always applied.
+- Latest-conversation fallback now requires a `since` timestamp window to reduce cross-session mixups.
+- Fixed critique transcript toggle listener duplication after multiple retries.
+- Added cleanup timers for Podcast Reviewer jobs to prevent in-memory job accumulation.
+- Standardized env-var handling and docs:
+  - Primary: `CLAUDE_API_KEY`, `LEGISLATION_API_KEY`
+  - Backward-compatible aliases still supported: `ANTHROPIC_API_KEY`, `Legislation_API_KEY`
+- Unified default witness behavior to `witness-catherine` for critique route consistency.
 
 ## Heroku Deployment
 

@@ -6,8 +6,8 @@ import { loadWitness } from './witness.js';
 const router = Router();
 
 // POST /api/session
-// Body: { witnessId: "witness-001" }
-// Returns: { signedUrl, witnessName, scenario, agentId }
+// Body: { witnessId: "witness-catherine" }
+// Returns: { signedUrl, witnessName, witnessId, scenario, systemPrompt }
 router.post('/', async (req, res) => {
   try {
     const { witnessId = 'witness-catherine' } = req.body;

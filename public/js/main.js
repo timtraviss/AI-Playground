@@ -9,7 +9,6 @@ import { TranscriptPanel } from './transcript.js';
 import { renderCritique } from './critique.js';
 import { showScreen, startTimer, stopTimer, setStatus, setMode, setProcessingStep, setInterviewWitness } from './ui.js';
 
-const AGENT_ID = 'agent_7301knnv9gdpe3dv4wyn542zaq6y';
 const WITNESS_ID = 'witness-catherine';
 
 // ── State ──────────────────────────────────────────────
@@ -17,6 +16,7 @@ let conversationId = null;
 let conversation = null;
 let witnessName = 'Catherine Johnson';
 let witnessInitials = 'CJ';
+let sessionStartedAt = null;
 
 // ── DOM refs ───────────────────────────────────────────
 const btnStart  = document.getElementById('btn-start');
@@ -63,14 +63,30 @@ btnStart.addEventListener('click', async () => {
     setInterviewWitness(witnessName, witnessInitials);
     transcriptPanel.clear();
     conversationId = null;
+    sessionStartedAt = new Date().toISOString();
     showScreen('interview');
     setStatus('connecting');
 
-    // Exactly as per ElevenLabs docs — public agent, just pass agentId
+    const sessionRes = await fetch('/api/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ witnessId: WITNESS_ID }),
+    });
+
+    if (!sessionRes.ok) {
+      const err = await sessionRes.json().catch(() => ({ error: sessionRes.statusText }));
+      throw new Error(err.error || 'Could not create interview session');
+    }
+
+    const { signedUrl } = await sessionRes.json();
+
     const { Conversation } = window.ElevenLabsClient;
+    if (!Conversation) {
+      throw new Error('ElevenLabs SDK not loaded');
+    }
 
     conversation = await Conversation.startSession({
-      agentId: AGENT_ID,
+      signedUrl,
 
       onConnect: ({ conversationId: id }) => {
         console.log('Connected! Conversation ID:', id);
@@ -126,10 +142,12 @@ btnEnd.addEventListener('click', async () => {
       conversation = null;
     }
 
-    // Fallback: if onConnect didn't fire with an ID, fetch the latest from backend
+    // Fallback: if onConnect didn't fire with an ID, fetch recent conversations
+    // constrained to this session start window.
     if (!conversationId) {
       console.log('No conversation ID from events — fetching latest...');
-      const res = await fetch('/api/latest-conversation');
+      const url = `/api/latest-conversation?since=${encodeURIComponent(sessionStartedAt || new Date().toISOString())}`;
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         conversationId = data.conversationId;
@@ -179,6 +197,7 @@ async function runCritique() {
 function resetForRetry() {
   conversationId = null;
   conversation = null;
+  sessionStartedAt = null;
   transcriptPanel.clear();
   btnStart.disabled = false;
   btnStart.innerHTML = '<span class="btn-icon">▶</span> Begin Interview';

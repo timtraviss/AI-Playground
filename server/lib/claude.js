@@ -26,7 +26,9 @@ function getPeaceReference() {
  * @returns {Promise<Object>} Structured critique object
  */
 export async function generateCritique(formattedTranscript, witness) {
-  const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
+  const apiKey = process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('CLAUDE_API_KEY (or ANTHROPIC_API_KEY) is not set');
+  const client = new Anthropic({ apiKey });
 
   const peaceRef = getPeaceReference();
 

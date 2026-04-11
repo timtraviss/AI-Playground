@@ -105,8 +105,8 @@ btnEnd.addEventListener('click', async () => {
   showScreen('processing');
   setProcessingStep('step-transcript');
 
-  // Give ElevenLabs a moment to finalise the conversation record
-  await delay(3000);
+  // Give ElevenLabs time to register the completed call in their API
+  await delay(5000);
 
   // Look up the most recent conversation since this session started
   try {
@@ -132,22 +132,33 @@ btnEnd.addEventListener('click', async () => {
 
 // ── Post-call: transcript fetch + critique ─────────────
 async function runPostCall() {
-  // Fetch transcript with retry (ElevenLabs may need a moment)
+  // ElevenLabs processes the conversation server-side after the call ends.
+  // Poll until status === 'done' (up to ~45s), then fetch the transcript.
+  const DONE_STATUSES = new Set(['done', 'completed', 'success']);
+  const MAX_ATTEMPTS  = 9;
+  const POLL_INTERVAL = 5000; // 5s between attempts
+
   let turns = null;
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    await delay(attempt === 1 ? 5000 : POLL_INTERVAL);
     try {
       const res = await fetch(`/api/transcript/${encodeURIComponent(conversationId)}`);
       if (!res.ok) throw new Error(`Transcript API ${res.status}`);
       const data = await res.json();
+      const status = (data.status || '').toLowerCase();
       turns = data.turns || [];
-      if (turns.length > 0) break;
-      if (attempt < 3) await delay(2000);
+
+      // Accept if status is done, or if we have turns (some accounts skip status)
+      if (DONE_STATUSES.has(status) || turns.length > 0) break;
+
+      // Still processing — keep waiting unless this is the last attempt
+      console.log(`[interview] transcript status: ${status || 'unknown'}, attempt ${attempt}/${MAX_ATTEMPTS}`);
+      if (attempt === MAX_ATTEMPTS) break; // use whatever we have
     } catch (err) {
-      if (attempt === 3) {
+      if (attempt === MAX_ATTEMPTS) {
         showResultsWithError(`Could not retrieve transcript: ${err.message}`);
         return;
       }
-      await delay(2000);
     }
   }
 

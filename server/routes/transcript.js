@@ -14,7 +14,8 @@ transcriptRouter.get('/:conversationId', async (req, res) => {
     const data = await fetchConversationTranscript(req.params.conversationId, apiKey);
     // ElevenLabs may nest the transcript — normalise to a flat array
     const turns = data.transcript || data.conversation?.transcript || [];
-    res.json({ conversationId: req.params.conversationId, turns });
+    const status = data.status || data.conversation?.status || 'unknown';
+    res.json({ conversationId: req.params.conversationId, status, turns });
   } catch (err) {
     console.error('[transcript] fetch error:', err.message);
     res.status(502).json({ error: err.message });

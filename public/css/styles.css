@@ -448,6 +448,17 @@ html, body {
   z-index: 10;
 }
 .footer-center { display: flex; align-items: center; gap: 12px; }
+
+/* ElevenLabs widget — centred in the interview stage */
+.convai-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0 8px;
+}
+elevenlabs-convai {
+  display: block;
+}
 .footer-hint {
   font-size: 12px;
   color: var(--text-sub);

@@ -93,16 +93,21 @@
           <div class="waveform-bar"></div>
           <div class="waveform-bar"></div>
         </div>
-        <div class="speaking-label" id="speaking-label">Connecting...</div>
+        <div class="speaking-label" id="speaking-label">Use the button below to start your interview</div>
+      </div>
+
+      <!-- ElevenLabs widget — centred inline -->
+      <div class="convai-wrapper">
+        <elevenlabs-convai id="convai-widget" agent-id="agent_7301knnv9gdpe3dv4wyn542zaq6y"></elevenlabs-convai>
       </div>
     </div>
 
     <footer class="interview-footer">
-      <div></div>
+      <p class="footer-hint">End the call in the widget first, then click Get Critique</p>
       <div class="footer-center">
         <div class="timer" id="timer">00:00</div>
       </div>
-      <button id="btn-end" class="btn-danger" disabled>End Interview</button>
+      <button id="btn-end" class="btn-danger" disabled>Get Critique</button>
     </footer>
   </div>
 
@@ -205,8 +210,8 @@
   <!-- Shared nav -->
   <script src="/js/nav.js" defer></script>
 
-  <!-- ElevenLabs Conversational AI SDK (confirmed package, IIFE build) -->
-  <script src="https://unpkg.com/@elevenlabs/client/dist/lib.iife.js"></script>
+  <!-- ElevenLabs Conversational AI Widget -->
+  <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
 
   <script type="module" src="/js/main.js"></script>
 </body>

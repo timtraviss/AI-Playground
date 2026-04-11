@@ -2,25 +2,26 @@
  * P.E.A.C.E. Model Investigative Interviewing Tutor
  *
  * Flow:
- *   1. Load witness metadata + scenario text in parallel
- *   2. "Begin Interview" → Conversation.startSession() via ElevenLabs SDK
- *   3. onConnect → conversationId, enable End button, start timer
- *   4. "End Interview" or unexpected onDisconnect → runPostCall()
- *   5. runPostCall: fetch transcript (with retry) → POST /api/critique → render results
+ *   1. Load witness metadata + scenario text in parallel → briefing screen
+ *   2. "Begin Interview" → show interview screen, start 30s enable-timer
+ *   3. ElevenLabs widget handles the voice call (student clicks mic button)
+ *   4. elevenlabs-convai:call event → enable Get Critique early + start timer
+ *   5. Student ends call via widget, clicks "Get Critique"
+ *   6. /api/latest-conversation → conversationId → transcript retry → /api/critique → results
  */
 
 import {
   showScreen, startTimer, stopTimer,
-  setStatus, setMode, setInterviewWitness, setProcessingStep,
+  setStatus, setInterviewWitness, setProcessingStep,
 } from './ui.js';
 
 const WITNESS_ID = 'witness-catherine';
 
 // ── State ──────────────────────────────────────────────
+let sessionStartedAt = null;
 let conversationId   = null;
-let conversation     = null;
-let callEnded        = false;  // guard against double-trigger
-let lastTranscript   = null;   // saved so critique can be retried without re-fetching
+let enableTimer      = null;   // 30s fallback to enable Get Critique
+let lastTranscript   = null;
 
 let witnessName     = 'Catherine Johnson';
 let witnessInitials = 'CJ';
@@ -33,7 +34,7 @@ const btnRetryBottom    = document.getElementById('btn-retry-bottom');
 const btnRetryCritique  = document.getElementById('btn-retry-critique');
 const btnTranscriptToggle = document.getElementById('btn-transcript-toggle');
 const transcriptContainer = document.getElementById('transcript-turns');
-const introError        = document.getElementById('intro-error');
+const widget            = document.getElementById('convai-widget');
 
 // ── Load briefing screen data ──────────────────────────
 async function loadBriefingData() {
@@ -65,150 +66,94 @@ async function loadBriefingData() {
 }
 
 // ── Begin Interview ────────────────────────────────────
-btnStart.addEventListener('click', async () => {
-  btnStart.disabled    = true;
-  btnStart.textContent = 'Connecting...';
-  introError.hidden    = true;
+btnStart.addEventListener('click', () => {
+  sessionStartedAt = new Date().toISOString();
+  conversationId   = null;
+  lastTranscript   = null;
 
-  const { Conversation } = window.ElevenLabsClient || {};
-  if (!Conversation) {
-    showInlineError(introError, 'ElevenLabs SDK failed to load. Please refresh and try again.');
-    btnStart.disabled  = false;
-    btnStart.innerHTML = '<span class="btn-icon">▶</span> Begin Interview';
-    return;
-  }
-
-  // Fetch agentId from server — keeps it out of client HTML
-  let agentId;
-  try {
-    const res = await fetch('/api/config');
-    if (!res.ok) throw new Error('Could not load agent configuration');
-    ({ agentId } = await res.json());
-  } catch (err) {
-    showInlineError(introError, err.message);
-    btnStart.disabled  = false;
-    btnStart.innerHTML = '<span class="btn-icon">▶</span> Begin Interview';
-    return;
-  }
-
-  // Switch to interview screen before connecting so user sees feedback
-  callEnded  = false;
-  conversationId = null;
-  conversation   = null;
   setInterviewWitness(witnessName, witnessInitials);
   showScreen('interview');
   setStatus('connecting');
 
-  try {
-    conversation = await Conversation.startSession({
-      agentId,
-
-      onConnect: ({ conversationId: id }) => {
-        console.log('[interview] connected, conversationId:', id);
-        conversationId = id;
-        setStatus('live');
-        startTimer();
-        btnEnd.disabled = false;
-        document.getElementById('speaking-label').textContent = 'Listening...';
-      },
-
-      onDisconnect: () => {
-        console.log('[interview] disconnected');
-        setStatus('disconnected');
-        stopTimer();
-        btnEnd.disabled = true;
-        // Auto-trigger post-call flow if student didn't click End Interview
-        if (!callEnded) {
-          callEnded = true;
-          runPostCall();
-        }
-      },
-
-      onMessage: ({ source, message }) => {
-        // Accumulate turns for transcript display
-        // (actual transcript fetched from ElevenLabs API after call)
-        console.log(`[interview] ${source}: ${message?.slice(0, 60)}`);
-      },
-
-      onModeChange: ({ mode }) => {
-        setMode(
-          mode,
-          document.getElementById('interview-avatar'),
-          document.getElementById('waveform'),
-          document.getElementById('speaking-label'),
-        );
-      },
-
-      onError: (message, context) => {
-        console.error('[interview] ElevenLabs error:', message, context);
-      },
-    });
-  } catch (err) {
-    console.error('[interview] startSession failed:', err);
-    const isPermission = err.name === 'NotAllowedError' ||
-      (err.message || '').toLowerCase().includes('permission');
-    const msg = isPermission
-      ? 'Microphone access was denied. Please allow microphone access in your browser settings and try again.'
-      : 'Could not connect to the interview agent: ' + err.message;
-    setStatus('disconnected');
-    document.getElementById('speaking-label').textContent = msg;
-    btnEnd.disabled    = false;
-    btnEnd.textContent = '↩ Back';
-    btnEnd.addEventListener('click', resetForRetry, { once: true });
-  }
+  // Enable Get Critique after 30s regardless of widget events
+  clearTimeout(enableTimer);
+  enableTimer = setTimeout(() => {
+    btnEnd.disabled = false;
+    setStatus('live');
+  }, 30_000);
 });
 
-// ── End Interview ──────────────────────────────────────
+// ── Widget call-start event (best-effort) ──────────────
+// Fires when the student clicks the widget mic button. If it comes through,
+// enable Get Critique immediately and start the visual timer.
+if (widget) {
+  widget.addEventListener('elevenlabs-convai:call', (e) => {
+    console.log('[interview] widget call started:', e.detail);
+    clearTimeout(enableTimer); // cancel the 30s fallback
+    btnEnd.disabled = false;
+    setStatus('live');
+    startTimer();
+  });
+}
+
+// ── Get Critique ───────────────────────────────────────
 btnEnd.addEventListener('click', async () => {
-  if (callEnded) return;
-  callEnded = true;
-
   btnEnd.disabled    = true;
-  btnEnd.textContent = 'Ending...';
+  btnEnd.textContent = 'Retrieving…';
   stopTimer();
-
-  if (conversation) {
-    try { await conversation.endSession(); } catch {}
-    conversation = null;
-  }
-
-  runPostCall();
-});
-
-// ── Post-call: transcript + critique ──────────────────
-async function runPostCall() {
+  clearTimeout(enableTimer);
   showScreen('processing');
   setProcessingStep('step-transcript');
 
-  // Step 1: fetch transcript with retry
+  // Give ElevenLabs a moment to finalise the conversation record
+  await delay(3000);
+
+  // Look up the most recent conversation since this session started
+  try {
+    const url = `/api/latest-conversation?since=${encodeURIComponent(sessionStartedAt)}`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error(`latest-conversation returned ${res.status}`);
+    const data = await res.json();
+    conversationId = data.conversationId;
+  } catch (err) {
+    console.warn('[interview] latest-conversation failed:', err.message);
+  }
+
+  if (!conversationId) {
+    showResultsWithError(
+      'No interview found — did you start a call using the widget? ' +
+      'End the call first, then click Get Critique.'
+    );
+    return;
+  }
+
+  await runPostCall();
+});
+
+// ── Post-call: transcript fetch + critique ─────────────
+async function runPostCall() {
+  // Fetch transcript with retry (ElevenLabs may need a moment)
   let turns = null;
-  const MAX_TRANSCRIPT_RETRIES = 3;
-  for (let attempt = 1; attempt <= MAX_TRANSCRIPT_RETRIES; attempt++) {
-    await delay(2000);
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      if (!conversationId) {
-        throw new Error('No conversation ID available — the call may not have connected.');
-      }
       const res = await fetch(`/api/transcript/${encodeURIComponent(conversationId)}`);
-      if (!res.ok) throw new Error(`Transcript API returned ${res.status}`);
+      if (!res.ok) throw new Error(`Transcript API ${res.status}`);
       const data = await res.json();
       turns = data.turns || [];
-      if (turns.length > 0) break; // got something
-      // empty transcript — retry if we have attempts left
-      if (attempt === MAX_TRANSCRIPT_RETRIES) break;
-      console.log(`[interview] transcript empty, retry ${attempt}/${MAX_TRANSCRIPT_RETRIES}`);
+      if (turns.length > 0) break;
+      if (attempt < 3) await delay(2000);
     } catch (err) {
-      if (attempt === MAX_TRANSCRIPT_RETRIES) {
+      if (attempt === 3) {
         showResultsWithError(`Could not retrieve transcript: ${err.message}`);
         return;
       }
+      await delay(2000);
     }
   }
 
   lastTranscript = turns;
   renderTranscript(turns);
 
-  // Step 2: PEACE critique
   setProcessingStep('step-analyse');
   await runCritique();
 }
@@ -234,14 +179,13 @@ async function runCritique() {
 
 // ── Render results screen ──────────────────────────────
 function renderResults(c) {
-  // Score ring
-  const pct     = Math.min(100, Math.max(0, c.overallScore || 0));
+  const pct = Math.min(100, Math.max(0, c.overallScore || 0));
   const circumference = 2 * Math.PI * 52;
-  const fill    = document.getElementById('score-ring-fill');
+  const fill = document.getElementById('score-ring-fill');
   fill.style.strokeDasharray  = `${circumference}`;
   fill.style.strokeDashoffset = `${circumference - (pct / 100) * circumference}`;
-  document.getElementById('score-value').textContent = pct;
-  document.getElementById('score-band').textContent  = c.overallBand || '';
+  document.getElementById('score-value').textContent   = pct;
+  document.getElementById('score-band').textContent    = c.overallBand || '';
   document.getElementById('score-summary').textContent = c.summary || '';
 
   // Phase bars
@@ -323,7 +267,6 @@ function renderResults(c) {
     `);
   }
 
-  // Hide critique error block
   document.getElementById('critique-error').hidden = true;
   showScreen('results');
 }
@@ -344,11 +287,10 @@ function renderTranscript(turns) {
   }
   for (const turn of turns) {
     const isStudent = turn.role === 'user';
-    const speaker   = isStudent ? 'You (Student)' : witnessName;
     const div = document.createElement('div');
     div.className = `tx-turn ${isStudent ? 'tx-student' : 'tx-witness'}`;
     div.innerHTML = `
-      <div class="tx-speaker">${speaker}</div>
+      <div class="tx-speaker">${isStudent ? 'You (Student)' : escapeHtml(witnessName)}</div>
       <div class="tx-message">${escapeHtml(turn.message)}</div>
     `;
     transcriptContainer.appendChild(div);
@@ -361,7 +303,7 @@ btnTranscriptToggle?.addEventListener('click', () => {
   btnTranscriptToggle.textContent = hidden ? 'Hide Transcript' : 'Show Transcript';
 });
 
-// ── Retry critique without re-fetching transcript ──────
+// ── Retry critique ─────────────────────────────────────
 btnRetryCritique?.addEventListener('click', async () => {
   document.getElementById('critique-error').hidden = true;
   setProcessingStep('step-analyse');
@@ -371,13 +313,13 @@ btnRetryCritique?.addEventListener('click', async () => {
 
 // ── Reset / retry ──────────────────────────────────────
 function resetForRetry() {
-  callEnded      = false;
-  conversationId = null;
-  conversation   = null;
-  lastTranscript = null;
+  clearTimeout(enableTimer);
   stopTimer();
+  sessionStartedAt = null;
+  conversationId   = null;
+  lastTranscript   = null;
   btnEnd.disabled    = true;
-  btnEnd.textContent = 'End Interview';
+  btnEnd.textContent = 'Get Critique';
   btnStart.disabled  = false;
   btnStart.innerHTML = '<span class="btn-icon">▶</span> Begin Interview';
   showScreen('intro');
@@ -391,11 +333,6 @@ function escapeHtml(str) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
-}
-
-function showInlineError(el, msg) {
-  el.textContent = msg;
-  el.hidden = false;
 }
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }

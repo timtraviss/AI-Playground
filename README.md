@@ -111,16 +111,16 @@ git push heroku main
 
 ### P.E.A.C.E. Interview Tutor
 - [x] AI witness with ElevenLabs voice synthesis
-- [x] Direct agentId connection via `@elevenlabs/client` SDK (unpkg IIFE build — no vendor copy)
+- [x] ElevenLabs official widget embed (`<elevenlabs-convai>`) — inline/centred on interview screen, customisable from ElevenLabs dashboard
 - [x] Tiered witness disclosure model (4 tiers)
 - [x] `/api/transcript/:id` endpoint fetches ElevenLabs transcript after session ends (with 3-attempt retry)
-- [x] Post-interview PEACE critique — auto-runs after call ends, no student action required
+- [x] Post-interview PEACE critique — student clicks "Get Critique" after ending call via widget
 - [x] Full results screen — score ring, phase bars, TEDS/leading/closed pills, key facts, strengths, improvements
 - [x] Scenario text loaded from `server/data/scenarios/catherine.md` — editable without code changes
 - [x] Admin UI at `/admin` — edit scenario briefing and task via browser, password-protected
 - [x] `GET /api/scenario` and `POST /api/admin/scenario` endpoints
-- [x] Unexpected disconnection handled — auto-triggers transcript + critique fetch
-- [x] Microphone denied: inline error message, no alert()
+- [x] Get Critique button enabled after 30s or on widget call-start event (whichever comes first)
+- [x] `/api/latest-conversation` used to resolve conversationId after widget call ends
 - [ ] Additional witness scenarios beyond Catherine
 - [ ] Student session history and progress tracking
 - [ ] Instructor dashboard to review student submissions

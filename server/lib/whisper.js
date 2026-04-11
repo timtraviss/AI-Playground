@@ -53,19 +53,38 @@ export async function transcribe(audioPath, model) {
   const mime = mimeMap[extname(audioPath).toLowerCase()] ?? 'audio/mpeg';
   formData.append('file', new Blob([fileBuffer], { type: mime }), fileName);
 
+  // Use Promise.race to enforce the deadline regardless of whether Node.js's
+  // native fetch actually honours the AbortSignal (it often doesn't for
+  // long-running server-side requests). The AbortController is still passed
+  // so the underlying connection is cleaned up when possible.
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000);
+  const TIMEOUT_MS = 5 * 60 * 1000;
+
+  let timeoutId;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      controller.abort();
+      reject(new Error(
+        `Transcription timed out after 5 minutes (model: ${model}). ` +
+        `Try again, or set TRANSCRIPTION_MODEL=whisper-1 in your .env for faster processing.`
+      ));
+    }, TIMEOUT_MS);
+  });
 
   let res;
   try {
-    res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}` },
-      body: formData,
-      signal: controller.signal,
-    });
+    res = await Promise.race([
+      fetch('https://api.openai.com/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiKey}` },
+        body: formData,
+        signal: controller.signal,
+      }),
+      timeoutPromise,
+    ]);
   } catch (err) {
-    if (err.name === 'AbortError') {
+    // Re-throw timeout errors with a consistent message so the route can detect them
+    if (err.message.includes('timed out') || err.name === 'AbortError') {
       throw new Error(
         `Transcription timed out after 5 minutes (model: ${model}). ` +
         `Try again, or set TRANSCRIPTION_MODEL=whisper-1 in your .env for faster processing.`

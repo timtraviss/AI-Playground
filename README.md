@@ -150,7 +150,7 @@ git push heroku main
 - [x] Download Transcript button — exports full timestamped transcript as Markdown for audio navigation
 - [x] Indeterminate shimmer progress bar on Transcribing step (Whisper API gives no incremental progress)
 - [x] "Transcript ready" step between Transcribing and Extracting — shows word count on completion
-- [x] 5-minute AbortController timeout on Whisper API fetch — surfaces clear error with model fallback hint instead of hanging indefinitely
+- [x] 5-minute timeout on Whisper API fetch via `Promise.race` — reliably enforces deadline even when Node.js native fetch ignores AbortSignal
 - [x] Automatic whisper-1 fallback on timeout — retries once with faster model; UI re-activates step with "Primary timed out — retrying…" note
 - [x] Transcript ready step notes when speaker labels are unavailable (whisper-1 fallback used)
 - [x] Server heartbeat every 30s during transcription — keeps SSE connection alive through proxies

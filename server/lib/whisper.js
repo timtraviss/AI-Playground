@@ -35,6 +35,9 @@ export async function transcribe(audioPath) {
   formData.append('model', model);
   formData.append('language', 'en');
   formData.append('response_format', 'json');
+  if (isDiarize) {
+    formData.append('chunking_strategy', 'auto');
+  }
 
   const { Blob } = await import('buffer');
   const { readFileSync } = await import('fs');

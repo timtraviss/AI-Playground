@@ -193,9 +193,9 @@ async function startConversion() {
       method: 'POST',
       body: formData,
     });
-    const data = await res.json();
+    const data = await readApiResponse(res);
     if (!res.ok) {
-      showError(data.error || 'Upload failed', 'step-uploading');
+      showError(data.error || `Upload failed (${res.status})`, 'step-uploading');
       return;
     }
     jobId = data.jobId;
@@ -309,3 +309,19 @@ function resetAll() {
 
 btnRetry.addEventListener('click', resetAll);
 btnAgain.addEventListener('click', resetAll);
+
+async function readApiResponse(res) {
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    return res.json();
+  }
+
+  const text = await res.text();
+  const snippet = text.replace(/\s+/g, ' ').trim().slice(0, 140);
+  if (res.ok) {
+    throw new Error(`Unexpected non-JSON response from server (${res.status}). ${snippet}`);
+  }
+  return {
+    error: `Server returned ${res.status} with unexpected content. ${snippet || 'No response body.'}`,
+  };
+}

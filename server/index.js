@@ -29,6 +29,11 @@ app.use('/api/latest-conversation', latestConversationRouter);
 app.use('/api/podcast-review', podcastReviewRouter);
 app.use('/api/podcast-converter', podcastConverterRouter);
 
+// Return JSON for unknown API routes instead of HTML fallback pages.
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: `API route not found: ${req.method} ${req.originalUrl}` });
+});
+
 // Interview subpage
 app.get('/interview', (req, res) => {
   res.redirect('/interview/');

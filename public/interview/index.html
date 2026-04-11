@@ -76,7 +76,7 @@
       <div class="brand-title-sm">P.E.A.C.E.</div>
       <div class="status-badge" id="status-badge">
         <span class="status-dot" id="status-dot"></span>
-        <span class="status-text" id="status-text">Connecting...</span>
+        <span class="status-text" id="status-text">Ready</span>
       </div>
     </header>
 
@@ -91,26 +91,19 @@
           <div class="waveform-bar"></div>
           <div class="waveform-bar"></div>
         </div>
-        <div class="speaking-label" id="speaking-label">Ready...</div>
-
+        <div class="speaking-label" id="speaking-label">Click the microphone button to begin</div>
       </div>
     </div>
 
-    <div class="transcript-panel" id="transcript-panel">
-      <div class="transcript-handle" id="transcript-handle"></div>
-      <div class="transcript-inner" id="transcript-inner">
-        <div class="transcript-empty">Transcript will appear here as the interview progresses...</div>
-      </div>
-    </div>
+    <!-- ElevenLabs Conversational AI Widget -->
+    <elevenlabs-convai id="convai-widget" agent-id="agent_7301knnv9gdpe3dv4wyn542zaq6y"></elevenlabs-convai>
 
     <footer class="interview-footer">
-      <button id="btn-transcript-toggle" class="btn-ghost">
-        <span id="transcript-toggle-label">Show Transcript</span>
-      </button>
+      <p class="footer-hint">End the call first, then click Get Transcript</p>
       <div class="footer-center">
         <div class="timer" id="timer">00:00</div>
       </div>
-      <button id="btn-end" class="btn-danger">End Interview</button>
+      <button id="btn-end" class="btn-danger">Get Transcript</button>
     </footer>
   </div>
 
@@ -153,8 +146,8 @@
   <!-- Shared nav -->
   <script src="/js/nav.js" defer></script>
 
-  <!-- ElevenLabs client SDK — local vendor copy -->
-  <script src="/js/vendor/elevenlabs-client.js"></script>
+  <!-- ElevenLabs Conversational AI Widget (official embed — no vendor copy needed) -->
+  <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" type="text/javascript"></script>
 
   <script type="module" src="/js/main.js"></script>
 </body>

@@ -112,9 +112,10 @@ git push heroku main
 ### P.E.A.C.E. Interview Tutor
 - [x] AI witness with ElevenLabs voice synthesis
 - [x] Direct agentId connection — no signed URL, no prompt injection, no overrides (voice and persona configured in ElevenLabs dashboard)
+- [x] ElevenLabs official widget embed (`<elevenlabs-convai>`) — replaces vendor SDK copy, uses latest unpkg build
 - [x] Transcript-only result screen — student and witness turns displayed after interview ends
-- [x] `/api/config` endpoint serves agentId to client without exposing key in HTML
 - [x] `/api/transcript/:id` endpoint fetches official ElevenLabs transcript after session ends
+- [x] `/api/latest-conversation` fallback — resolves conversationId when widget doesn't surface it
 - [x] Tiered witness disclosure model (4 tiers)
 - [ ] Post-interview critique scored against NZ Police PEACE model (retired pending stable transcript flow)
 - [ ] Additional witness scenarios beyond Catherine

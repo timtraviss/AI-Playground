@@ -448,6 +448,12 @@ html, body {
   z-index: 10;
 }
 .footer-center { display: flex; align-items: center; gap: 12px; }
+.footer-hint {
+  font-size: 12px;
+  color: var(--text-sub);
+  opacity: 0.6;
+  font-style: italic;
+}
 .timer {
   font-size: 18px;
   font-variant-numeric: tabular-nums;

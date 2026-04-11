@@ -83,13 +83,6 @@ export async function transcribe(audioPath, model) {
 
   const data = await res.json();
 
-  if (isDiarize) {
-    console.log('[transcribe] diarize response keys:', Object.keys(data));
-    if (data.segments?.length) {
-      console.log('[transcribe] first segment:', JSON.stringify(data.segments[0]));
-    }
-  }
-
   return isDiarize ? formatDiarizedTranscript(data) : (data.text || '').trim();
 }
 

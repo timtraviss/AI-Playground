@@ -1,24 +1,21 @@
 /**
  * P.E.A.C.E. Model Investigative Interviewing Tutor
  *
- * Simplified flow:
- *   1. Fetch agentId from /api/config (keeps key server-side)
- *   2. Connect directly to ElevenLabs agent — no prompt injection, no signed URL
- *   3. Capture conversationId from onConnect
- *   4. End session → wait 3s → fetch transcript from /api/transcript/:id
- *   5. Render transcript screen
+ * Flow:
+ *   1. Load witness metadata from /api/witness/:id — populates briefing screen
+ *   2. "Begin Interview" → navigate to interview screen
+ *   3. Student clicks the ElevenLabs widget microphone button to start the call
+ *   4. elevenlabs-convai:call event → start timer, set status Live
+ *   5. Student clicks "Get Transcript" → wait 3s → fetch via /api/latest-conversation
+ *      fallback → /api/transcript/:id → render transcript screen
  */
 
-import { TranscriptPanel } from './transcript.js';
-import { showScreen, startTimer, stopTimer, setStatus, setMode, setInterviewWitness } from './ui.js';
+import { showScreen, startTimer, stopTimer, setStatus, setInterviewWitness } from './ui.js';
 
 const WITNESS_ID = 'witness-catherine';
 
 // ── State ──────────────────────────────────────────────
 let conversationId   = null;
-let conversation     = null;
-let witnessName      = 'Catherine Johnson';
-let witnessInitials  = 'CJ';
 let sessionStartedAt = null;
 
 // ── DOM refs ───────────────────────────────────────────
@@ -26,14 +23,10 @@ const btnStart       = document.getElementById('btn-start');
 const btnEnd         = document.getElementById('btn-end');
 const btnRetry       = document.getElementById('btn-retry');
 const btnRetryBottom = document.getElementById('btn-retry-bottom');
+const widget         = document.getElementById('convai-widget');
 
-// ── Live transcript panel (during interview) ───────────
-const transcriptPanel = new TranscriptPanel(
-  document.getElementById('transcript-panel'),
-  document.getElementById('transcript-inner'),
-  document.getElementById('btn-transcript-toggle'),
-  document.getElementById('transcript-toggle-label'),
-);
+let witnessName     = 'Catherine Johnson';
+let witnessInitials = 'CJ';
 
 // ── Load witness metadata for briefing screen ──────────
 async function loadWitnessMetadata() {
@@ -52,96 +45,46 @@ async function loadWitnessMetadata() {
 
     btnStart.disabled = false;
   } catch (err) {
-    console.error('Failed to load witness:', err);
+    console.error('[interview] Failed to load witness:', err);
     document.getElementById('briefing-text').textContent =
       'Failed to load scenario. Is the server running?';
   }
 }
 
-// ── Begin Interview ────────────────────────────────────
-btnStart.addEventListener('click', async () => {
-  btnStart.disabled    = true;
-  btnStart.textContent = 'Connecting...';
-
-  try {
-    // Fetch agentId from server — keeps the key out of client HTML
-    const configRes = await fetch('/api/config');
-    if (!configRes.ok) throw new Error('Could not load agent configuration from server');
-    const { agentId } = await configRes.json();
-
-    setInterviewWitness(witnessName, witnessInitials);
-    transcriptPanel.clear();
-    conversationId   = null;
-    sessionStartedAt = new Date().toISOString();
-    showScreen('interview');
-    setStatus('connecting');
-
-    const { Conversation } = window.ElevenLabsClient;
-    if (!Conversation) throw new Error('ElevenLabs SDK not loaded');
-
-    // Connect directly — agent is fully configured in ElevenLabs dashboard
-    conversation = await Conversation.startSession({
-      agentId,
-
-      onConnect: ({ conversationId: id }) => {
-        console.log('[interview] connected, conversationId:', id);
-        conversationId = id;
-        setStatus('live');
-        startTimer();
-      },
-
-      onDisconnect: () => {
-        console.log('[interview] disconnected');
-        setStatus('disconnected');
-        stopTimer();
-      },
-
-      onMessage: ({ source, message }) => {
-        const side = source === 'user' ? 'student' : 'witness';
-        transcriptPanel.addTurn(side, message, witnessName);
-        transcriptPanel.open();
-      },
-
-      onModeChange: ({ mode }) => {
-        setMode(
-          mode,
-          document.getElementById('interview-avatar'),
-          document.getElementById('waveform'),
-          document.getElementById('speaking-label'),
-        );
-      },
-
-      onError: (message, context) => {
-        console.error('[interview] ElevenLabs error:', message, context);
-      },
-    });
-
-  } catch (err) {
-    console.error('[interview] failed to start:', err);
-    alert('Could not connect: ' + err.message);
-    resetForRetry();
-  }
+// ── Begin Interview — navigate to interview screen ─────
+btnStart.addEventListener('click', () => {
+  sessionStartedAt = new Date().toISOString();
+  conversationId   = null;
+  setInterviewWitness(witnessName, witnessInitials);
+  showScreen('interview');
 });
 
-// ── End Interview ──────────────────────────────────────
+// ── Widget call-start event ────────────────────────────
+// Fires when the student clicks the ElevenLabs microphone button to start the call.
+// The widget may include a conversationId in the event detail — capture it if present.
+if (widget) {
+  widget.addEventListener('elevenlabs-convai:call', (e) => {
+    console.log('[interview] widget call started:', e.detail);
+    conversationId = e.detail?.conversationId || null;
+    setStatus('live');
+    startTimer();
+  });
+}
+
+// ── Get Transcript ─────────────────────────────────────
 btnEnd.addEventListener('click', async () => {
   btnEnd.disabled    = true;
-  btnEnd.textContent = 'Ending session...';
+  btnEnd.textContent = 'Retrieving...';
   stopTimer();
+  showScreen('processing');
+
+  // Wait for ElevenLabs to finalise the conversation record server-side
+  await delay(3000);
 
   try {
-    if (conversation) {
-      await conversation.endSession();
-      conversation = null;
-    }
-
-    // Show processing screen while ElevenLabs finalises the conversation record
-    showScreen('processing');
-    await delay(3000);
-
-    // Fallback: if onConnect never fired with an ID, look up the latest conversation
+    // If the widget didn't surface a conversationId, look up the latest call
     if (!conversationId) {
-      console.warn('[interview] no conversationId from onConnect — fetching latest');
+      console.log('[interview] no conversationId from widget — fetching latest');
       const url = `/api/latest-conversation?since=${encodeURIComponent(sessionStartedAt || new Date().toISOString())}`;
       const res = await fetch(url);
       if (res.ok) {
@@ -152,7 +95,7 @@ btnEnd.addEventListener('click', async () => {
 
     if (!conversationId) {
       throw new Error(
-        'No conversation ID — the interview may not have connected properly. Please try again.'
+        'No conversation found. Did the call connect? Please end the call using the microphone button, then try again.'
       );
     }
 
@@ -166,7 +109,7 @@ btnEnd.addEventListener('click', async () => {
     showTranscriptScreen(turns);
 
   } catch (err) {
-    console.error('[interview] error ending interview:', err);
+    console.error('[interview] error fetching transcript:', err);
     alert(err.message);
     resetForRetry();
   }
@@ -208,13 +151,12 @@ function escapeHtml(str) {
 // ── Reset / retry ──────────────────────────────────────
 function resetForRetry() {
   conversationId   = null;
-  conversation     = null;
   sessionStartedAt = null;
-  transcriptPanel.clear();
+  stopTimer();
+  btnEnd.disabled    = false;
+  btnEnd.textContent = 'Get Transcript';
   btnStart.disabled  = false;
   btnStart.innerHTML = '<span class="btn-icon">▶</span> Begin Interview';
-  btnEnd.disabled    = false;
-  btnEnd.textContent = 'End Interview';
   showScreen('intro');
 }
 

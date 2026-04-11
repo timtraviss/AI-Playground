@@ -139,8 +139,9 @@ git push heroku main
 - [x] Dark theme background fix (page now matches site-wide dark design)
 - [x] Descriptive upload error messages (file too large, wrong type, etc.)
 - [x] Uploading step with file size indicator for immediate feedback on submit
+- [x] Configurable transcription model via `TRANSCRIPTION_MODEL` env var (whisper-1 / gpt-4o-mini-transcribe / gpt-4o-transcribe / gpt-4o-transcribe-diarize — defaults to diarize for speaker-labelled output)
+- [x] Export results as Markdown file (client-side, no server round-trip)
 - [ ] Support for YouTube / podcast URL input (no file upload needed)
-- [ ] Exportable PDF report of findings
 
 ### Code Quality & Security
 - [x] Parallel three-agent code review orchestrator (`tools/review.py`)

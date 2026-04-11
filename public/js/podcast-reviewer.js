@@ -24,6 +24,7 @@
   let currentStep  = null;
   let transcribeTimer = null;
   let transcribeStartedAt = 0;
+  let lastResults = null;
 
   // ── Screen management ─────────────────────────────────────────────────────
   function showScreen(id) {
@@ -299,6 +300,7 @@
   }
 
   function renderResults(data) {
+    lastResults = data;
     document.getElementById('result-filename').textContent = data.filename || 'Podcast Review';
     document.getElementById('result-date').textContent =
       `Reviewed ${data.reviewedAt} · legislation.govt.nz (current in-force)`;
@@ -417,5 +419,81 @@
 
     return card;
   }
+
+  // ── Markdown export ───────────────────────────────────────────────────────
+  const VERDICT_ORDER = ['INACCURATE','MISSING CAVEAT','OUTDATED LAW','WRONG SECTION','OVERSIMPLIFIED','AMBIGUOUS','ACCURATE','GOOD EXPLANATION'];
+
+  function exportMarkdown() {
+    const data = lastResults;
+    if (!data) return;
+
+    const lines = [];
+
+    lines.push(`# Legislation Review Report`);
+    lines.push(`**File:** ${data.filename || 'Unknown'}`);
+    lines.push(`**Reviewed:** ${data.reviewedAt || new Date().toLocaleDateString()}`);
+    lines.push(`**Source:** legislation.govt.nz (current in-force)`);
+    lines.push('');
+
+    // Summary table
+    lines.push(`## Summary`);
+    lines.push(`**Total claims reviewed:** ${data.totalClaims}`);
+    lines.push('');
+    lines.push('| Category | Count |');
+    lines.push('|---|---|');
+    for (const cat of VERDICT_ORDER) {
+      const count = data.categoryCounts?.[cat];
+      if (count) lines.push(`| ${CATEGORY_LABELS[cat] || cat} | ${count} |`);
+    }
+    lines.push('');
+
+    // Priority issues
+    const priorities = data.priorityIssues || [];
+    if (priorities.length > 0) {
+      lines.push('## Priority Issues');
+      lines.push('');
+      priorities.forEach((c, i) => lines.push(...claimToMarkdown(c, i + 1)));
+    }
+
+    // All claims
+    lines.push('## All Claims');
+    lines.push('');
+    (data.claims || []).forEach((c, i) => lines.push(...claimToMarkdown(c, i + 1)));
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const baseName = (data.filename || 'podcast-review').replace(/\.[^.]+$/, '');
+    a.download = `${baseName}-legislation-review.md`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function claimToMarkdown(claim, index) {
+    const cat = (claim.category || 'AMBIGUOUS').toUpperCase();
+    const label = CATEGORY_LABELS[cat] || cat;
+    const lines = [];
+
+    const ts = claim.timestamp && claim.timestamp !== 'unknown' ? ` · ${claim.timestamp}` : '';
+    lines.push(`### ${index}. ${label}${ts}`);
+    lines.push('');
+    if (claim.quote) lines.push(`> "${claim.quote}"`);
+    lines.push('');
+    if (claim.finding) lines.push(claim.finding);
+    if (claim.correctStatement) {
+      lines.push('');
+      lines.push(`**Correct statement:** ${claim.correctStatement}`);
+    }
+    if (claim.statutoryText && !claim.statutoryText.startsWith('[')) {
+      lines.push('');
+      lines.push(`**Statutory text:**`);
+      lines.push('');
+      lines.push(`> ${claim.statutoryText.replace(/\n/g, '\n> ')}`);
+    }
+    lines.push('');
+    return lines;
+  }
+
+  document.getElementById('btn-export-md').addEventListener('click', exportMarkdown);
 
 })();

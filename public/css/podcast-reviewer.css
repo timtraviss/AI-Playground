@@ -369,6 +369,7 @@ html, body {
 }
 
 .results-meta { flex: 1; }
+.results-actions { display: flex; gap: 8px; flex-shrink: 0; }
 .results-meta .pr-subtitle { margin-bottom: 4px; }
 .results-date {
   font-size: 12px;

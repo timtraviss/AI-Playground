@@ -34,7 +34,7 @@ export async function transcribe(audioPath) {
   const formData = new FormData();
   formData.append('model', model);
   formData.append('language', 'en');
-  formData.append('response_format', isDiarize ? 'verbose_json' : 'json');
+  formData.append('response_format', 'json');
 
   const { Blob } = await import('buffer');
   const { readFileSync } = await import('fs');
@@ -62,6 +62,13 @@ export async function transcribe(audioPath) {
   }
 
   const data = await res.json();
+
+  if (isDiarize) {
+    console.log('[transcribe] diarize response keys:', Object.keys(data));
+    if (data.segments?.length) {
+      console.log('[transcribe] first segment:', JSON.stringify(data.segments[0]));
+    }
+  }
 
   return isDiarize ? formatDiarizedTranscript(data) : (data.text || '').trim();
 }

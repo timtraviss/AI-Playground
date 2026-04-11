@@ -15,11 +15,11 @@ const WHISPER_MAX_BYTES = 25 * 1024 * 1024; // 25 MB — OpenAI API hard limit
  * Returns the transcript as a plain string. For the diarize model the string
  * includes speaker labels: "[Speaker 1]: ...\n\n[Speaker 2]: ..."
  */
-export async function transcribe(audioPath) {
+export async function transcribe(audioPath, model) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error('OPENAI_API_KEY is not set');
 
-  const model = process.env.TRANSCRIPTION_MODEL || 'gpt-4o-transcribe-diarize';
+  model = model || process.env.TRANSCRIPTION_MODEL || 'gpt-4o-transcribe-diarize';
   const isDiarize = model.endsWith('-diarize');
 
   const { size } = statSync(audioPath);

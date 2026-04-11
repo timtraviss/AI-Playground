@@ -99,18 +99,41 @@ async function runPipeline(jobId, file) {
   const audioPath = file.path;
 
   try {
-    // Step 1 — Transcribe
-    const model = process.env.TRANSCRIPTION_MODEL || 'gpt-4o-transcribe-diarize';
-    pushEvent(jobId, { step: 'transcribing', model });
+    // Step 1 — Transcribe (with automatic whisper-1 fallback on timeout)
+    const primaryModel = process.env.TRANSCRIPTION_MODEL || 'gpt-4o-transcribe-diarize';
+    const FALLBACK = 'whisper-1';
+
+    pushEvent(jobId, { step: 'transcribing', model: primaryModel });
     const heartbeat = setInterval(() => pushEvent(jobId, { step: 'heartbeat' }), 30_000);
+
     let transcript;
+    let usedFallback = false;
     try {
-      transcript = await transcribe(audioPath);
+      try {
+        transcript = await transcribe(audioPath, primaryModel);
+      } catch (err) {
+        const isTimeout = err.message.includes('timed out');
+        if (!isTimeout || primaryModel === FALLBACK) throw err;
+        // Primary timed out — retry once with whisper-1
+        usedFallback = true;
+        pushEvent(jobId, { step: 'transcribing', model: FALLBACK, retry: true });
+        try {
+          transcript = await transcribe(audioPath, FALLBACK);
+        } catch (retryErr) {
+          if (retryErr.message.includes('timed out')) {
+            throw new Error(
+              'Transcription failed after two attempts — both timed out after 5 minutes. ' +
+              'Try uploading a shorter audio file.'
+            );
+          }
+          throw retryErr;
+        }
+      }
     } finally {
       clearInterval(heartbeat);
     }
     const wordCount = transcript.split(/\s+/).filter(Boolean).length;
-    pushEvent(jobId, { step: 'transcribed', wordCount });
+    pushEvent(jobId, { step: 'transcribed', wordCount, wasFallback: usedFallback });
 
     // Step 2 — Extract claims
     pushEvent(jobId, { step: 'extracting' });

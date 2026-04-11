@@ -26,6 +26,7 @@
   let transcribeTimer = null;
   let transcribeStartedAt = 0;
   let transcribeModel = '';
+  let transcribeRetry = false;
   let lastResults = null;
 
   // ── Screen management ─────────────────────────────────────────────────────
@@ -132,6 +133,7 @@
     switch (evt.step) {
       case 'transcribing':
         transcribeModel = evt.model || 'Whisper API';
+        transcribeRetry = evt.retry || false;
         activateStep('transcribing');
         startTranscribeTimer();
         break;
@@ -145,7 +147,9 @@
         activateStep('transcribed');
         setTimeout(() => {
           const words = (evt.wordCount ?? 0).toLocaleString();
-          document.getElementById('note-transcribed').textContent = `~${words} words transcribed`;
+          const fallbackNote = evt.wasFallback ? ' · no speaker labels (whisper-1 used)' : '';
+          document.getElementById('note-transcribed').textContent =
+            `~${words} words transcribed${fallbackNote}`;
           completeStep('transcribed');
         }, 150);
         break;
@@ -257,8 +261,11 @@
   function updateTranscribeNote() {
     const elapsedMs = Date.now() - transcribeStartedAt;
     const modelLabel = transcribeModel || 'Whisper API';
+    const prefix = transcribeRetry
+      ? `Primary timed out — retrying with ${modelLabel}`
+      : `Sending to ${modelLabel}`;
     document.getElementById('note-transcribing').textContent =
-      `Sending to ${modelLabel}… ${formatElapsed(elapsedMs)} elapsed`;
+      `${prefix}… ${formatElapsed(elapsedMs)} elapsed`;
   }
 
   function uploadWithProgress(url, formData, onProgress) {

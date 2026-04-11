@@ -102,6 +102,8 @@ async function runPipeline(jobId, file) {
     // Step 1 — Transcribe
     pushEvent(jobId, { step: 'transcribing' });
     const transcript = await transcribe(audioPath);
+    const wordCount = transcript.split(/\s+/).filter(Boolean).length;
+    pushEvent(jobId, { step: 'transcribed', wordCount });
 
     // Step 2 — Extract claims
     pushEvent(jobId, { step: 'extracting' });

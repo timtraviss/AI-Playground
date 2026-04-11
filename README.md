@@ -143,6 +143,8 @@ git push heroku main
 - [x] Uploading step with file size indicator for immediate feedback on submit
 - [x] Configurable transcription model via `TRANSCRIPTION_MODEL` env var (whisper-1 / gpt-4o-mini-transcribe / gpt-4o-transcribe / gpt-4o-transcribe-diarize — defaults to diarize for speaker-labelled output)
 - [x] Export results as Markdown file (client-side, no server round-trip)
+- [x] Indeterminate shimmer progress bar on Transcribing step (Whisper API gives no incremental progress)
+- [x] "Transcript ready" step between Transcribing and Extracting — shows word count on completion
 - [ ] Support for YouTube / podcast URL input (no file upload needed)
 
 ### Code Quality & Security

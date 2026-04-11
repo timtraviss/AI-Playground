@@ -19,6 +19,7 @@
   const btnRetry      = document.getElementById('btn-retry');
   const uploadProgress = document.getElementById('upload-progress');
   const uploadProgressFill = document.getElementById('upload-progress-fill');
+  const transcribeProgress = document.getElementById('transcribe-progress');
 
   let selectedFile = null;
   let currentStep  = null;
@@ -133,9 +134,19 @@
         startTranscribeTimer();
         break;
 
-      case 'extracting':
+      case 'transcribed': {
         stopTranscribeTimer();
         completeStep('transcribing');
+        activateStep('transcribed');
+        setTimeout(() => {
+          const words = (evt.wordCount ?? 0).toLocaleString();
+          document.getElementById('note-transcribed').textContent = `~${words} words transcribed`;
+          completeStep('transcribed');
+        }, 150);
+        break;
+      }
+
+      case 'extracting':
         activateStep('extracting');
         if (evt.claimsFound !== undefined) {
           document.getElementById('note-extracting').textContent =
@@ -225,6 +236,7 @@
   function startTranscribeTimer() {
     stopTranscribeTimer();
     transcribeStartedAt = Date.now();
+    transcribeProgress.hidden = false;
     updateTranscribeNote();
     transcribeTimer = setInterval(updateTranscribeNote, 1000);
   }
@@ -234,6 +246,7 @@
       clearInterval(transcribeTimer);
       transcribeTimer = null;
     }
+    transcribeProgress.hidden = true;
   }
 
   function updateTranscribeNote() {

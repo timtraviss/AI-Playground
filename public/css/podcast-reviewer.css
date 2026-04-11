@@ -274,6 +274,24 @@ html, body {
   transition: width 0.18s ease-out;
 }
 
+.mini-progress--indeterminate {
+  position: relative;
+  overflow: hidden;
+}
+.mini-progress--indeterminate::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(232,201,106,0.7), transparent);
+  animation: shimmer-slide 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer-slide {
+  from { transform: translateX(-150%); }
+  to   { transform: translateX(350%); }
+}
+
 /* ── Active state ── */
 .step-item.active .step-dot {
   background: rgba(232,201,106,0.12);

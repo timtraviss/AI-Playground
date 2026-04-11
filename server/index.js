@@ -13,6 +13,9 @@ const { configRouter } = await import('./routes/config.js');
 const { transcriptRouter } = await import('./routes/transcript.js');
 const { witnessRouter } = await import('./routes/witness.js');
 const { latestConversationRouter } = await import('./routes/latestConversation.js');
+const { critiqueRouter } = await import('./routes/critique.js');
+const { scenarioRouter } = await import('./routes/scenario.js');
+const { adminRouter } = await import('./routes/admin.js');
 const { podcastReviewRouter } = await import('./routes/podcastReview.js');
 const { podcastConverterRouter } = await import('./routes/podcastConverter.js');
 
@@ -26,6 +29,9 @@ app.use('/api/config', configRouter);
 app.use('/api/transcript', transcriptRouter);
 app.use('/api/witness', witnessRouter);
 app.use('/api/latest-conversation', latestConversationRouter);
+app.use('/api/critique', critiqueRouter);
+app.use('/api/scenario', scenarioRouter);
+app.use('/api/admin', adminRouter);
 app.use('/api/podcast-review', podcastReviewRouter);
 app.use('/api/podcast-converter', podcastConverterRouter);
 
@@ -40,6 +46,11 @@ app.get('/interview', (req, res) => {
 });
 app.get('/interview/', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'interview', 'index.html'));
+});
+
+// Admin page
+app.get('/admin', (req, res) => {
+  res.sendFile(resolve(projectRoot, 'public', 'admin', 'index.html'));
 });
 
 // Podcast Reviewer subpage

@@ -3,7 +3,7 @@
  * Manages screen transitions, timer, waveform, and status indicators.
  */
 
-const SCREENS = ['intro', 'interview', 'processing', 'transcript'];
+const SCREENS = ['intro', 'interview', 'processing', 'results'];
 
 export function showScreen(name) {
   SCREENS.forEach(s => {
@@ -67,7 +67,7 @@ export function setMode(mode, avatarEl, waveformEl, speakingLabelEl) {
 
 // ── Processing steps ───────────────────────────────────
 export function setProcessingStep(step) {
-  const steps = ['step-transcript', 'step-analyse', 'step-critique'];
+  const steps = ['step-transcript', 'step-analyse'];
   const idx = steps.indexOf(step);
   steps.forEach((id, i) => {
     const el = document.getElementById(id);

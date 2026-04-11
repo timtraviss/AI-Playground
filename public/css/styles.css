@@ -852,6 +852,17 @@ html, body {
 ─────────────────────────────────────────────── */
 .hidden { display: none !important; }
 
+.error-inline {
+  font-size: 13px;
+  color: var(--red);
+  background: var(--red-dim);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
 @media (max-width: 600px) {
   .score-hero { flex-direction: column; text-align: center; }
   .score-circle { margin: 0 auto; }

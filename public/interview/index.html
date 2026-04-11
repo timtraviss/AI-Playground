@@ -26,6 +26,7 @@
     <div class="nav-overlay" id="nav-overlay"></div>
   </nav>
 
+
   <!-- ═══════════════════════════════════════════
        SCREEN 1: INTRO / BRIEFING
   ═══════════════════════════════════════════ -->
@@ -64,6 +65,7 @@
       </button>
 
       <p class="mic-note">Microphone access required</p>
+      <p class="error-inline" id="intro-error" hidden></p>
     </div>
   </div>
 
@@ -76,7 +78,7 @@
       <div class="brand-title-sm">P.E.A.C.E.</div>
       <div class="status-badge" id="status-badge">
         <span class="status-dot" id="status-dot"></span>
-        <span class="status-text" id="status-text">Ready</span>
+        <span class="status-text" id="status-text">Connecting...</span>
       </div>
     </header>
 
@@ -91,19 +93,16 @@
           <div class="waveform-bar"></div>
           <div class="waveform-bar"></div>
         </div>
-        <div class="speaking-label" id="speaking-label">Click the microphone button to begin</div>
+        <div class="speaking-label" id="speaking-label">Connecting...</div>
       </div>
     </div>
 
-    <!-- ElevenLabs Conversational AI Widget -->
-    <elevenlabs-convai id="convai-widget" agent-id="agent_7301knnv9gdpe3dv4wyn542zaq6y"></elevenlabs-convai>
-
     <footer class="interview-footer">
-      <p class="footer-hint">End the call first, then click Get Transcript</p>
+      <div></div>
       <div class="footer-center">
         <div class="timer" id="timer">00:00</div>
       </div>
-      <button id="btn-end" class="btn-danger">Get Transcript</button>
+      <button id="btn-end" class="btn-danger" disabled>End Interview</button>
     </footer>
   </div>
 
@@ -114,28 +113,87 @@
   <div id="screen-processing" class="screen hidden">
     <div class="processing-container">
       <div class="spinner"></div>
-      <h2 class="processing-title">Retrieving transcript...</h2>
-      <p class="processing-sub">Please wait a moment</p>
+      <h2 class="processing-title" id="processing-title">Retrieving transcript...</h2>
+      <p class="processing-sub" id="processing-sub">Please wait a moment</p>
+      <div class="processing-steps">
+        <div class="step" id="step-transcript">Retrieving transcript</div>
+        <div class="step" id="step-analyse">Analysing with PEACE model</div>
+      </div>
     </div>
   </div>
 
 
   <!-- ═══════════════════════════════════════════
-       SCREEN 4: TRANSCRIPT
+       SCREEN 4: RESULTS
   ═══════════════════════════════════════════ -->
-  <div id="screen-transcript" class="screen hidden">
+  <div id="screen-results" class="screen hidden">
     <div class="critique-container">
       <div class="critique-header">
         <div class="brand-title-sm">P.E.A.C.E.</div>
         <button id="btn-retry" class="btn-ghost-sm">↩ Try Again</button>
       </div>
 
-      <div class="tx-heading-block">
-        <h2 class="tx-title">Interview Transcript</h2>
-        <p class="tx-subtitle">Interview with <span id="transcript-witness-name"></span></p>
+      <!-- Score hero -->
+      <div class="score-hero" id="score-hero">
+        <div class="score-circle">
+          <svg class="score-ring" viewBox="0 0 120 120">
+            <circle class="score-ring-bg" cx="60" cy="60" r="52"/>
+            <circle class="score-ring-fill" id="score-ring-fill" cx="60" cy="60" r="52"/>
+          </svg>
+          <div class="score-text">
+            <span class="score-value" id="score-value">--</span>
+            <span class="score-label">/ 100</span>
+          </div>
+        </div>
+        <div class="score-meta">
+          <div class="score-band" id="score-band">--</div>
+          <p class="score-summary" id="score-summary"></p>
+        </div>
       </div>
 
-      <div class="tx-turns" id="transcript-turns"></div>
+      <!-- Phase scores -->
+      <div class="critique-section">
+        <div class="section-label">PHASE SCORES</div>
+        <div class="phase-bars" id="phase-bars"></div>
+      </div>
+
+      <!-- Questioning technique -->
+      <div class="critique-section">
+        <div class="section-label">QUESTIONING TECHNIQUE</div>
+        <div class="questioning-row" id="questioning-row"></div>
+        <p class="questioning-notes" id="questioning-notes"></p>
+      </div>
+
+      <!-- Key facts elicited -->
+      <div class="critique-section">
+        <div class="section-label">KEY FACTS ELICITED</div>
+        <p class="facts-count" id="facts-count"></p>
+        <div class="facts-list" id="facts-list"></div>
+      </div>
+
+      <!-- Strengths -->
+      <div class="critique-section">
+        <div class="section-label">STRENGTHS</div>
+        <ul class="strengths-list" id="strengths-list"></ul>
+      </div>
+
+      <!-- Improvements -->
+      <div class="critique-section">
+        <div class="section-label">AREAS FOR IMPROVEMENT</div>
+        <div class="improvements-list" id="improvements-list"></div>
+      </div>
+
+      <!-- Critique failed fallback -->
+      <div id="critique-error" hidden>
+        <p class="error-inline" id="critique-error-msg"></p>
+        <button class="btn-ghost" id="btn-retry-critique">Retry Critique</button>
+      </div>
+
+      <!-- Transcript toggle -->
+      <div class="critique-section">
+        <button class="btn-ghost" id="btn-transcript-toggle">Show Transcript</button>
+        <div class="tx-turns" id="transcript-turns" hidden></div>
+      </div>
 
       <div class="critique-footer">
         <button id="btn-retry-bottom" class="btn-primary">↩ Try Again</button>
@@ -143,11 +201,12 @@
     </div>
   </div>
 
+
   <!-- Shared nav -->
   <script src="/js/nav.js" defer></script>
 
-  <!-- ElevenLabs Conversational AI Widget (official embed — no vendor copy needed) -->
-  <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" type="text/javascript"></script>
+  <!-- ElevenLabs Conversational AI SDK (confirmed package, IIFE build) -->
+  <script src="https://unpkg.com/@elevenlabs/client/dist/lib.iife.js"></script>
 
   <script type="module" src="/js/main.js"></script>
 </body>

@@ -111,13 +111,16 @@ git push heroku main
 
 ### P.E.A.C.E. Interview Tutor
 - [x] AI witness with ElevenLabs voice synthesis
-- [x] Direct agentId connection — no signed URL, no prompt injection, no overrides (voice and persona configured in ElevenLabs dashboard)
-- [x] ElevenLabs official widget embed (`<elevenlabs-convai>`) — replaces vendor SDK copy, uses latest unpkg build
-- [x] Transcript-only result screen — student and witness turns displayed after interview ends
-- [x] `/api/transcript/:id` endpoint fetches official ElevenLabs transcript after session ends
-- [x] `/api/latest-conversation` fallback — resolves conversationId when widget doesn't surface it
+- [x] Direct agentId connection via `@elevenlabs/client` SDK (unpkg IIFE build — no vendor copy)
 - [x] Tiered witness disclosure model (4 tiers)
-- [ ] Post-interview critique scored against NZ Police PEACE model (retired pending stable transcript flow)
+- [x] `/api/transcript/:id` endpoint fetches ElevenLabs transcript after session ends (with 3-attempt retry)
+- [x] Post-interview PEACE critique — auto-runs after call ends, no student action required
+- [x] Full results screen — score ring, phase bars, TEDS/leading/closed pills, key facts, strengths, improvements
+- [x] Scenario text loaded from `server/data/scenarios/catherine.md` — editable without code changes
+- [x] Admin UI at `/admin` — edit scenario briefing and task via browser, password-protected
+- [x] `GET /api/scenario` and `POST /api/admin/scenario` endpoints
+- [x] Unexpected disconnection handled — auto-triggers transcript + critique fetch
+- [x] Microphone denied: inline error message, no alert()
 - [ ] Additional witness scenarios beyond Catherine
 - [ ] Student session history and progress tracking
 - [ ] Instructor dashboard to review student submissions

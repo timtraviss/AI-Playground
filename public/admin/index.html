@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scenario Editor — P.E.A.C.E. Tutor</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: #0d1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px 24px;
+    }
+    .container {
+      width: 100%;
+      max-width: 560px;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #e8c96a;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 40px;
+    }
+    .field { margin-bottom: 24px; }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    textarea, input[type="password"] {
+      width: 100%;
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 12px 14px;
+      resize: vertical;
+      transition: border-color 0.15s;
+    }
+    textarea:focus, input[type="password"]:focus {
+      outline: none;
+      border-color: #e8c96a;
+    }
+    input[type="password"] { resize: none; }
+    .btn-save {
+      width: 100%;
+      background: #e8c96a;
+      color: #0d1117;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      margin-top: 8px;
+    }
+    .btn-save:hover { opacity: 0.88; }
+    .btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
+    .msg {
+      margin-top: 16px;
+      font-size: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      display: none;
+    }
+    .msg.success { display: block; background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+    .msg.error   { display: block; background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>P.E.A.C.E. Scenario Editor</h1>
+    <p class="subtitle">Changes take effect immediately on the interview page.</p>
+
+    <div class="field">
+      <label for="briefing">Scenario Briefing</label>
+      <textarea id="briefing" rows="4" placeholder="Loading…"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="task">Your Task</label>
+      <textarea id="task" rows="4" placeholder="Loading…"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="password">Admin Password</label>
+      <input type="password" id="password" placeholder="Enter password to save" />
+    </div>
+
+    <button class="btn-save" id="btn-save">Save Changes</button>
+
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <script>
+    const briefingEl = document.getElementById('briefing');
+    const taskEl     = document.getElementById('task');
+    const passwordEl = document.getElementById('password');
+    const btnSave    = document.getElementById('btn-save');
+    const msgEl      = document.getElementById('msg');
+
+    // Load current scenario
+    fetch('/api/admin/scenario')
+      .then(r => r.json())
+      .then(d => {
+        briefingEl.value = d.briefing || '';
+        taskEl.value     = d.task || '';
+      })
+      .catch(() => {
+        briefingEl.placeholder = 'Failed to load scenario.';
+      });
+
+    btnSave.addEventListener('click', async () => {
+      msgEl.className = 'msg';
+      btnSave.disabled = true;
+      btnSave.textContent = 'Saving…';
+
+      try {
+        const res = await fetch('/api/admin/scenario', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            password: passwordEl.value,
+            briefing: briefingEl.value,
+            task:     taskEl.value,
+          }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          msgEl.textContent = 'Saved successfully.';
+          msgEl.className   = 'msg success';
+          passwordEl.value  = '';
+        } else {
+          msgEl.textContent = data.error || 'Save failed.';
+          msgEl.className   = 'msg error';
+        }
+      } catch {
+        msgEl.textContent = 'Network error — is the server running?';
+        msgEl.className   = 'msg error';
+      } finally {
+        btnSave.disabled = false;
+        btnSave.textContent = 'Save Changes';
+      }
+    });
+  </script>
+</body>
+</html>

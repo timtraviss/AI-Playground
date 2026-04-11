@@ -100,8 +100,15 @@ async function runPipeline(jobId, file) {
 
   try {
     // Step 1 — Transcribe
-    pushEvent(jobId, { step: 'transcribing' });
-    const transcript = await transcribe(audioPath);
+    const model = process.env.TRANSCRIPTION_MODEL || 'gpt-4o-transcribe-diarize';
+    pushEvent(jobId, { step: 'transcribing', model });
+    const heartbeat = setInterval(() => pushEvent(jobId, { step: 'heartbeat' }), 30_000);
+    let transcript;
+    try {
+      transcript = await transcribe(audioPath);
+    } finally {
+      clearInterval(heartbeat);
+    }
     const wordCount = transcript.split(/\s+/).filter(Boolean).length;
     pushEvent(jobId, { step: 'transcribed', wordCount });
 

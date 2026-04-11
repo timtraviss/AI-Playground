@@ -53,11 +53,28 @@ export async function transcribe(audioPath) {
   const mime = mimeMap[extname(audioPath).toLowerCase()] ?? 'audio/mpeg';
   formData.append('file', new Blob([fileBuffer], { type: mime }), fileName);
 
-  const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}` },
-    body: formData,
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000);
+
+  let res;
+  try {
+    res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}` },
+      body: formData,
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error(
+        `Transcription timed out after 5 minutes (model: ${model}). ` +
+        `Try again, or set TRANSCRIPTION_MODEL=whisper-1 in your .env for faster processing.`
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!res.ok) {
     const err = await res.text();

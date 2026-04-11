@@ -25,6 +25,7 @@
   let currentStep  = null;
   let transcribeTimer = null;
   let transcribeStartedAt = 0;
+  let transcribeModel = '';
   let lastResults = null;
 
   // ── Screen management ─────────────────────────────────────────────────────
@@ -130,8 +131,12 @@
   function handleProgressEvent(evt, jobId, es) {
     switch (evt.step) {
       case 'transcribing':
+        transcribeModel = evt.model || 'Whisper API';
         activateStep('transcribing');
         startTranscribeTimer();
+        break;
+
+      case 'heartbeat':
         break;
 
       case 'transcribed': {
@@ -251,8 +256,9 @@
 
   function updateTranscribeNote() {
     const elapsedMs = Date.now() - transcribeStartedAt;
+    const modelLabel = transcribeModel || 'Whisper API';
     document.getElementById('note-transcribing').textContent =
-      `Sending audio to Whisper API… ${formatElapsed(elapsedMs)} elapsed`;
+      `Sending to ${modelLabel}… ${formatElapsed(elapsedMs)} elapsed`;
   }
 
   function uploadWithProgress(url, formData, onProgress) {

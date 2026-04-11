@@ -33,6 +33,7 @@ const resSize       = document.getElementById('res-size');
 let selectedFile = null;
 let currentJobId = null;
 let currentStep  = null;
+let uploadStartedAt = 0;
 
 // ── Screen switching ──────────────────────────────────────────────────────────
 function showScreen(name) {
@@ -124,6 +125,15 @@ function setProgress(pct) {
   progressFill.style.width = `${pct}%`;
 }
 
+// ── Upload progress bar (on the uploading step) ───────────────────────────────
+const uploadProgressBar  = document.getElementById('upload-progress-bar');
+const uploadProgressFill = document.getElementById('upload-progress-fill');
+
+function setUploadProgress(pct) {
+  uploadProgressBar.hidden = false;
+  uploadProgressFill.style.width = `${pct}%`;
+}
+
 // ── Reset steps ───────────────────────────────────────────────────────────────
 function resetSteps() {
   ['step-uploading', 'step-analysing', 'step-converting', 'step-verifying', 'step-done-step']
@@ -134,6 +144,8 @@ function resetSteps() {
       const noteEl = document.getElementById(noteId);
       if (noteEl) noteEl.textContent = '';
     });
+  uploadProgressBar.hidden = true;
+  uploadProgressFill.style.width = '0%';
   progressBar.hidden = true;
   progressFill.style.width = '0%';
   progressError.hidden = true;
@@ -145,7 +157,7 @@ function resetSteps() {
 function showError(message, failedStepId) {
   if (failedStepId) errorStep(failedStepId, 'Failed — see below');
   progressError.hidden = false;
-  progressErrorMsg.textContent = message;
+  progressErrorMsg.textContent = message || 'An unexpected error occurred. Please try again.';
 }
 
 // ── Format helpers ────────────────────────────────────────────────────────────
@@ -180,7 +192,10 @@ async function startConversion() {
 
   showScreen('progress');
   resetSteps();
-  activateStep('step-uploading', `${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB — uploading…`);
+  const fileSizeMB = (selectedFile.size / (1024 * 1024)).toFixed(1);
+  activateStep('step-uploading', `${fileSizeMB} MB — starting upload…`);
+  setUploadProgress(0);
+  uploadStartedAt = Date.now();
 
   const formData = new FormData();
   formData.append('audio', selectedFile);
@@ -189,21 +204,22 @@ async function startConversion() {
 
   let jobId;
   try {
-    const res = await fetch('/api/podcast-converter/upload', {
-      method: 'POST',
-      body: formData,
+    const data = await uploadWithProgress('/api/podcast-converter/upload', formData, ({ percent }) => {
+      setUploadProgress(percent);
+      const elapsed = formatElapsed(Date.now() - uploadStartedAt);
+      const noteEl = document.getElementById('note-uploading');
+      if (noteEl) noteEl.textContent = `${fileSizeMB} MB — uploaded ${percent}% · ${elapsed} elapsed`;
     });
-    const data = await readApiResponse(res);
-    if (!res.ok) {
-      showError(data.error || `Upload failed (${res.status})`, 'step-uploading');
-      return;
-    }
     jobId = data.jobId;
     currentJobId = jobId;
   } catch (err) {
-    showError('Upload failed: ' + err.message, 'step-uploading');
+    showError(err.message, 'step-uploading');
     return;
   }
+
+  setUploadProgress(100);
+  const uploadNote = document.getElementById('note-uploading');
+  if (uploadNote) uploadNote.textContent = `${fileSizeMB} MB — upload complete`;
 
   completeStep('step-uploading');
   activateStep('step-analysing', 'Running ffprobe…');
@@ -309,6 +325,41 @@ function resetAll() {
 
 btnRetry.addEventListener('click', resetAll);
 btnAgain.addEventListener('click', resetAll);
+
+function uploadWithProgress(url, formData, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+    xhr.responseType = 'json';
+
+    xhr.upload.onprogress = (e) => {
+      if (!e.lengthComputable) return;
+      const percent = Math.max(0, Math.min(100, Math.round((e.loaded / e.total) * 100)));
+      onProgress({ percent });
+    };
+
+    xhr.onerror = () => reject(new Error('Upload failed. Check your connection and try again.'));
+
+    xhr.onload = () => {
+      const body = xhr.response;
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(body || {});
+        return;
+      }
+      const msg = body?.error || `Upload error ${xhr.status}`;
+      reject(new Error(msg));
+    };
+
+    xhr.send(formData);
+  });
+}
+
+function formatElapsed(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+  const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+  return `${minutes}:${seconds}`;
+}
 
 async function readApiResponse(res) {
   const contentType = res.headers.get('content-type') || '';

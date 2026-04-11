@@ -125,6 +125,8 @@ git push heroku main
 - [x] Auto / Low / Medium / High quality presets (all cap at 25 MB)
 - [x] Force Mono toggle for extra size savings
 - [x] Real-time SSE progress (upload → analyse → convert % → verify → done)
+- [x] Upload progress bar with live % and elapsed time (XHR-based, matching Reviewer UX)
+- [x] Descriptive upload error messages (server errors now surface correctly)
 - [x] Unit tests for `computeTargetKbps` (14 cases, Node built-in test runner)
 - [ ] Split-into-parts option for files that can't fit even at 32 kbps mono
 - [ ] YouTube / podcast URL input (no file upload needed)

@@ -121,6 +121,12 @@ git push heroku main
 - [x] `GET /api/scenario` and `POST /api/admin/scenario` endpoints
 - [x] Get Critique button enabled after 30s or on widget call-start event (whichever comes first)
 - [x] `/api/latest-conversation` used to resolve conversationId after widget call ends
+- [x] Interview footer redesigned — hint text on own row, timer + Get Critique button side by side (no squashing)
+- [x] Get Critique button styled as `btn-primary` (matches Begin Interview)
+- [x] `latestConversation` route: fixed timestamp field (`start_time_unix_secs`), sort newest-first, 2h clock-skew fallback, full debug logging on 404
+- [x] Removed dead `elevenlabs-convai:call_end` listener (widget only emits call-start)
+- [x] Transcript polling: removed redundant 5s delay on first attempt; detailed client-side error logging
+- [x] `formatTranscriptForCritique` filters null/empty message turns before sending to Claude
 - [ ] Additional witness scenarios beyond Catherine
 - [ ] Student session history and progress tracking
 - [ ] Instructor dashboard to review student submissions

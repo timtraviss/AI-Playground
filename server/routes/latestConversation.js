@@ -3,6 +3,12 @@ import { Router } from 'express';
 const router = Router();
 
 function parseConversationTimestampMs(conversation) {
+  // ElevenLabs list API returns start_time_unix_secs at top level (required field per API docs)
+  if (Number.isFinite(conversation?.start_time_unix_secs)) {
+    return Number(conversation.start_time_unix_secs) * 1000;
+  }
+
+  // String-date fallbacks for any future API variants
   const candidates = [
     conversation?.created_at,
     conversation?.started_at,
@@ -54,13 +60,56 @@ router.get('/', async (req, res) => {
 
     const data = await response.json();
     const conversations = data.conversations || data.items || [];
-    const filtered = conversations.filter((c) => {
+    console.log(`[latestConversation] ElevenLabs returned ${conversations.length} conversation(s). sinceMs=${sinceMs} (${new Date(sinceMs).toISOString()})`);
+    conversations.forEach((c, i) => {
       const ts = parseConversationTimestampMs(c);
-      return ts !== null && ts >= sinceMs;
+      console.log(`  [${i}] id=${c.conversation_id} start_time_unix_secs=${c.start_time_unix_secs} → parsedMs=${ts} (${ts ? new Date(ts).toISOString() : 'null'}) passes=${ts !== null && ts >= sinceMs}`);
     });
 
+    const filtered = conversations
+      .filter((c) => {
+        const ts = parseConversationTimestampMs(c);
+        return ts !== null && ts >= sinceMs;
+      })
+      .sort((a, b) => {
+        // Newest first — don't assume ElevenLabs returns in chronological order
+        const tsA = parseConversationTimestampMs(a) ?? 0;
+        const tsB = parseConversationTimestampMs(b) ?? 0;
+        return tsB - tsA;
+      });
+
     if (filtered.length === 0) {
-      return res.status(404).json({ error: 'No recent conversations found for this session window' });
+      // Fallback: accept the most recent conversation within the last 2 hours,
+      // in case of clock skew or the call starting just before sessionStartedAt was recorded.
+      const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+      const fallbackCutoff = sinceMs - TWO_HOURS_MS;
+      const fallback = conversations
+        .filter((c) => {
+          const ts = parseConversationTimestampMs(c);
+          return ts !== null && ts >= fallbackCutoff;
+        })
+        .sort((a, b) => (parseConversationTimestampMs(b) ?? 0) - (parseConversationTimestampMs(a) ?? 0));
+
+      if (fallback.length > 0) {
+        const fb = fallback[0];
+        const fbId = fb.conversation_id || fb.id;
+        const fbTs = parseConversationTimestampMs(fb);
+        console.log(`[latestConversation] strict filter found nothing; using 2h fallback → id=${fbId} ts=${fbTs ? new Date(fbTs).toISOString() : 'null'}`);
+        if (fbId) return res.json({ conversationId: fbId });
+      }
+
+      return res.status(404).json({
+        error: 'No recent conversations found for this session window',
+        debug: {
+          since: new Date(sinceMs).toISOString(),
+          totalConversations: conversations.length,
+          conversations: conversations.map(c => ({
+            id: c.conversation_id,
+            start_time_unix_secs: c.start_time_unix_secs,
+            parsedMs: parseConversationTimestampMs(c),
+          })),
+        },
+      });
     }
 
     const latest = filtered[0];

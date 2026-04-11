@@ -115,6 +115,7 @@ export function formatTranscriptForCritique(transcript, witnessName) {
   }
 
   return transcript
+    .filter(turn => turn.message != null && turn.message.trim() !== '')
     .map((turn, index) => {
       const speaker = turn.role === 'user' ? 'STUDENT' : witnessName.toUpperCase();
       const turnNum = index + 1;

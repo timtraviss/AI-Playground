@@ -84,12 +84,13 @@ btnStart.addEventListener('click', () => {
 });
 
 // ── Widget call-start event (best-effort) ──────────────
-// Fires when the student clicks the widget mic button. If it comes through,
-// enable Get Critique immediately and start the visual timer.
+// The widget only dispatches 'elevenlabs-convai:call' (call start) — there is no call_end event.
+// If it fires, enable Get Critique immediately and start the visual timer.
+// The 30s fallback above covers cases where the event doesn't fire.
 if (widget) {
   widget.addEventListener('elevenlabs-convai:call', (e) => {
     console.log('[interview] widget call started:', e.detail);
-    clearTimeout(enableTimer); // cancel the 30s fallback
+    clearTimeout(enableTimer);
     btnEnd.disabled = false;
     setStatus('live');
     startTimer();
@@ -108,15 +109,21 @@ btnEnd.addEventListener('click', async () => {
   // Give ElevenLabs time to register the completed call in their API
   await delay(5000);
 
-  // Look up the most recent conversation since this session started
+  // Look up the most recent conversation for this session
   try {
     const url = `/api/latest-conversation?since=${encodeURIComponent(sessionStartedAt)}`;
+    console.log('[interview] fetching latest-conversation, since:', sessionStartedAt);
     const res  = await fetch(url);
-    if (!res.ok) throw new Error(`latest-conversation returned ${res.status}`);
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      console.warn('[interview] latest-conversation failed:', res.status, JSON.stringify(errBody));
+      throw new Error(`latest-conversation returned ${res.status}`);
+    }
     const data = await res.json();
     conversationId = data.conversationId;
+    console.log('[interview] got conversationId:', conversationId);
   } catch (err) {
-    console.warn('[interview] latest-conversation failed:', err.message);
+    console.warn('[interview] latest-conversation error:', err.message);
   }
 
   if (!conversationId) {
@@ -140,7 +147,8 @@ async function runPostCall() {
 
   let turns = null;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    await delay(attempt === 1 ? 5000 : POLL_INTERVAL);
+    // No extra delay on attempt 1 — btnEnd already waited 5s before calling runPostCall
+    if (attempt > 1) await delay(POLL_INTERVAL);
     try {
       const res = await fetch(`/api/transcript/${encodeURIComponent(conversationId)}`);
       if (!res.ok) throw new Error(`Transcript API ${res.status}`);

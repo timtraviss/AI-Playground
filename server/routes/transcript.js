@@ -5,7 +5,7 @@ export const transcriptRouter = Router();
 
 // GET /api/transcript/:conversationId — fetch transcript from ElevenLabs
 transcriptRouter.get('/:conversationId', async (req, res) => {
-  const apiKey = process.env.ELEVENLABS_API_KEY || process.env.ELEVENLABS_API_KEY;
+  const apiKey = process.env.ELEVENLABS_API_KEY;
   if (!apiKey) {
     return res.status(503).json({ error: 'ELEVENLABS_API_KEY is not configured' });
   }

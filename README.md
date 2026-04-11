@@ -1,6 +1,6 @@
 # Traviss.org — AI Demo Projects
 
-A Node.js/Express web app hosted at [Traviss.org](https://traviss.org) that showcases two AI-powered tools built for New Zealand policing and law contexts.
+A Node.js/Express web app hosted at [Traviss.org](https://traviss.org) that showcases three tools built for New Zealand policing and law contexts.
 
 ## Projects
 
@@ -17,6 +17,18 @@ Practice investigative interviewing against an AI witness powered by ElevenLabs 
 
 The witness scenario (currently: Catherine) holds facts across four disclosure tiers — students who use open TEDS questioning unlock more facts and score higher.
 
+### Podcast Converter (`/podcast-converter/`)
+
+Upload an M4A podcast file (up to 250 MB). The app converts it to MP3 and **guarantees the output is under 25 MB**:
+
+1. Probes duration via ffprobe
+2. Computes the highest bitrate that fits (32–192 kbps, with a 4% safety margin)
+3. Applies preset (Auto / Low / Medium / High) and optional Force Mono
+4. Verifies output size and re-encodes with a lower bitrate (up to 2 retries) if needed
+5. Returns a streaming download of the converted MP3
+
+Conversion runs server-side using ffmpeg binaries bundled via `ffmpeg-static` — no client-side WASM or system ffmpeg required.
+
 ### Podcast Legislation Reviewer (`/podcast-reviewer/`)
 
 Upload a NZ Police DDP podcast audio file (MP3, M4A, WAV — up to 200 MB). The app:
@@ -32,6 +44,7 @@ A companion Claude Code skill (`podcast-reviewer.skill`) lets you trigger the sa
 
 - **Backend:** Node.js, Express
 - **AI:** Anthropic Claude (Sonnet 4.6), OpenAI Whisper, ElevenLabs
+- **Audio:** fluent-ffmpeg + ffmpeg-static (bundled Linux/macOS binaries — no system install needed)
 - **Legislation API:** legislation.govt.nz REST API
 - **Frontend:** Vanilla HTML/CSS/JS
 
@@ -46,6 +59,34 @@ npm start
 
 Required environment variables: `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`, `OPENAI_API_KEY`, `LEGISLATION_API_KEY`.
 
+### Running tests
+
+```bash
+npm test
+```
+
+Tests cover `computeTargetKbps` edge cases and require no external dependencies (ffmpeg not needed).
+
+## Heroku Deployment
+
+### ffmpeg — No Extra Buildpack Needed
+
+`ffmpeg-static` and `ffprobe-static` bundle pre-compiled Linux x64 binaries that work out-of-the-box on Heroku's Cedar/Heroku-22/Heroku-24 stacks. No additional buildpack required.
+
+Simply deploy as normal:
+
+```bash
+git push heroku main
+```
+
+### Podcast Converter Limitations
+
+- **Upload limit:** 250 MB per file (configurable in `server/routes/podcastConverter.js`)
+- **Output guaranteed < 25 MB** via bitrate planning and up to 2 retry re-encodes
+- **Very long files (> 4 hours):** Output bitrate will be clamped to 32 kbps (mono). Quality will be poor — consider splitting the file first
+- **Heroku free tier:** Conversion of large files may time out if the dyno sleeps. Use a paid dyno for production workloads
+- **Temp storage:** Input and output files are written to Heroku's ephemeral `/tmp`. They are cleaned up automatically after download or after a 10-minute job expiry timeout
+
 ## Roadmap
 
 ### P.E.A.C.E. Interview Tutor
@@ -57,6 +98,16 @@ Required environment variables: `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`, `OPEN
 - [ ] Additional witness scenarios beyond Catherine
 - [ ] Student session history and progress tracking
 - [ ] Instructor dashboard to review student submissions
+
+### Podcast Converter
+- [x] M4A → MP3 conversion via server-side ffmpeg (ffmpeg-static — no buildpack)
+- [x] Deterministic 25 MB output guarantee with bitrate planning + bounded retry
+- [x] Auto / Low / Medium / High quality presets (all cap at 25 MB)
+- [x] Force Mono toggle for extra size savings
+- [x] Real-time SSE progress (upload → analyse → convert % → verify → done)
+- [x] Unit tests for `computeTargetKbps` (14 cases, Node built-in test runner)
+- [ ] Split-into-parts option for files that can't fit even at 32 kbps mono
+- [ ] YouTube / podcast URL input (no file upload needed)
 
 ### Podcast Legislation Reviewer
 - [x] Audio upload and transcription via OpenAI Whisper API

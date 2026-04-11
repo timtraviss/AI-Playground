@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Podcast Converter — Traviss.org</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/nav.css" />
+  <link rel="stylesheet" href="/css/podcast-converter.css" />
+</head>
+<body>
+
+  <!-- Shared nav -->
+  <nav class="site-nav" id="site-nav">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-drawer" id="nav-drawer">
+      <div class="nav-logo"><a href="/">Traviss.org</a></div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+        <li><a href="/podcast-reviewer/">Podcast Reviewer</a></li>
+        <li><a href="/podcast-converter/" class="active">Podcast Converter</a></li>
+      </ul>
+    </div>
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </nav>
+
+  <!-- ── Screen 1: Upload ── -->
+  <main class="pc-screen" id="screen-upload">
+    <div class="pc-center">
+      <div class="pc-tag">M4A → MP3</div>
+      <h1 class="pc-title">Podcast<br>Converter</h1>
+      <p class="pc-desc">Convert podcast M4A files to MP3. Output is always under 25 MB — bitrate is calculated automatically to fit.</p>
+
+      <!-- Drop zone -->
+      <div class="pc-drop-zone" id="drop-zone" role="button" tabindex="0"
+           aria-label="Upload M4A audio file. Click or drag and drop.">
+        <div class="pc-drop-icon" aria-hidden="true">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <p class="pc-drop-label">Drag &amp; drop .m4a here</p>
+        <p class="pc-drop-sub">M4A · up to 250 MB</p>
+        <input type="file" id="file-input" accept=".m4a" hidden aria-label="Choose M4A file" />
+        <button class="btn-ghost" id="btn-browse" type="button">Choose file</button>
+      </div>
+
+      <!-- Selected file pill -->
+      <div class="pc-file-selected" id="file-selected" hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        </svg>
+        <span class="pc-file-name" id="file-name"></span>
+        <button class="pc-file-clear" id="btn-clear" type="button" aria-label="Remove file">✕</button>
+      </div>
+
+      <!-- Options -->
+      <div class="pc-options" id="pc-options" hidden>
+        <div class="pc-option-row">
+          <span class="pc-option-label" id="label-preset">Quality preset</span>
+          <div class="pc-radio-group" role="radiogroup" aria-labelledby="label-preset">
+            <label class="pc-radio"><input type="radio" name="preset" value="auto" checked /><span>Auto</span></label>
+            <label class="pc-radio"><input type="radio" name="preset" value="low" /><span>Low</span></label>
+            <label class="pc-radio"><input type="radio" name="preset" value="medium" /><span>Medium</span></label>
+            <label class="pc-radio"><input type="radio" name="preset" value="high" /><span>High</span></label>
+          </div>
+        </div>
+        <div class="pc-option-row pc-option-row--toggle">
+          <label class="pc-option-label" for="force-mono">
+            Force mono
+            <span class="pc-option-hint">saves ~50% file size</span>
+          </label>
+          <label class="pc-toggle" aria-label="Force mono">
+            <input type="checkbox" id="force-mono" />
+            <span class="pc-toggle-track"><span class="pc-toggle-thumb"></span></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-convert" type="button" disabled>Convert to MP3</button>
+    </div>
+  </main>
+
+  <!-- ── Screen 2: Progress ── -->
+  <main class="pc-screen" id="screen-progress" hidden>
+    <div class="pc-center">
+      <h2 class="pc-subtitle">Converting your podcast…</h2>
+
+      <div class="step-list" id="step-list" role="status" aria-live="polite" aria-label="Conversion progress">
+
+        <div class="step-item" id="step-uploading" data-step="uploading">
+          <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <div class="step-name">Uploading</div>
+            <div class="step-note" id="note-uploading"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-analysing" data-step="analysing">
+          <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <div class="step-name">Analysing audio</div>
+            <div class="step-note" id="note-analysing"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-converting" data-step="converting">
+          <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <div class="step-name">Converting to MP3</div>
+            <div class="step-note" id="note-converting"></div>
+            <div class="pc-progress-bar" id="progress-bar" hidden>
+              <div class="pc-progress-fill" id="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-verifying" data-step="verifying">
+          <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <div class="step-name">Verifying size</div>
+            <div class="step-note" id="note-verifying"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-done-step" data-step="done-step">
+          <div class="step-track"><div class="step-dot"></div></div>
+          <div class="step-body">
+            <div class="step-name">Complete</div>
+            <div class="step-note" id="note-done-step"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Error box -->
+      <div class="pc-error" id="progress-error" hidden role="alert">
+        <div class="pc-error-icon" aria-hidden="true">⚠</div>
+        <div class="pc-error-msg" id="progress-error-msg"></div>
+        <button class="btn-ghost pc-error-retry" id="btn-retry" type="button">Try again</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Screen 3: Result ── -->
+  <main class="pc-screen" id="screen-result" hidden>
+    <div class="pc-center">
+      <div class="pc-result-icon" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h2 class="pc-subtitle">Ready to Download</h2>
+
+      <!-- Stats card -->
+      <div class="pc-stats-card" aria-label="Conversion details">
+        <div class="pc-stat">
+          <span class="pc-stat-label">Duration</span>
+          <span class="pc-stat-value" id="res-duration">—</span>
+        </div>
+        <div class="pc-stat">
+          <span class="pc-stat-label">Bitrate</span>
+          <span class="pc-stat-value" id="res-bitrate">—</span>
+        </div>
+        <div class="pc-stat">
+          <span class="pc-stat-label">Channels</span>
+          <span class="pc-stat-value" id="res-channels">—</span>
+        </div>
+        <div class="pc-stat">
+          <span class="pc-stat-label">Sample rate</span>
+          <span class="pc-stat-value" id="res-samplerate">—</span>
+        </div>
+        <div class="pc-stat">
+          <span class="pc-stat-label">File size</span>
+          <span class="pc-stat-value pc-stat-ok" id="res-size">—</span>
+        </div>
+      </div>
+
+      <a class="btn-download" id="btn-download" href="#" download aria-label="Download converted MP3">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download MP3
+      </a>
+      <button class="btn-ghost" id="btn-again" type="button">Convert another file</button>
+    </div>
+  </main>
+
+  <script src="/js/nav.js" defer></script>
+  <script src="/js/podcast-converter.js" defer></script>
+</body>
+</html>

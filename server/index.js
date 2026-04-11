@@ -14,6 +14,7 @@ const { critiqueRouter } = await import('./routes/critique.js');
 const { witnessRouter } = await import('./routes/witness.js');
 const { latestConversationRouter } = await import('./routes/latestConversation.js');
 const { podcastReviewRouter } = await import('./routes/podcastReview.js');
+const { podcastConverterRouter } = await import('./routes/podcastConverter.js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.use('/api/critique', critiqueRouter);
 app.use('/api/witness', witnessRouter);
 app.use('/api/latest-conversation', latestConversationRouter);
 app.use('/api/podcast-review', podcastReviewRouter);
+app.use('/api/podcast-converter', podcastConverterRouter);
 
 // Interview subpage
 app.get('/interview', (req, res) => {
@@ -41,6 +43,14 @@ app.get('/podcast-reviewer', (req, res) => {
 });
 app.get('/podcast-reviewer/', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'podcast-reviewer', 'index.html'));
+});
+
+// Podcast Converter subpage
+app.get('/podcast-converter', (req, res) => {
+  res.redirect('/podcast-converter/');
+});
+app.get('/podcast-converter/', (req, res) => {
+  res.sendFile(resolve(projectRoot, 'public', 'podcast-converter', 'index.html'));
 });
 
 // Landing page fallback

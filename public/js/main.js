@@ -78,16 +78,21 @@ btnStart.addEventListener('click', async () => {
       throw new Error(err.error || 'Could not create interview session');
     }
 
-    const { signedUrl } = await sessionRes.json();
+    const { signedUrl, agentId, systemPrompt, voiceId } = await sessionRes.json();
 
     const { Conversation } = window.ElevenLabsClient;
     if (!Conversation) {
       throw new Error('ElevenLabs SDK not loaded');
     }
 
-    conversation = await Conversation.startSession({
-      signedUrl,
+    const overrides = {
+      agent: { prompt: systemPrompt },
+    };
+    if (voiceId) {
+      overrides.tts = { voiceId };
+    }
 
+    const callbacks = {
       onConnect: ({ conversationId: id }) => {
         console.log('Connected! Conversation ID:', id);
         conversationId = id;
@@ -121,7 +126,32 @@ btnStart.addEventListener('click', async () => {
         console.error('ElevenLabs error:', message, context);
         alert('Connection error: ' + message);
       },
-    });
+    };
+
+    // Prefer agentId per ElevenLabs guidance, with signedUrl fallback.
+    if (agentId) {
+      try {
+        conversation = await Conversation.startSession({
+          agentId,
+          overrides,
+          ...callbacks,
+        });
+      } catch (agentErr) {
+        if (!signedUrl) throw agentErr;
+        console.warn('agentId session start failed; retrying with signedUrl', agentErr);
+        conversation = await Conversation.startSession({
+          signedUrl,
+          overrides,
+          ...callbacks,
+        });
+      }
+    } else {
+      conversation = await Conversation.startSession({
+        signedUrl,
+        overrides,
+        ...callbacks,
+      });
+    }
 
   } catch (err) {
     console.error('Failed to start:', err);

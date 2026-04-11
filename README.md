@@ -72,6 +72,9 @@ Tests cover `computeTargetKbps` edge cases and require no external dependencies 
 ## Recent Updates (2026-04-11)
 
 - Interview page now starts sessions via `/api/session` signed URLs, ensuring witness-specific prompt overrides are always applied.
+- Interview startup now prefers ElevenLabs `agentId` sessions (per widget guidance), with signed URL fallback for compatibility.
+- Runtime witness overrides are now applied at session start (`overrides.agent.prompt`, optional `overrides.tts.voiceId`) to better preserve Catherine persona/voice behavior.
+- Catherine witness config now explicitly references `Catherine.md`, and session prompt building appends those supplemental witness notes.
 - Latest-conversation fallback now requires a `since` timestamp window to reduce cross-session mixups.
 - Fixed critique transcript toggle listener duplication after multiple retries.
 - Added cleanup timers for Podcast Reviewer jobs to prevent in-memory job accumulation.

@@ -7,8 +7,7 @@ const ELEVENLABS_BASE = 'https://api.elevenlabs.io';
 
 /**
  * Generate a signed WebSocket URL for a private agent conversation.
- * The system prompt is injected as a per-session override so any witness
- * scenario can use the same base agent.
+ * Tries legacy POST override flow first, then falls back to current GET flow.
  *
  * @param {string} agentId - ElevenLabs agent ID from dashboard
  * @param {string} apiKey - ElevenLabs API key
@@ -16,7 +15,7 @@ const ELEVENLABS_BASE = 'https://api.elevenlabs.io';
  * @returns {Promise<{ signed_url: string }>}
  */
 export async function generateSignedUrl(agentId, apiKey, systemPromptOverride) {
-  const body = {
+  const legacyBody = {
     agent_id: agentId,
     conversation_config_override: {
       agent: {
@@ -25,7 +24,8 @@ export async function generateSignedUrl(agentId, apiKey, systemPromptOverride) {
     },
   };
 
-  const response = await fetch(
+  // Legacy API: supports prompt override via POST JSON body.
+  const legacyResponse = await fetch(
     `${ELEVENLABS_BASE}/v1/convai/conversation/get_signed_url`,
     {
       method: 'POST',
@@ -33,17 +33,46 @@ export async function generateSignedUrl(agentId, apiKey, systemPromptOverride) {
         'xi-api-key': apiKey,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(legacyBody),
     }
   );
 
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`ElevenLabs signed URL error ${response.status}: ${body}`);
+  if (legacyResponse.ok) {
+    return legacyResponse.json(); // { signed_url: "wss://..." }
   }
 
-  const data = await response.json();
-  return data; // { signed_url: "wss://..." }
+  const legacyErrBody = await legacyResponse.text();
+  const fallbackAllowed = legacyResponse.status === 404 || legacyResponse.status === 405;
+  if (!fallbackAllowed) {
+    throw new Error(`ElevenLabs signed URL error ${legacyResponse.status}: ${legacyErrBody}`);
+  }
+
+  // Current API variants: GET endpoint with agent_id query param.
+  const candidatePaths = [
+    '/v1/convai/conversation/get-signed-url',
+    '/v1/convai/conversation/get_signed_url',
+  ];
+
+  for (const path of candidatePaths) {
+    const url = `${ELEVENLABS_BASE}${path}?agent_id=${encodeURIComponent(agentId)}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'xi-api-key': apiKey },
+    });
+
+    if (response.ok) {
+      return response.json(); // { signed_url: "wss://..." }
+    }
+
+    const errBody = await response.text();
+    if (response.status !== 404 && response.status !== 405) {
+      throw new Error(`ElevenLabs signed URL error ${response.status}: ${errBody}`);
+    }
+  }
+
+  throw new Error(
+    `ElevenLabs signed URL error ${legacyResponse.status}: ${legacyErrBody}`
+  );
 }
 
 /**

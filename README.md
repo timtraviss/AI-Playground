@@ -75,6 +75,10 @@ Tests cover `computeTargetKbps` edge cases and require no external dependencies 
 - Latest-conversation fallback now requires a `since` timestamp window to reduce cross-session mixups.
 - Fixed critique transcript toggle listener duplication after multiple retries.
 - Added cleanup timers for Podcast Reviewer jobs to prevent in-memory job accumulation.
+- Podcast Reviewer UX improved:
+  - Upload now shows real-time progress (%) and elapsed timer.
+  - Transcription step now shows live elapsed time while waiting on Whisper API.
+  - Progress error panel now stays hidden unless an actual error occurs.
 - Standardized env-var handling and docs:
   - Primary: `CLAUDE_API_KEY`, `LEGISLATION_API_KEY`
   - Backward-compatible aliases still supported: `ANTHROPIC_API_KEY`, `Legislation_API_KEY`

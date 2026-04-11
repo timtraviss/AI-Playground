@@ -258,6 +258,22 @@ html, body {
   transition: color 0.3s;
 }
 
+.mini-progress {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.mini-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #e8c96a 0%, #facc15 100%);
+  transition: width 0.18s ease-out;
+}
+
 /* ── Active state ── */
 .step-item.active .step-dot {
   background: rgba(232,201,106,0.12);
@@ -311,6 +327,7 @@ html, body {
   gap: 10px;
   text-align: left;
 }
+.pr-error[hidden] { display: none !important; }
 .pr-error-icon {
   font-size: 18px;
   line-height: 1;

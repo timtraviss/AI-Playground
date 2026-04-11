@@ -17,9 +17,13 @@
   const progressError = document.getElementById('progress-error');
   const progressErrorMsg = document.getElementById('progress-error-msg');
   const btnRetry      = document.getElementById('btn-retry');
+  const uploadProgress = document.getElementById('upload-progress');
+  const uploadProgressFill = document.getElementById('upload-progress-fill');
 
   let selectedFile = null;
   let currentStep  = null;
+  let transcribeTimer = null;
+  let transcribeStartedAt = 0;
 
   // ── Screen management ─────────────────────────────────────────────────────
   function showScreen(id) {
@@ -80,26 +84,31 @@
 
     // Activate upload step immediately so the user sees something happening
     activateStep('uploading');
-    document.getElementById('note-uploading').textContent =
-      `${(selectedFile.size / 1024 / 1024).toFixed(1)} MB — sending to server…`;
+    uploadProgress.hidden = false;
+    uploadProgressFill.style.width = '0%';
+    const fileSizeLabel = `${(selectedFile.size / 1024 / 1024).toFixed(1)} MB`;
+    document.getElementById('note-uploading').textContent = `${fileSizeLabel} — starting upload…`;
 
     const formData = new FormData();
     formData.append('audio', selectedFile);
 
     let jobId;
     try {
-      const resp = await fetch('/api/podcast-review/upload', { method: 'POST', body: formData });
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => ({ error: 'Upload failed. Check your connection and try again.' }));
-        throw new Error(err.error || `Upload error ${resp.status}`);
-      }
-      ({ jobId } = await resp.json());
+      const data = await uploadWithProgress('/api/podcast-review/upload', formData, ({ percent, elapsedMs }) => {
+        uploadProgressFill.style.width = `${percent}%`;
+        document.getElementById('note-uploading').textContent =
+          `${fileSizeLabel} — uploaded ${percent}% · ${formatElapsed(elapsedMs)} elapsed`;
+      });
+      jobId = data.jobId;
     } catch (err) {
       showError(err.message, currentStep);
       return;
     }
 
+    uploadProgressFill.style.width = '100%';
+    document.getElementById('note-uploading').textContent = `${fileSizeLabel} — upload complete`;
     completeStep('uploading');
+    uploadProgress.hidden = true;
 
     // Open SSE stream
     const es = new EventSource(`/api/podcast-review/status/${jobId}`);
@@ -120,10 +129,11 @@
     switch (evt.step) {
       case 'transcribing':
         activateStep('transcribing');
-        document.getElementById('note-transcribing').textContent = 'Sending audio to Whisper API…';
+        startTranscribeTimer();
         break;
 
       case 'extracting':
+        stopTranscribeTimer();
         completeStep('transcribing');
         activateStep('extracting');
         if (evt.claimsFound !== undefined) {
@@ -142,6 +152,7 @@
         break;
 
       case 'done':
+        stopTranscribeTimer();
         completeStep('checking');
         activateStep('done');
         completeStep('done');
@@ -150,6 +161,7 @@
         break;
 
       case 'error':
+        stopTranscribeTimer();
         es.close();
         showError(evt.message || 'Unknown error', currentStep);
         break;
@@ -170,10 +182,15 @@
 
   // ── Step helpers ──────────────────────────────────────────────────────────
   function resetSteps() {
+    stopTranscribeTimer();
     document.querySelectorAll('.step-item').forEach(el => {
-      el.classList.remove('active', 'complete');
+      el.classList.remove('active', 'complete', 'error');
     });
     document.querySelectorAll('.step-note').forEach(el => { el.textContent = ''; });
+    uploadProgress.hidden = true;
+    uploadProgressFill.style.width = '0%';
+    progressError.hidden = true;
+    progressErrorMsg.textContent = '';
   }
 
   function activateStep(name) {
@@ -188,6 +205,8 @@
   }
 
   function showError(msg, failedStep) {
+    stopTranscribeTimer();
+    uploadProgress.hidden = true;
     // Mark the failing step red
     if (failedStep) {
       const el = document.getElementById(`step-${failedStep}`);
@@ -200,6 +219,67 @@
     }
     progressErrorMsg.textContent = msg;
     progressError.hidden = false;
+  }
+
+  function startTranscribeTimer() {
+    stopTranscribeTimer();
+    transcribeStartedAt = Date.now();
+    updateTranscribeNote();
+    transcribeTimer = setInterval(updateTranscribeNote, 1000);
+  }
+
+  function stopTranscribeTimer() {
+    if (transcribeTimer) {
+      clearInterval(transcribeTimer);
+      transcribeTimer = null;
+    }
+  }
+
+  function updateTranscribeNote() {
+    const elapsedMs = Date.now() - transcribeStartedAt;
+    document.getElementById('note-transcribing').textContent =
+      `Sending audio to Whisper API… ${formatElapsed(elapsedMs)} elapsed`;
+  }
+
+  function uploadWithProgress(url, formData, onProgress) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const startedAt = Date.now();
+
+      xhr.open('POST', url, true);
+      xhr.responseType = 'json';
+
+      xhr.upload.onprogress = (e) => {
+        if (!e.lengthComputable) return;
+        const percent = Math.max(0, Math.min(100, Math.round((e.loaded / e.total) * 100)));
+        onProgress({ percent, elapsedMs: Date.now() - startedAt });
+      };
+
+      xhr.onerror = () => reject(new Error('Upload failed. Check your connection and try again.'));
+
+      xhr.onload = () => {
+        const responseBody = xhr.response ?? safeJsonParse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(responseBody || {});
+          return;
+        }
+        const message = responseBody?.error || `Upload error ${xhr.status}`;
+        reject(new Error(message));
+      };
+
+      xhr.send(formData);
+    });
+  }
+
+  function safeJsonParse(text) {
+    try { return JSON.parse(text); } catch { return null; }
+  }
+
+  function formatElapsed(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+    const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
   }
 
   // ── Results rendering ─────────────────────────────────────────────────────

@@ -1,30 +1,33 @@
 /**
  * P.E.A.C.E. Model Investigative Interviewing Tutor
  *
- * Uses @elevenlabs/client exactly as documented:
- * https://elevenlabs.io/docs/eleven-agents/libraries/java-script
+ * Simplified flow:
+ *   1. Fetch agentId from /api/config (keeps key server-side)
+ *   2. Connect directly to ElevenLabs agent — no prompt injection, no signed URL
+ *   3. Capture conversationId from onConnect
+ *   4. End session → wait 3s → fetch transcript from /api/transcript/:id
+ *   5. Render transcript screen
  */
 
 import { TranscriptPanel } from './transcript.js';
-import { renderCritique } from './critique.js';
-import { showScreen, startTimer, stopTimer, setStatus, setMode, setProcessingStep, setInterviewWitness } from './ui.js';
+import { showScreen, startTimer, stopTimer, setStatus, setMode, setInterviewWitness } from './ui.js';
 
 const WITNESS_ID = 'witness-catherine';
 
 // ── State ──────────────────────────────────────────────
-let conversationId = null;
-let conversation = null;
-let witnessName = 'Catherine Johnson';
-let witnessInitials = 'CJ';
+let conversationId   = null;
+let conversation     = null;
+let witnessName      = 'Catherine Johnson';
+let witnessInitials  = 'CJ';
 let sessionStartedAt = null;
 
 // ── DOM refs ───────────────────────────────────────────
-const btnStart  = document.getElementById('btn-start');
-const btnEnd    = document.getElementById('btn-end');
-const btnRetry  = document.getElementById('btn-retry');
+const btnStart       = document.getElementById('btn-start');
+const btnEnd         = document.getElementById('btn-end');
+const btnRetry       = document.getElementById('btn-retry');
 const btnRetryBottom = document.getElementById('btn-retry-bottom');
 
-// ── Transcript panel ───────────────────────────────────
+// ── Live transcript panel (during interview) ───────────
 const transcriptPanel = new TranscriptPanel(
   document.getElementById('transcript-panel'),
   document.getElementById('transcript-inner'),
@@ -32,82 +35,68 @@ const transcriptPanel = new TranscriptPanel(
   document.getElementById('transcript-toggle-label'),
 );
 
-// ── Load witness metadata ──────────────────────────────
+// ── Load witness metadata for briefing screen ──────────
 async function loadWitnessMetadata() {
   try {
-    const res = await fetch(`/api/witness/${WITNESS_ID}`);
+    const res  = await fetch(`/api/witness/${WITNESS_ID}`);
     const data = await res.json();
-    witnessName   = data.name;
+    witnessName     = data.name;
     witnessInitials = data.avatarInitials;
 
-    document.getElementById('witness-avatar').textContent  = data.avatarInitials;
-    document.getElementById('witness-name').textContent    = data.name;
-    document.getElementById('witness-role').textContent    = data.role;
-    document.getElementById('witness-org').textContent     = data.organization;
-    document.getElementById('briefing-text').textContent   = data.scenarioBlurb;
-    document.getElementById('briefing-note').textContent   = data.briefingNote;
+    document.getElementById('witness-avatar').textContent = data.avatarInitials;
+    document.getElementById('witness-name').textContent   = data.name;
+    document.getElementById('witness-role').textContent   = data.role;
+    document.getElementById('witness-org').textContent    = data.organization;
+    document.getElementById('briefing-text').textContent  = data.scenarioBlurb;
+    document.getElementById('briefing-note').textContent  = data.briefingNote;
 
     btnStart.disabled = false;
   } catch (err) {
     console.error('Failed to load witness:', err);
-    document.getElementById('briefing-text').textContent = 'Failed to load scenario. Is the server running?';
+    document.getElementById('briefing-text').textContent =
+      'Failed to load scenario. Is the server running?';
   }
 }
 
-// ── Start interview ────────────────────────────────────
+// ── Begin Interview ────────────────────────────────────
 btnStart.addEventListener('click', async () => {
-  btnStart.disabled = true;
+  btnStart.disabled    = true;
   btnStart.textContent = 'Connecting...';
 
   try {
+    // Fetch agentId from server — keeps the key out of client HTML
+    const configRes = await fetch('/api/config');
+    if (!configRes.ok) throw new Error('Could not load agent configuration from server');
+    const { agentId } = await configRes.json();
+
     setInterviewWitness(witnessName, witnessInitials);
     transcriptPanel.clear();
-    conversationId = null;
+    conversationId   = null;
     sessionStartedAt = new Date().toISOString();
     showScreen('interview');
     setStatus('connecting');
 
-    const sessionRes = await fetch('/api/session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ witnessId: WITNESS_ID }),
-    });
-
-    if (!sessionRes.ok) {
-      const err = await sessionRes.json().catch(() => ({ error: sessionRes.statusText }));
-      throw new Error(err.error || 'Could not create interview session');
-    }
-
-    const { signedUrl, agentId, systemPrompt, voiceId } = await sessionRes.json();
-
     const { Conversation } = window.ElevenLabsClient;
-    if (!Conversation) {
-      throw new Error('ElevenLabs SDK not loaded');
-    }
+    if (!Conversation) throw new Error('ElevenLabs SDK not loaded');
 
-    const overrides = {
-      agent: { prompt: systemPrompt },
-    };
-    if (voiceId) {
-      overrides.tts = { voiceId };
-    }
+    // Connect directly — agent is fully configured in ElevenLabs dashboard
+    conversation = await Conversation.startSession({
+      agentId,
 
-    const callbacks = {
       onConnect: ({ conversationId: id }) => {
-        console.log('Connected! Conversation ID:', id);
+        console.log('[interview] connected, conversationId:', id);
         conversationId = id;
         setStatus('live');
         startTimer();
       },
 
       onDisconnect: () => {
-        console.log('Disconnected');
+        console.log('[interview] disconnected');
         setStatus('disconnected');
         stopTimer();
       },
 
       onMessage: ({ source, message }) => {
-        console.log(`[${source}]:`, message);
         const side = source === 'user' ? 'student' : 'witness';
         transcriptPanel.addTurn(side, message, witnessName);
         transcriptPanel.open();
@@ -123,47 +112,21 @@ btnStart.addEventListener('click', async () => {
       },
 
       onError: (message, context) => {
-        console.error('ElevenLabs error:', message, context);
-        alert('Connection error: ' + message);
+        console.error('[interview] ElevenLabs error:', message, context);
       },
-    };
-
-    // Prefer agentId per ElevenLabs guidance, with signedUrl fallback.
-    if (agentId) {
-      try {
-        conversation = await Conversation.startSession({
-          agentId,
-          overrides,
-          ...callbacks,
-        });
-      } catch (agentErr) {
-        if (!signedUrl) throw agentErr;
-        console.warn('agentId session start failed; retrying with signedUrl', agentErr);
-        conversation = await Conversation.startSession({
-          signedUrl,
-          overrides,
-          ...callbacks,
-        });
-      }
-    } else {
-      conversation = await Conversation.startSession({
-        signedUrl,
-        overrides,
-        ...callbacks,
-      });
-    }
+    });
 
   } catch (err) {
-    console.error('Failed to start:', err);
+    console.error('[interview] failed to start:', err);
     alert('Could not connect: ' + err.message);
     resetForRetry();
   }
 });
 
-// ── End interview ──────────────────────────────────────
+// ── End Interview ──────────────────────────────────────
 btnEnd.addEventListener('click', async () => {
-  btnEnd.disabled = true;
-  btnEnd.textContent = 'Getting feedback...';
+  btnEnd.disabled    = true;
+  btnEnd.textContent = 'Ending session...';
   stopTimer();
 
   try {
@@ -172,10 +135,13 @@ btnEnd.addEventListener('click', async () => {
       conversation = null;
     }
 
-    // Fallback: if onConnect didn't fire with an ID, fetch recent conversations
-    // constrained to this session start window.
+    // Show processing screen while ElevenLabs finalises the conversation record
+    showScreen('processing');
+    await delay(3000);
+
+    // Fallback: if onConnect never fired with an ID, look up the latest conversation
     if (!conversationId) {
-      console.log('No conversation ID from events — fetching latest...');
+      console.warn('[interview] no conversationId from onConnect — fetching latest');
       const url = `/api/latest-conversation?since=${encodeURIComponent(sessionStartedAt || new Date().toISOString())}`;
       const res = await fetch(url);
       if (res.ok) {
@@ -185,54 +151,70 @@ btnEnd.addEventListener('click', async () => {
     }
 
     if (!conversationId) {
-      throw new Error('No conversation found. Please complete an interview first.');
+      throw new Error(
+        'No conversation ID — the interview may not have connected properly. Please try again.'
+      );
     }
 
-    await runCritique();
+    const res = await fetch(`/api/transcript/${encodeURIComponent(conversationId)}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error(err.error || 'Failed to retrieve transcript from ElevenLabs');
+    }
+
+    const { turns } = await res.json();
+    showTranscriptScreen(turns);
 
   } catch (err) {
-    console.error('Error:', err);
+    console.error('[interview] error ending interview:', err);
     alert(err.message);
     resetForRetry();
   }
 });
 
-// ── Critique pipeline ──────────────────────────────────
-async function runCritique() {
-  showScreen('processing');
-  setProcessingStep('step-transcript');
-  await delay(400);
-  setProcessingStep('step-analyse');
+// ── Render transcript result screen ───────────────────
+function showTranscriptScreen(turns) {
+  const container = document.getElementById('transcript-turns');
+  container.innerHTML = '';
 
-  const res = await fetch('/api/critique', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ conversationId, witnessId: WITNESS_ID }),
-  });
-
-  setProcessingStep('step-critique');
-  await delay(300);
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(`Critique failed: ${err.error}`);
+  if (!turns || turns.length === 0) {
+    container.innerHTML =
+      '<p class="tx-empty">No transcript available — the conversation may not have been recorded.</p>';
+  } else {
+    turns.forEach((turn) => {
+      const isStudent = turn.role === 'user';
+      const speaker   = isStudent ? 'You (Student)' : witnessName;
+      const div = document.createElement('div');
+      div.className = `tx-turn ${isStudent ? 'tx-student' : 'tx-witness'}`;
+      div.innerHTML = `
+        <div class="tx-speaker">${speaker}</div>
+        <div class="tx-message">${escapeHtml(turn.message)}</div>
+      `;
+      container.appendChild(div);
+    });
   }
 
-  const critique = await res.json();
-  showScreen('critique');
-  renderCritique(critique, transcriptPanel.getTurns(), witnessName);
+  document.getElementById('transcript-witness-name').textContent = witnessName;
+  showScreen('transcript');
 }
 
-// ── Retry ──────────────────────────────────────────────
+function escapeHtml(str) {
+  return (str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// ── Reset / retry ──────────────────────────────────────
 function resetForRetry() {
-  conversationId = null;
-  conversation = null;
+  conversationId   = null;
+  conversation     = null;
   sessionStartedAt = null;
   transcriptPanel.clear();
-  btnStart.disabled = false;
+  btnStart.disabled  = false;
   btnStart.innerHTML = '<span class="btn-icon">▶</span> Begin Interview';
-  btnEnd.disabled = false;
-  btnEnd.textContent = 'End & Get Feedback';
+  btnEnd.disabled    = false;
+  btnEnd.textContent = 'End Interview';
   showScreen('intro');
 }
 

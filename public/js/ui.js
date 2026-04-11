@@ -3,7 +3,7 @@
  * Manages screen transitions, timer, waveform, and status indicators.
  */
 
-const SCREENS = ['intro', 'interview', 'processing', 'critique'];
+const SCREENS = ['intro', 'interview', 'processing', 'transcript'];
 
 export function showScreen(name) {
   SCREENS.forEach(s => {

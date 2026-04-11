@@ -110,7 +110,7 @@
       <div class="footer-center">
         <div class="timer" id="timer">00:00</div>
       </div>
-      <button id="btn-end" class="btn-danger">End &amp; Get Feedback</button>
+      <button id="btn-end" class="btn-danger">End Interview</button>
     </footer>
   </div>
 
@@ -121,78 +121,28 @@
   <div id="screen-processing" class="screen hidden">
     <div class="processing-container">
       <div class="spinner"></div>
-      <h2 class="processing-title">Analysing your interview...</h2>
-      <p class="processing-sub">Evaluating against the PEACE model</p>
-      <div class="processing-steps">
-        <div class="step active" id="step-transcript">Retrieving transcript</div>
-        <div class="step" id="step-analyse">Evaluating technique</div>
-        <div class="step" id="step-critique">Generating feedback</div>
-      </div>
+      <h2 class="processing-title">Retrieving transcript...</h2>
+      <p class="processing-sub">Please wait a moment</p>
     </div>
   </div>
 
 
   <!-- ═══════════════════════════════════════════
-       SCREEN 4: CRITIQUE
+       SCREEN 4: TRANSCRIPT
   ═══════════════════════════════════════════ -->
-  <div id="screen-critique" class="screen hidden">
+  <div id="screen-transcript" class="screen hidden">
     <div class="critique-container">
       <div class="critique-header">
         <div class="brand-title-sm">P.E.A.C.E.</div>
         <button id="btn-retry" class="btn-ghost-sm">↩ Try Again</button>
       </div>
 
-      <!-- Score hero -->
-      <div class="score-hero">
-        <div class="score-circle">
-          <svg class="score-ring" viewBox="0 0 120 120">
-            <circle class="score-ring-bg" cx="60" cy="60" r="50"/>
-            <circle class="score-ring-fill" id="score-ring-fill" cx="60" cy="60" r="50"/>
-          </svg>
-          <div class="score-number" id="score-number">—</div>
-        </div>
-        <div class="score-meta">
-          <div class="score-band" id="score-band">—</div>
-          <p class="score-summary" id="score-summary"></p>
-        </div>
+      <div class="tx-heading-block">
+        <h2 class="tx-title">Interview Transcript</h2>
+        <p class="tx-subtitle">Interview with <span id="transcript-witness-name"></span></p>
       </div>
 
-      <section class="critique-section">
-        <h3 class="section-title">PEACE Framework</h3>
-        <div class="phase-bars" id="phase-bars"></div>
-      </section>
-
-      <section class="critique-section">
-        <h3 class="section-title">Questioning Technique</h3>
-        <div class="questioning-row" id="questioning-pills"></div>
-        <p class="questioning-notes" id="questioning-notes"></p>
-      </section>
-
-      <section class="critique-section">
-        <h3 class="section-title">Key Facts Elicited</h3>
-        <div class="facts-progress-bar-wrap">
-          <div class="facts-progress-bar" id="facts-progress-bar"></div>
-        </div>
-        <p class="facts-count" id="facts-count"></p>
-        <div class="facts-list" id="facts-list"></div>
-      </section>
-
-      <section class="critique-section">
-        <h3 class="section-title">Strengths</h3>
-        <ul class="strengths-list" id="strengths-list"></ul>
-      </section>
-
-      <section class="critique-section">
-        <h3 class="section-title">Areas to Develop</h3>
-        <div class="improvements-list" id="improvements-list"></div>
-      </section>
-
-      <section class="critique-section">
-        <button class="btn-ghost transcript-toggle-btn" id="btn-show-full-transcript">
-          Show Full Transcript ▾
-        </button>
-        <div class="full-transcript hidden" id="full-transcript"></div>
-      </section>
+      <div class="tx-turns" id="transcript-turns"></div>
 
       <div class="critique-footer">
         <button id="btn-retry-bottom" class="btn-primary">↩ Try Again</button>

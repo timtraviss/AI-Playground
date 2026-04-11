@@ -9,8 +9,8 @@ dotenv.config();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, '..');
 
-const { sessionRouter } = await import('./routes/session.js');
-const { critiqueRouter } = await import('./routes/critique.js');
+const { configRouter } = await import('./routes/config.js');
+const { transcriptRouter } = await import('./routes/transcript.js');
 const { witnessRouter } = await import('./routes/witness.js');
 const { latestConversationRouter } = await import('./routes/latestConversation.js');
 const { podcastReviewRouter } = await import('./routes/podcastReview.js');
@@ -22,8 +22,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(resolve(projectRoot, 'public')));
 
-app.use('/api/session', sessionRouter);
-app.use('/api/critique', critiqueRouter);
+app.use('/api/config', configRouter);
+app.use('/api/transcript', transcriptRouter);
 app.use('/api/witness', witnessRouter);
 app.use('/api/latest-conversation', latestConversationRouter);
 app.use('/api/podcast-review', podcastReviewRouter);

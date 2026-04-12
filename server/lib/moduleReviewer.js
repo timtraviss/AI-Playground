@@ -113,11 +113,15 @@ Be thorough — review the entire module. It is better to flag a possible issue 
 /**
  * Review a module's extracted text against DDP proofreader rules.
  *
- * @param {string} moduleText    - Plain text extracted from the module DOCX
+ * Uses the streaming API so the caller can detect the moment Claude starts
+ * responding (first token) and avoid hard timeouts on long documents.
+ *
+ * @param {string}      moduleText    - Plain text extracted from the module DOCX
  * @param {string|null} referenceText - Plain text from reference DOCX, or null
+ * @param {Function}    [onProgress]  - Optional callback({ type: 'connected' | 'progress', chars })
  * @returns {Promise<Object>} Parsed JSON review result
  */
-export async function reviewModule(moduleText, referenceText) {
+export async function reviewModule(moduleText, referenceText, onProgress) {
   const apiKey = process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('CLAUDE_API_KEY (or ANTHROPIC_API_KEY) is not set');
   const client = new Anthropic({ apiKey });
@@ -126,24 +130,34 @@ export async function reviewModule(moduleText, referenceText) {
     ? `REFERENCE MODULE (previously approved — use for terminology and citation style comparison):\n\n${referenceText}\n\n---\n\nMODULE TO REVIEW:\n\n${moduleText}`
     : `MODULE TO REVIEW:\n\n${moduleText}`;
 
-  const response = await client.messages.create({
+  let raw = '';
+  let connected = false;
+
+  const stream = client.messages.stream({
     model: 'claude-sonnet-4-6',
     max_tokens: 8192,
     system: SYSTEM_PROMPT,
     messages: [{ role: 'user', content: userContent }],
   });
 
-  const block = response.content.find(b => b.type === 'text');
-  if (!block) throw new Error('Claude returned no text content');
+  stream.on('text', (text) => {
+    raw += text;
+    if (!connected) {
+      connected = true;
+      onProgress?.({ type: 'connected' });
+    }
+  });
+
+  await stream.finalMessage();
 
   // Strip any accidental markdown fences
-  const raw = block.text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
 
   let result;
   try {
-    result = JSON.parse(raw);
+    result = JSON.parse(cleaned);
   } catch {
-    throw new Error(`Claude returned invalid JSON: ${raw.slice(0, 200)}`);
+    throw new Error(`Claude returned invalid JSON: ${cleaned.slice(0, 200)}`);
   }
 
   if (!Array.isArray(result.issues)) {

@@ -690,6 +690,8 @@
       });
 
       eventSource.addEventListener('error', () => {
+        clearInterval(reviewTimer);
+        reviewTimer = null;
         eventSource.close();
         // Only show the panel if the job isn't already done (avoids false positives on stream end)
         const errorPanel = document.getElementById('progress-error');
@@ -712,13 +714,20 @@
           setStepState('step-reviewing', 'active', 'Sending document to Claude…');
           break;
         case 'reviewing':
-          setStepState('step-reviewing', 'active', 'Sending document to Claude…');
+          setStepState('step-reviewing', 'active', 'Connecting to Claude Sonnet 4.6…');
           clearInterval(reviewTimer);
+          reviewTimer = null;
+          break;
+        case 'reviewing_connected':
           reviewStart = Date.now();
           reviewTimer = setInterval(() => {
-            const s = Math.round((Date.now() - reviewStart) / 1000);
-            document.getElementById('note-reviewing').textContent = `Analysing… ${s}s`;
+            const elapsed = Math.round((Date.now() - reviewStart) / 1000);
+            const label = elapsed >= 60
+              ? `${Math.floor(elapsed / 60)}m ${elapsed % 60}s`
+              : `${elapsed}s`;
+            document.getElementById('note-reviewing').textContent = `Generating review… ${label}`;
           }, 1000);
+          setStepState('step-reviewing', 'active', 'Generating review… 0s');
           break;
         case 'reviewing_done':
           clearInterval(reviewTimer);
@@ -750,6 +759,8 @@
           setTimeout(() => showScreen('results'), 600);
           break;
         case 'error':
+          clearInterval(reviewTimer);
+          reviewTimer = null;
           if (eventSource) eventSource.close();
           document.getElementById('progress-error-msg').textContent = data.message || data.error || 'An error occurred';
           document.getElementById('progress-error').hidden = false;

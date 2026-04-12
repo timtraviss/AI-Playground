@@ -174,7 +174,11 @@ async function runPipeline(jobId, moduleFile, referenceFile) {
     let review;
     const heartbeat = setInterval(() => pushEvent(jobId, { step: 'heartbeat' }), 30_000);
     try {
-      review = await reviewModule(moduleText, referenceText);
+      review = await reviewModule(moduleText, referenceText, ({ type }) => {
+        if (type === 'connected') {
+          pushEvent(jobId, { step: 'reviewing_connected', message: 'Claude is generating your review…' });
+        }
+      });
     } catch (err) {
       console.error('[proofreader] Claude API error:', err);
       throw err;

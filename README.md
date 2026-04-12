@@ -197,7 +197,7 @@ git push heroku main
 - [x] SSE progress stream (Uploading → Extracting → Reviewing → Annotating → Done)
 - [x] SSE heartbeat every 30 s during Claude review — prevents connection drops on long documents
 - [x] Streaming Claude API — avoids SDK timeout on long documents; detects first token to confirm connection
-- [x] Output length constraints in prompt — max 60 issues, concise issue/suggestion fields — prevents JSON truncation on large modules
+- [x] Extended output beta (`output-128k-2025-02-19`) — raises output limit from 8 192 to 16 000 tokens, matches thoroughness of CLI skill
 - [x] Truncation-aware error message — detects cut-off JSON and surfaces a clear user-facing explanation
 - [x] "Reviewing with AI" shows "Connecting…" then "Generating review… Xm Ys" once Claude responds
 - [x] Elapsed timer stops immediately on error (both SSE drop and Claude error events)

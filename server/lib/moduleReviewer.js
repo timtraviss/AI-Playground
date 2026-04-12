@@ -108,7 +108,14 @@ Return ONLY this JSON structure (no markdown, no prose):
 
 LEGISLATION issues must always have severity "critical".
 searchText must be a short, unique phrase (under 60 characters) that appears verbatim in the document. If the issue is structural (missing section) or cannot be anchored to specific text, set searchText to null.
-Be thorough — review the entire module. It is better to flag a possible issue than to miss one.`;
+Be thorough — review the entire module. It is better to flag a possible issue than to miss one.
+
+## Response length — IMPORTANT
+The JSON must fit within the output token limit. Follow these rules strictly:
+- "summary": one sentence, maximum 150 characters
+- "issue": one clear sentence, maximum 120 characters — omit examples and qualifications
+- "suggestion": one actionable instruction, maximum 120 characters
+- Report at most 60 issues. If there are more, include the most significant: critical severity first, then by category in this priority order: LEGISLATION, STRUCTURE, CONTENT, LEARNING_OBJ, LANGUAGE, CONSISTENCY, GRAMMAR, FORMATTING. Set "totalIssues" to the true total count even if some issues are omitted.`;
 
 /**
  * Review a module's extracted text against DDP proofreader rules.
@@ -157,7 +164,13 @@ export async function reviewModule(moduleText, referenceText, onProgress) {
   try {
     result = JSON.parse(cleaned);
   } catch {
-    throw new Error(`Claude returned invalid JSON: ${cleaned.slice(0, 200)}`);
+    const likelyTruncated = !cleaned.trimEnd().endsWith('}');
+    console.error(`[moduleReviewer] JSON parse failed. Response length: ${cleaned.length} chars. Last 100 chars: ${cleaned.slice(-100)}`);
+    throw new Error(
+      likelyTruncated
+        ? 'The review response was too long and got cut off. The document may be too large for a single pass — try uploading a shorter module or a single section.'
+        : `Claude returned invalid JSON (${cleaned.length} chars). Check server logs for details.`
+    );
   }
 
   if (!Array.isArray(result.issues)) {

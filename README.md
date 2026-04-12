@@ -40,6 +40,18 @@ Upload a NZ Police DDP podcast audio file (MP3, M4A, WAV — up to 200 MB). The 
 
 A companion Claude Code skill (`podcast-reviewer.skill`) lets you trigger the same review workflow directly from within Claude Code.
 
+### Module Proofreader (`/proofreader/`)
+
+Upload a NZ Police Detective Development Programme (DDP) learning module (DOCX), plus an optional previously-approved reference module. The app:
+
+1. Extracts plain text from both DOCX files via mammoth
+2. Sends the text to Claude Sonnet 4.6 with the full DDP style ruleset (NZ English, structure, legislation, learning objectives, formatting)
+3. Returns structured JSON: issues with category, severity, and `searchText` anchors
+4. Injects every issue as a Word comment directly into the DOCX ZIP (pizzip + XML manipulation)
+5. Returns a downloadable `_reviewed.docx` ready to open in Word — comments appear in the sidebar with category tags and fix suggestions
+
+A companion Claude Code skill (`proofreader.skill`) is available for terminal-based review workflows.
+
 ## Stack
 
 - **Backend:** Node.js, Express
@@ -175,6 +187,18 @@ git push heroku main
 - [x] ElevenLabs system prompt override implemented (POST with `conversation_config_override`)
 - [x] Env var guard in latest-conversation route — 503 if ElevenLabs not configured
 - [x] Input validation in `promptBuilder` — descriptive errors on missing witness fields
+
+### Module Proofreader
+- [x] DOCX upload (module + optional reference) with 50 MB limit
+- [x] Plain text extraction via mammoth
+- [x] Claude Sonnet 4.6 review against full DDP style ruleset (8 categories: STRUCTURE, GRAMMAR, LANGUAGE, CONSISTENCY, CONTENT, FORMATTING, LEARNING_OBJ, LEGISLATION)
+- [x] LEGISLATION issues always flagged as critical severity
+- [x] Word comments injected into DOCX ZIP via pizzip — opens in Word with comment sidebar
+- [x] SSE progress stream (Uploading → Extracting → Reviewing → Annotating → Done)
+- [x] Summary panel with issue counts by category and critical issue callouts
+- [x] Download reviewed `.docx` with `_reviewed` suffix
+- [x] Landing page card and nav links added across all subpages
+- [ ] Tracked changes (v2) — in addition to comments, insert Word tracked-change insertions/deletions
 
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)

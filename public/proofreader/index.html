@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module Proofreader — Traviss.org</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/nav.css" />
+  <style>
+    /* ── Base ── */
+    html, body {
+      background: #0d1117;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── Screens ── */
+    .pr-screen[hidden] { display: none !important; }
+    .pr-screen {
+      min-height: calc(100vh - 52px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px 24px 80px;
+    }
+    .pr-center {
+      max-width: 560px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* ── Typography ── */
+    .pr-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #e8c96a;
+      background: rgba(232,201,106,0.1);
+      border: 1px solid rgba(232,201,106,0.2);
+      padding: 4px 10px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .pr-title {
+      font-family: 'Fugaz One', cursive;
+      font-size: clamp(32px, 8vw, 52px);
+      font-weight: 400;
+      color: #e8c96a;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      margin: 0 0 16px;
+    }
+    .pr-subtitle {
+      font-family: 'Fugaz One', cursive;
+      font-size: 28px;
+      font-weight: 400;
+      color: #e2e8f0;
+      margin: 0 0 32px;
+      letter-spacing: 0.02em;
+    }
+    .pr-desc {
+      font-size: 15px;
+      color: #94a3b8;
+      line-height: 1.7;
+      margin: 0 0 36px;
+      max-width: 460px;
+    }
+
+    /* ── Upload fields ── */
+    .upload-fields {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .file-field {
+      background: #161b22;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .file-field:hover { border-color: rgba(232,201,106,0.4); }
+    .file-field.has-file { border-color: rgba(232,201,106,0.5); }
+    .file-field-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .file-field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .file-field-name {
+      font-size: 14px;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-field-name.selected { color: #e8c96a; }
+    .file-field-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e2e8f0;
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .file-field-btn:hover { background: rgba(255,255,255,0.1); }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      background: #e8c96a;
+      color: #0d1117;
+      border: none;
+      padding: 14px 36px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary:not(:disabled):hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.06);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+    .file-limit-note {
+      font-size: 12px;
+      color: #475569;
+      margin-top: 16px;
+    }
+
+    /* ── Upload progress bar ── */
+    .upload-bar-wrap {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+      height: 4px;
+      margin-top: 8px;
+    }
+    .upload-bar-fill {
+      height: 100%;
+      background: #e8c96a;
+      width: 0%;
+      transition: width 0.2s;
+    }
+
+    /* ── Step list ── */
+    .step-list {
+      width: 100%;
+      max-width: 480px;
+      text-align: left;
+      margin-bottom: 32px;
+    }
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-track {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 3px;
+    }
+    .step-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #334155;
+      background: transparent;
+      flex-shrink: 0;
+      position: relative;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .step-connector {
+      width: 2px;
+      background: #1e293b;
+      flex: 1;
+      min-height: 24px;
+      margin: 4px 0;
+    }
+    .step-body {
+      flex: 1;
+      padding-bottom: 20px;
+    }
+    .step-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #475569;
+      transition: color 0.2s;
+    }
+    .step-note {
+      font-size: 12px;
+      color: #334155;
+      margin-top: 2px;
+      min-height: 16px;
+      transition: color 0.2s;
+    }
+
+    /* Step states */
+    .step-item[data-state="active"] .step-dot {
+      border-color: #e8c96a;
+      background: rgba(232,201,106,0.15);
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+    .step-item[data-state="active"] .step-name { color: #e8c96a; }
+    .step-item[data-state="active"] .step-note { color: #94a3b8; }
+    .step-item[data-state="done"] .step-dot {
+      border-color: #22c55e;
+      background: #22c55e;
+    }
+    .step-item[data-state="done"] .step-dot::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 7px;
+      border: 2px solid #0d1117;
+      border-top: none;
+      border-left: none;
+      transform: translate(-50%, -60%) rotate(45deg);
+    }
+    .step-item[data-state="done"] .step-name { color: #e2e8f0; }
+    .step-item[data-state="done"] .step-note { color: #64748b; }
+    .step-item[data-state="done"] .step-connector { background: #22c55e; }
+    .step-item[data-state="error"] .step-dot { border-color: #ef4444; background: #ef4444; }
+    .step-item[data-state="error"] .step-name { color: #ef4444; }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(232,201,106,0.4); }
+      50%       { box-shadow: 0 0 0 6px rgba(232,201,106,0); }
+    }
+
+    /* ── Error panel ── */
+    .pr-error {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 12px;
+      padding: 20px 24px;
+      width: 100%;
+      max-width: 480px;
+      text-align: left;
+    }
+    .pr-error-icon { font-size: 20px; margin-bottom: 6px; }
+    .pr-error-msg { font-size: 14px; color: #fca5a5; margin-bottom: 12px; }
+
+    /* ── Results screen ── */
+    .results-wrap {
+      max-width: 720px;
+      width: 100%;
+    }
+    .results-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .results-title {
+      font-family: 'Fugaz One', cursive;
+      font-size: 26px;
+      color: #e2e8f0;
+      margin: 0 0 4px;
+    }
+    .results-subtitle { font-size: 14px; color: #64748b; margin: 0; }
+    .results-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
+
+    /* Category pills */
+    .cat-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .cat-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #161b22;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    .cat-pill-count {
+      font-weight: 600;
+      font-size: 15px;
+      color: #e8c96a;
+    }
+    .cat-pill-label { color: #94a3b8; }
+
+    /* Critical banner */
+    .critical-banner {
+      background: rgba(239,68,68,0.07);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    .critical-banner-heading {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ef4444;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .critical-item {
+      font-size: 13px;
+      color: #fca5a5;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(239,68,68,0.1);
+      line-height: 1.5;
+    }
+    .critical-item:last-child { border-bottom: none; }
+
+    /* Summary quote */
+    .summary-quote {
+      background: #161b22;
+      border-left: 3px solid #e8c96a;
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #94a3b8;
+      font-style: italic;
+      text-align: left;
+    }
+
+    /* Download area */
+    .download-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-download {
+      background: #e8c96a;
+      color: #0d1117;
+      border: none;
+      padding: 14px 36px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-download:hover { opacity: 0.9; transform: translateY(-1px); }
+  </style>
+</head>
+<body>
+
+  <!-- Shared nav -->
+  <nav class="site-nav" id="site-nav">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-drawer" id="nav-drawer">
+      <div class="nav-logo"><a href="/">Traviss.org</a></div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+        <li><a href="/podcast-reviewer/">Podcast Reviewer</a></li>
+        <li><a href="/podcast-converter/">Podcast Converter</a></li>
+        <li><a href="/proofreader/" class="active">Module Proofreader</a></li>
+      </ul>
+    </div>
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </nav>
+
+  <!-- ── Screen 1: Upload ── -->
+  <main class="pr-screen" id="screen-upload">
+    <div class="pr-center">
+      <div class="pr-tag">AI + Document Review</div>
+      <h1 class="pr-title">Module<br>Proofreader</h1>
+      <p class="pr-desc">Upload a NZ Police Detective Development Programme learning module (.docx) to receive it back annotated with Word comments covering grammar, NZ English style, structure, legislation accuracy, and consistency.</p>
+
+      <div class="upload-fields">
+        <!-- Module file -->
+        <div class="file-field" id="field-module" onclick="document.getElementById('input-module').click()">
+          <div class="file-field-label">Learning module (.docx) — required</div>
+          <div class="file-field-row">
+            <span class="file-field-name" id="name-module">No file selected</span>
+            <button class="file-field-btn" type="button" onclick="event.stopPropagation(); document.getElementById('input-module').click()">Browse</button>
+          </div>
+          <input type="file" id="input-module" accept=".docx" hidden />
+        </div>
+
+        <!-- Reference file -->
+        <div class="file-field" id="field-reference" onclick="document.getElementById('input-reference').click()">
+          <div class="file-field-label">Reference module (.docx) — optional</div>
+          <div class="file-field-row">
+            <span class="file-field-name" id="name-reference">No file selected</span>
+            <button class="file-field-btn" type="button" onclick="event.stopPropagation(); document.getElementById('input-reference').click()">Browse</button>
+          </div>
+          <input type="file" id="input-reference" accept=".docx" hidden />
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-submit" type="button" disabled>Review Module</button>
+      <p class="file-limit-note">Max 50 MB per file · Output is a .docx with Word comments</p>
+    </div>
+  </main>
+
+  <!-- ── Screen 2: Progress ── -->
+  <main class="pr-screen" id="screen-progress" hidden>
+    <div class="pr-center">
+      <h2 class="pr-subtitle">Reviewing your module…</h2>
+
+      <div class="step-list" id="step-list">
+        <div class="step-item" id="step-uploading">
+          <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <div class="step-name">Uploading</div>
+            <div class="step-note" id="note-uploading"></div>
+            <div class="upload-bar-wrap" id="upload-bar-wrap" hidden>
+              <div class="upload-bar-fill" id="upload-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-extracting">
+          <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <div class="step-name">Extracting text</div>
+            <div class="step-note" id="note-extracting"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-reviewing">
+          <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <div class="step-name">Reviewing with AI</div>
+            <div class="step-note" id="note-reviewing"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-annotating">
+          <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <div class="step-name">Annotating document</div>
+            <div class="step-note" id="note-annotating"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-done-item">
+          <div class="step-track"><div class="step-dot"></div></div>
+          <div class="step-body">
+            <div class="step-name">Done</div>
+            <div class="step-note" id="note-done"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pr-error" id="progress-error" hidden>
+        <div class="pr-error-icon">⚠</div>
+        <div class="pr-error-msg" id="progress-error-msg"></div>
+        <button class="btn-ghost" id="btn-retry" type="button">Try again</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Screen 3: Results ── -->
+  <main class="pr-screen" id="screen-results" hidden>
+    <div class="results-wrap">
+
+      <div class="results-header">
+        <div>
+          <h2 class="results-title" id="results-title">Review complete</h2>
+          <p class="results-subtitle" id="results-subtitle"></p>
+        </div>
+        <div class="results-actions">
+          <button class="btn-ghost" id="btn-again">Review another</button>
+        </div>
+      </div>
+
+      <!-- Category counts -->
+      <div class="cat-pills" id="cat-pills"></div>
+
+      <!-- Critical issues -->
+      <div class="critical-banner" id="critical-banner" hidden>
+        <div class="critical-banner-heading">Critical issues requiring priority attention</div>
+        <div id="critical-list"></div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary-quote" id="summary-quote"></div>
+
+      <!-- Download -->
+      <div class="download-area">
+        <button class="btn-download" id="btn-download" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download Reviewed Document
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/js/nav.js" defer></script>
+  <script>
+    // ── State ──────────────────────────────────────────────────────────────
+    let moduleFile    = null;
+    let referenceFile = null;
+    let currentJobId  = null;
+    let eventSource   = null;
+
+    const CATEGORIES = ['STRUCTURE','GRAMMAR','LANGUAGE','CONSISTENCY','CONTENT','FORMATTING','LEARNING_OBJ','LEGISLATION'];
+
+    // ── DOM refs ───────────────────────────────────────────────────────────
+    const screenUpload   = document.getElementById('screen-upload');
+    const screenProgress = document.getElementById('screen-progress');
+    const screenResults  = document.getElementById('screen-results');
+
+    const inputModule    = document.getElementById('input-module');
+    const inputReference = document.getElementById('input-reference');
+    const nameModule     = document.getElementById('name-module');
+    const nameReference  = document.getElementById('name-reference');
+    const fieldModule    = document.getElementById('field-module');
+    const fieldReference = document.getElementById('field-reference');
+    const btnSubmit      = document.getElementById('btn-submit');
+    const btnAgain       = document.getElementById('btn-again');
+    const btnDownload    = document.getElementById('btn-download');
+    const btnRetry       = document.getElementById('btn-retry');
+
+    // ── File pickers ───────────────────────────────────────────────────────
+    inputModule.addEventListener('change', () => {
+      moduleFile = inputModule.files[0] || null;
+      if (moduleFile) {
+        nameModule.textContent = moduleFile.name;
+        nameModule.classList.add('selected');
+        fieldModule.classList.add('has-file');
+      } else {
+        nameModule.textContent = 'No file selected';
+        nameModule.classList.remove('selected');
+        fieldModule.classList.remove('has-file');
+      }
+      btnSubmit.disabled = !moduleFile;
+    });
+
+    inputReference.addEventListener('change', () => {
+      referenceFile = inputReference.files[0] || null;
+      if (referenceFile) {
+        nameReference.textContent = referenceFile.name;
+        nameReference.classList.add('selected');
+        fieldReference.classList.add('has-file');
+      } else {
+        nameReference.textContent = 'No file selected';
+        nameReference.classList.remove('selected');
+        fieldReference.classList.remove('has-file');
+      }
+    });
+
+    // ── Show/hide screens ──────────────────────────────────────────────────
+    function showScreen(name) {
+      screenUpload.hidden   = name !== 'upload';
+      screenProgress.hidden = name !== 'progress';
+      screenResults.hidden  = name !== 'results';
+    }
+
+    // ── Step helpers ───────────────────────────────────────────────────────
+    function setStepState(stepId, state, note) {
+      const el = document.getElementById(stepId);
+      if (!el) return;
+      el.dataset.state = state;
+      if (note !== undefined) {
+        const noteEl = document.getElementById('note-' + stepId.replace('step-', ''));
+        if (noteEl) noteEl.textContent = note;
+      }
+    }
+
+    function resetSteps() {
+      ['step-uploading','step-extracting','step-reviewing','step-annotating','step-done-item'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) delete el.dataset.state;
+        const noteId = 'note-' + id.replace('step-','');
+        const noteEl = document.getElementById(noteId);
+        if (noteEl) noteEl.textContent = '';
+      });
+      document.getElementById('progress-error').hidden = true;
+    }
+
+    // ── Upload with XHR for progress ──────────────────────────────────────
+    function uploadFiles() {
+      return new Promise((resolve, reject) => {
+        const fd = new FormData();
+        fd.append('module', moduleFile);
+        if (referenceFile) fd.append('reference', referenceFile);
+
+        const bar     = document.getElementById('upload-bar-fill');
+        const barWrap = document.getElementById('upload-bar-wrap');
+        barWrap.hidden = false;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/proofreader/upload');
+
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            bar.style.width = `${Math.round((e.loaded / e.total) * 100)}%`;
+          }
+        });
+
+        xhr.addEventListener('load', () => {
+          bar.style.width = '100%';
+          barWrap.hidden = true;
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try { resolve(JSON.parse(xhr.responseText)); }
+            catch { reject(new Error('Invalid server response')); }
+          } else {
+            try {
+              const err = JSON.parse(xhr.responseText);
+              reject(new Error(err.error || `Upload failed (${xhr.status})`));
+            } catch {
+              reject(new Error(`Upload failed (${xhr.status})`));
+            }
+          }
+        });
+
+        xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
+        xhr.send(fd);
+      });
+    }
+
+    // ── SSE listener ──────────────────────────────────────────────────────
+    function listenToJob(jobId) {
+      if (eventSource) eventSource.close();
+      eventSource = new EventSource(`/api/proofreader/status/${jobId}`);
+
+      eventSource.addEventListener('message', (e) => {
+        const data = JSON.parse(e.data);
+        handleEvent(data);
+      });
+
+      eventSource.addEventListener('error', () => {
+        eventSource.close();
+        // Only show the panel if the job isn't already done (avoids false positives on stream end)
+        const errorPanel = document.getElementById('progress-error');
+        if (errorPanel.hidden) {
+          document.getElementById('progress-error-msg').textContent =
+            'Lost connection to the server. Check server logs and try again.';
+          errorPanel.hidden = false;
+        }
+      });
+    }
+
+    function handleEvent(data) {
+      switch (data.step) {
+        case 'extracting':
+          setStepState('step-uploading', 'done', moduleFile?.name || '');
+          setStepState('step-extracting', 'active', data.message || 'Extracting…');
+          break;
+        case 'extracting_done':
+          setStepState('step-extracting', 'done', data.message || '');
+          setStepState('step-reviewing', 'active', 'Analysing against style, structure, and legislation rules…');
+          break;
+        case 'reviewing':
+          setStepState('step-reviewing', 'active', data.message || 'Analysing…');
+          break;
+        case 'reviewing_done':
+          setStepState('step-reviewing', 'done', data.message || '');
+          setStepState('step-annotating', 'active', 'Adding Word comments…');
+          break;
+        case 'annotating':
+          setStepState('step-annotating', 'active', data.message || 'Adding Word comments…');
+          break;
+        case 'annotating_done':
+          setStepState('step-annotating', 'done', data.message || '');
+          setStepState('step-done-item', 'active', '');
+          break;
+        case 'done':
+          setStepState('step-done-item', 'done', 'Review ready');
+          if (eventSource) eventSource.close();
+          renderResults(data.result);
+          setTimeout(() => showScreen('results'), 600);
+          break;
+        case 'error':
+          if (eventSource) eventSource.close();
+          document.getElementById('progress-error-msg').textContent = data.message || data.error || 'An error occurred';
+          document.getElementById('progress-error').hidden = false;
+          break;
+      }
+    }
+
+    // ── Submit ─────────────────────────────────────────────────────────────
+    btnSubmit.addEventListener('click', async () => {
+      if (!moduleFile) return;
+      showScreen('progress');
+      resetSteps();
+      setStepState('step-uploading', 'active', 'Uploading…');
+
+      try {
+        const { jobId } = await uploadFiles();
+        currentJobId = jobId;
+        setStepState('step-uploading', 'done', moduleFile.name);
+        setStepState('step-extracting', 'active', 'Extracting text…');
+        listenToJob(jobId);
+      } catch (err) {
+        setStepState('step-uploading', 'error', err.message);
+        document.getElementById('progress-error-msg').textContent = err.message;
+        document.getElementById('progress-error').hidden = false;
+      }
+    });
+
+    // ── Retry ──────────────────────────────────────────────────────────────
+    btnRetry.addEventListener('click', () => {
+      showScreen('upload');
+      currentJobId = null;
+    });
+
+    // ── Review another ─────────────────────────────────────────────────────
+    btnAgain.addEventListener('click', () => {
+      currentJobId  = null;
+      moduleFile    = null;
+      referenceFile = null;
+      inputModule.value    = '';
+      inputReference.value = '';
+      nameModule.textContent    = 'No file selected';
+      nameReference.textContent = 'No file selected';
+      nameModule.classList.remove('selected');
+      nameReference.classList.remove('selected');
+      fieldModule.classList.remove('has-file');
+      fieldReference.classList.remove('has-file');
+      btnSubmit.disabled = true;
+      showScreen('upload');
+    });
+
+    // ── Download ───────────────────────────────────────────────────────────
+    btnDownload.addEventListener('click', () => {
+      if (!currentJobId) return;
+      window.location.href = `/api/proofreader/download/${currentJobId}`;
+    });
+
+    // ── Render results ─────────────────────────────────────────────────────
+    function renderResults(result) {
+      if (!result) return;
+
+      document.getElementById('results-title').textContent =
+        `Review complete — ${result.totalIssues} issue${result.totalIssues !== 1 ? 's' : ''} found`;
+      document.getElementById('results-subtitle').textContent =
+        result.criticalCount > 0
+          ? `${result.criticalCount} critical issue${result.criticalCount !== 1 ? 's' : ''} require priority attention`
+          : 'No critical issues found';
+
+      // Category pills
+      const pillsEl = document.getElementById('cat-pills');
+      pillsEl.innerHTML = '';
+      const counts = result.byCategoryCount || {};
+      for (const cat of CATEGORIES) {
+        const n = counts[cat] || 0;
+        if (n === 0) continue;
+        pillsEl.insertAdjacentHTML('beforeend', `
+          <div class="cat-pill">
+            <span class="cat-pill-count">${n}</span>
+            <span class="cat-pill-label">${cat.replace('_', ' ')}</span>
+          </div>
+        `);
+      }
+
+      // Critical banner
+      const criticalBanner = document.getElementById('critical-banner');
+      const criticalList   = document.getElementById('critical-list');
+      criticalList.innerHTML = '';
+      const critIssues = result.criticalIssues || [];
+      if (critIssues.length > 0) {
+        criticalBanner.hidden = false;
+        for (const issue of critIssues) {
+          const div = document.createElement('div');
+          div.className = 'critical-item';
+          div.textContent = `[${issue.category}] ${issue.issue}`;
+          criticalList.appendChild(div);
+        }
+      } else {
+        criticalBanner.hidden = true;
+      }
+
+      // Summary
+      document.getElementById('summary-quote').textContent = result.summary || '';
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    showScreen('upload');
+  </script>
+</body>
+</html>

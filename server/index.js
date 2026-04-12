@@ -18,6 +18,7 @@ const { scenarioRouter } = await import('./routes/scenario.js');
 const { adminRouter } = await import('./routes/admin.js');
 const { podcastReviewRouter } = await import('./routes/podcastReview.js');
 const { podcastConverterRouter } = await import('./routes/podcastConverter.js');
+const { proofreaderRouter } = await import('./routes/proofreader.js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,6 +35,7 @@ app.use('/api/scenario', scenarioRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/podcast-review', podcastReviewRouter);
 app.use('/api/podcast-converter', podcastConverterRouter);
+app.use('/api/proofreader', proofreaderRouter);
 
 // Return JSON for unknown API routes instead of HTML fallback pages.
 app.use('/api', (req, res) => {
@@ -67,6 +69,14 @@ app.get('/podcast-converter', (req, res) => {
 });
 app.get('/podcast-converter/', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'podcast-converter', 'index.html'));
+});
+
+// Module Proofreader subpage
+app.get('/proofreader', (req, res) => {
+  res.redirect('/proofreader/');
+});
+app.get('/proofreader/', (req, res) => {
+  res.sendFile(resolve(projectRoot, 'public', 'proofreader', 'index.html'));
 });
 
 // Landing page fallback

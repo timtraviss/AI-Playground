@@ -195,6 +195,10 @@ git push heroku main
 - [x] LEGISLATION issues always flagged as critical severity
 - [x] Word comments injected into DOCX ZIP via pizzip — opens in Word with comment sidebar
 - [x] SSE progress stream (Uploading → Extracting → Reviewing → Annotating → Done)
+- [x] SSE heartbeat every 30 s during Claude review — prevents connection drops on long documents
+- [x] Live elapsed timer on "Reviewing with AI" step (ticks up in seconds while Claude processes)
+- [x] Legislation verification step — LEGISLATION-category issues checked against legislation.govt.nz; authoritative statutory text appended to Word comment
+- [x] "Verifying legislation" step shown in progress UI only when LEGISLATION issues are found; skipped silently if API key absent
 - [x] Summary panel with issue counts by category and critical issue callouts
 - [x] Download reviewed `.docx` with `_reviewed` suffix
 - [x] Landing page card and nav links added across all subpages

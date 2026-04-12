@@ -475,6 +475,14 @@
           </div>
         </div>
 
+        <div class="step-item" id="step-verifying-legislation" hidden>
+          <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <div class="step-name">Verifying legislation</div>
+            <div class="step-note" id="note-verifying-legislation"></div>
+          </div>
+        </div>
+
         <div class="step-item" id="step-annotating">
           <div class="step-track"><div class="step-dot"></div><div class="step-connector"></div></div>
           <div class="step-body">
@@ -548,6 +556,8 @@
     let referenceFile = null;
     let currentJobId  = null;
     let eventSource   = null;
+    let reviewTimer   = null;
+    let reviewStart   = 0;
 
     const CATEGORIES = ['STRUCTURE','GRAMMAR','LANGUAGE','CONSISTENCY','CONTENT','FORMATTING','LEARNING_OBJ','LEGISLATION'];
 
@@ -614,9 +624,13 @@
     }
 
     function resetSteps() {
-      ['step-uploading','step-extracting','step-reviewing','step-annotating','step-done-item'].forEach(id => {
+      clearInterval(reviewTimer);
+      reviewTimer = null;
+      ['step-uploading','step-extracting','step-reviewing','step-verifying-legislation','step-annotating','step-done-item'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) delete el.dataset.state;
+        if (!el) return;
+        delete el.dataset.state;
+        if (id === 'step-verifying-legislation') el.hidden = true;
         const noteId = 'note-' + id.replace('step-','');
         const noteEl = document.getElementById(noteId);
         if (noteEl) noteEl.textContent = '';
@@ -695,14 +709,32 @@
           break;
         case 'extracting_done':
           setStepState('step-extracting', 'done', data.message || '');
-          setStepState('step-reviewing', 'active', 'Analysing against style, structure, and legislation rules…');
+          setStepState('step-reviewing', 'active', 'Sending document to Claude…');
           break;
         case 'reviewing':
-          setStepState('step-reviewing', 'active', data.message || 'Analysing…');
+          setStepState('step-reviewing', 'active', 'Sending document to Claude…');
+          clearInterval(reviewTimer);
+          reviewStart = Date.now();
+          reviewTimer = setInterval(() => {
+            const s = Math.round((Date.now() - reviewStart) / 1000);
+            document.getElementById('note-reviewing').textContent = `Analysing… ${s}s`;
+          }, 1000);
           break;
         case 'reviewing_done':
-          setStepState('step-reviewing', 'done', data.message || '');
-          setStepState('step-annotating', 'active', 'Adding Word comments…');
+          clearInterval(reviewTimer);
+          reviewTimer = null;
+          setStepState('step-reviewing', 'done', `${data.totalIssues} issue${data.totalIssues !== 1 ? 's' : ''} found`);
+          break;
+        case 'verifying_legislation': {
+          const legStep = document.getElementById('step-verifying-legislation');
+          legStep.hidden = false;
+          setStepState('step-verifying-legislation', 'active', data.message || 'Checking legislation…');
+          break;
+        }
+        case 'verifying_legislation_done':
+          setStepState('step-verifying-legislation', 'done', data.message || '');
+          break;
+        case 'heartbeat':
           break;
         case 'annotating':
           setStepState('step-annotating', 'active', data.message || 'Adding Word comments…');

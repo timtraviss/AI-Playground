@@ -167,7 +167,8 @@ export async function annotateDocx(inputPath, issues, outputPath) {
 
     const severity = issue.severity === 'critical' ? ' ⚠ CRITICAL — ' : ' ';
     const commentText =
-      `[${issue.category}]${severity}${issue.issue} | Suggestion: ${issue.suggestion}`;
+      `[${issue.category}]${severity}${issue.issue} | Suggestion: ${issue.suggestion}` +
+      (issue.legislationNote ? ` | ${issue.legislationNote}` : '');
 
     commentElements.push(buildComment(commentId, commentText));
 

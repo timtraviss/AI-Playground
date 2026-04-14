@@ -146,15 +146,15 @@ export function buildReviewPrompt(transcriptText, formData) {
 Date of Interview: ${formatValue(formData.dateOfInterview)}
 Reason for Interview: ${formatValue(formData.reasonForInterview)}
 File Number: ${formatValue(formData.fileNumber)}
-Length of Interview: ${formatValue(formData.lengthOfInterview)} minutes
+Length of Interview: ${formData.lengthMinutes ? formData.lengthMinutes + ' minutes' : 'Not provided'}
 
 ### Interviewer
 Name: ${formatValue(formData.interviewerName)}
-QID: ${formatValue(formData.interviewerQID)}
+QID: ${formatValue(formData.interviewerQid)}
 Section: ${formatValue(formData.interviewerSection)}
 Supervisor: ${formatValue(formData.interviewerSupervisor)}
-Wellcheck acknowledgement: ${formatValue(formData.wellcheckAcknowledgement)}
-First-time Level 3 accreditation: ${formatValue(formData.firstTimeLevelThree)}
+Wellcheck acknowledgement: ${formatValue(formData.wellcheckAcknowledged)}
+First-time Level 3 accreditation: ${formatValue(formData.firstTimeAccreditation)}
 
 ### Interviewee
 Name: ${formatValue(formData.intervieweeName)}
@@ -194,12 +194,15 @@ export async function reviewInterview(transcriptText, formData, onProgress) {
   let raw = '';
   let connected = false;
 
-  const stream = client.messages.stream({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 8000,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: userContent }],
-  });
+  const stream = client.messages.stream(
+    {
+      model: 'claude-sonnet-4-6',
+      max_tokens: 16000,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userContent }],
+    },
+    { headers: { 'anthropic-beta': 'output-128k-2025-02-19' } },
+  );
 
   stream.on('text', (text) => {
     raw += text;

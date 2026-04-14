@@ -1,6 +1,6 @@
 # Traviss.org — AI Demo Projects
 
-A Node.js/Express web app hosted at [Traviss.org](https://traviss.org) that showcases three tools built for New Zealand policing and law contexts.
+A Node.js/Express web app hosted at [Traviss.org](https://traviss.org) that showcases tools built for New Zealand policing and law contexts.
 
 ## Projects
 
@@ -52,6 +52,19 @@ Upload a NZ Police Detective Development Programme (DDP) learning module (DOCX),
 
 A companion Claude Code skill (`proofreader.skill`) is available for terminal-based review workflows.
 
+### L3 Interview Reviewer (`/l3-reviewer/`)
+
+Upload a Word (.docx) transcript of a NZ Police Level 3 investigative interview. The app:
+
+1. Guides the assessor through a 3-step wizard capturing admin fields (Sections 1–3), planning notes (Section 4), and self-reflection (Section 9) from the paper moderation form
+2. Extracts the transcript via mammoth
+3. Sends it to Claude Sonnet 4.6 with an explicit law enforcement framing prompt — instructing Claude to treat victim/witness accounts as professional law enforcement material and assess only the interviewer's technique
+4. Returns a structured JSON assessment across all four assessed sections (Engage & Explain, Account, Questioning, Closure) plus verdict and narrative
+5. Displays a score-first results screen: verdict banner, section rating bars, strengths/learning points cards, collapsible per-item breakdowns
+6. Generates downloadable Word (.docx) and Markdown reports built server-side before the SSE `done` event fires
+
+All transcript content is processed in memory — nothing is written to disk or logged.
+
 ## Stack
 
 - **Backend:** Node.js, Express
@@ -79,7 +92,11 @@ Backward-compatible aliases still accepted in code: `ANTHROPIC_API_KEY` and `Leg
 npm test
 ```
 
-Tests cover `computeTargetKbps` edge cases and require no external dependencies (ffmpeg not needed).
+Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingLabel`, `buildMarkdownReport`). No external dependencies required (ffmpeg not needed).
+
+## Recent Updates (2026-04-14)
+
+- **New: L3 Interview Reviewer** — full end-to-end feature at `/l3-reviewer/`. Upload a Word transcript, fill in the moderation form context via a 3-step wizard, and receive an AI-powered assessment of the interviewer's PEACE technique across all four moderation sections (Engage & Explain, Account, Questioning, Closure). Results displayed on-screen with verdict banner, section rating bars, and collapsible breakdowns. Downloadable as Word or Markdown.
 
 ## Recent Updates (2026-04-11)
 
@@ -207,6 +224,22 @@ git push heroku main
 - [x] Download reviewed `.docx` with `_reviewed` suffix
 - [x] Landing page card and nav links added across all subpages
 - [ ] Tracked changes (v2) — in addition to comments, insert Word tracked-change insertions/deletions
+
+### L3 Interview Reviewer
+- [x] 3-step wizard capturing admin fields, planning notes, and self-reflection (Sections 1–4, 9)
+- [x] DOCX transcript upload and extraction via mammoth
+- [x] Claude assessment against full Level 3 moderation form (Sections 5–8: Engage & Explain, Account, Questioning, Closure)
+- [x] Law enforcement system prompt framing — prevents content filter refusals on sensitive victim/witness transcripts
+- [x] Structured JSON output: per-item results (Yes/No/N/A, frequency), ratings 1–5, verdict, strengths, learning points, narrative summary
+- [x] Score-first results screen: verdict banner (COMPETENT / NOT YET COMPETENT), section rating bars, strengths/learning cards, collapsible per-section breakdowns
+- [x] Markdown report generation (server-side, downloadable)
+- [x] Word (.docx) report generation via PizZip + raw Open XML (server-side, downloadable)
+- [x] SSE progress stream with heartbeat — Uploading → Extracting → Reviewing → Generating → Done
+- [x] In-memory report storage — no disk writes for sensitive transcript content
+- [x] Landing page card and nav links added across all subpages
+- [x] Unit tests for `ratingLabel` and `buildMarkdownReport` (10 cases)
+- [ ] Section 4 (Planning & Preparation) AI assessment derived from planning notes
+- [ ] Multi-transcript batch assessment
 
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)

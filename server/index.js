@@ -19,6 +19,7 @@ const { adminRouter } = await import('./routes/admin.js');
 const { podcastReviewRouter } = await import('./routes/podcastReview.js');
 const { podcastConverterRouter } = await import('./routes/podcastConverter.js');
 const { proofreaderRouter } = await import('./routes/proofreader.js');
+const { l3ReviewerRouter } = await import('./routes/l3Reviewer.js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,6 +37,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/podcast-review', podcastReviewRouter);
 app.use('/api/podcast-converter', podcastConverterRouter);
 app.use('/api/proofreader', proofreaderRouter);
+app.use('/api/l3-reviewer', l3ReviewerRouter);
 
 // Return JSON for unknown API routes instead of HTML fallback pages.
 app.use('/api', (req, res) => {
@@ -77,6 +79,14 @@ app.get('/proofreader', (req, res) => {
 });
 app.get('/proofreader/', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'proofreader', 'index.html'));
+});
+
+// L3 Interview Reviewer subpage
+app.get('/l3-reviewer', (req, res) => {
+  res.redirect('/l3-reviewer/');
+});
+app.get('/l3-reviewer/', (req, res) => {
+  res.sendFile(resolve(projectRoot, 'public', 'l3-reviewer', 'index.html'));
 });
 
 // Landing page fallback

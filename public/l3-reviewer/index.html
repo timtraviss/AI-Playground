@@ -720,7 +720,7 @@
   </nav>
 
   <!-- ── Step 1: Admin + Transcript Upload ── -->
-  <main class="l3-screen" id="step-admin">
+  <section class="l3-screen" id="step-admin">
     <div class="l3-form-wrap">
       <div style="text-align:center; margin-bottom: 32px;">
         <div class="l3-tag">AI + Interview Assessment</div>
@@ -895,10 +895,10 @@
 
       </form>
     </div>
-  </main>
+  </section>
 
   <!-- ── Step 2: Planning & Preparation ── -->
-  <main class="l3-screen" id="step-planning" hidden>
+  <section class="l3-screen" id="step-planning" hidden>
     <div class="l3-form-wrap">
       <div style="text-align:center; margin-bottom: 32px;">
         <div class="l3-tag">Step 2 of 3</div>
@@ -938,10 +938,10 @@
         <button class="btn-primary" type="button" id="planning-next">Next: Self-Reflection →</button>
       </div>
     </div>
-  </main>
+  </section>
 
   <!-- ── Step 3: Self-Reflection / Evaluation ── -->
-  <main class="l3-screen" id="step-reflection" hidden>
+  <section class="l3-screen" id="step-reflection" hidden>
     <div class="l3-form-wrap">
       <div style="text-align:center; margin-bottom: 32px;">
         <div class="l3-tag">Step 3 of 3</div>
@@ -998,10 +998,10 @@
         <button class="btn-primary" type="button" id="reflection-submit">Submit for Review</button>
       </div>
     </div>
-  </main>
+  </section>
 
   <!-- ── Step 4: Progress ── -->
-  <main class="l3-screen" id="step-progress" hidden>
+  <section class="l3-screen" id="step-progress" hidden>
     <div class="l3-center">
       <div class="l3-tag">Processing</div>
       <h2 class="l3-subtitle">Reviewing Interview</h2>
@@ -1070,10 +1070,10 @@
       </div>
 
     </div>
-  </main>
+  </section>
 
   <!-- ── Step 5: Results ── -->
-  <main class="l3-screen" id="step-results" hidden>
+  <section class="l3-screen" id="step-results" hidden>
     <div class="l3-wide">
 
       <div class="results-header" style="text-align:center;">
@@ -1195,7 +1195,7 @@
       </div>
 
     </div>
-  </main>
+  </section>
 
   <script src="/js/nav.js" defer></script>
   <script>
@@ -1424,9 +1424,10 @@
       });
 
       currentEventSource.addEventListener('error', () => {
+        if (!currentEventSource) return;
         currentEventSource.close();
         currentEventSource = null;
-        showProgressError('Connection lost. Please try again.');
+        showProgressError('Connection lost. Please refresh and try again.');
       });
     }
 
@@ -1450,6 +1451,10 @@
               : `${elapsed}s`;
             document.getElementById('sn-reviewing').textContent = `Reviewing… ${label}`;
           }, 1000);
+          break;
+
+        case 'reviewing':
+          setStepState('ps-reviewing', 'active', data.message);
           break;
 
         case 'reviewing_connected':
@@ -1511,38 +1516,41 @@
     function renderResults(result, jobId) {
       if (!result) return;
 
-      // Verdict banner
+      // Verdict banner — server sends 'COMPETENT' or 'NOT COMPETENT' (uppercase)
+      const isCompetent = result.verdict === 'COMPETENT';
       const banner = document.getElementById('verdict-banner');
-      const isCompetent = String(result.verdict).toLowerCase() !== 'not competent';
       banner.className = 'verdict-banner ' + (isCompetent ? 'competent' : 'not-competent');
       const verdictEl = document.getElementById('verdict-text');
       verdictEl.textContent = result.verdict || '';
       verdictEl.className = 'verdict-text ' + (isCompetent ? 'green' : 'red');
-      document.getElementById('verdict-summary').textContent = result.summary || '';
+      document.getElementById('verdict-summary').textContent = result.narrativeSummary || '';
 
-      // Rating bars
-      function setBar(barId, scoreId, rating) {
-        const pct = rating ? (rating / 5 * 100) + '%' : '0%';
+      // Rating bars — server sends result.section5, result.section6, result.section7
+      function setBar(barId, scoreId, section) {
+        const rating = section && section.rating;
+        const label  = section && section.ratingLabel;
+        const pct    = rating ? (rating / 5 * 100) + '%' : '0%';
         document.getElementById(barId).style.width = pct;
         document.getElementById(scoreId).textContent = rating
-          ? `${rating}/5 — ${ratingLabel(rating)}`
+          ? `${rating}/5 — ${label || ratingLabel(rating)}`
           : '—';
       }
-      setBar('bar-s5', 'score-s5', result.ratings && result.ratings.s5);
-      setBar('bar-s6', 'score-s6', result.ratings && result.ratings.s6);
-      setBar('bar-s7', 'score-s7', result.ratings && result.ratings.s7);
+      setBar('bar-s5', 'score-s5', result.section5);
+      setBar('bar-s6', 'score-s6', result.section6);
+      setBar('bar-s7', 'score-s7', result.section7);
 
       // Section badges
-      if (result.ratings) {
-        ['s5','s6','s7'].forEach(s => {
-          const badge = document.getElementById('badge-' + s);
-          if (badge) badge.textContent = result.ratings[s] ? `${result.ratings[s]}/5` : '';
-        });
-      }
-      if (result.ratings && result.ratings.s8 !== undefined) {
-        const b = document.getElementById('badge-s8');
-        if (b) b.textContent = result.ratings.s8 ? `${result.ratings.s8}/5` : '';
-      }
+      const s5r = result.section5 && result.section5.rating;
+      const s6r = result.section6 && result.section6.rating;
+      const s7r = result.section7 && result.section7.rating;
+      const badgeS5 = document.getElementById('badge-s5');
+      if (badgeS5) badgeS5.textContent = s5r ? `${s5r}/5 — ${result.section5.ratingLabel || ratingLabel(s5r)}` : '';
+      const badgeS6 = document.getElementById('badge-s6');
+      if (badgeS6) badgeS6.textContent = s6r ? `${s6r}/5 — ${result.section6.ratingLabel || ratingLabel(s6r)}` : '';
+      const badgeS7 = document.getElementById('badge-s7');
+      if (badgeS7) badgeS7.textContent = s7r ? `${s7r}/5 — ${result.section7.ratingLabel || ratingLabel(s7r)}` : '';
+      const badgeS8 = document.getElementById('badge-s8');
+      if (badgeS8) badgeS8.textContent = '';   // Section 8 has no rating
 
       // Strengths and learning lists
       function buildList(ulId, items) {
@@ -1558,46 +1566,29 @@
       buildList('strengths-list', result.strengths);
       buildList('learning-list', result.learningPoints);
 
-      // Checklist tables (S5, S6, S8 — Assessment column)
-      function buildChecklistTable(tableId, items) {
-        const tbody = document.querySelector(`#${tableId} tbody`);
+      // Checklist tables — valueKey is the property to display in the middle column
+      function buildChecklistTable(tableId, items, valueKey) {
+        const tbody = document.querySelector('#' + tableId + ' tbody');
         if (!tbody) return;
         tbody.innerHTML = '';
         (items || []).forEach(row => {
+          const val = row[valueKey] || '';
           const tr = document.createElement('tr');
-          const cls = resultClass(row.result || row.assessment || '');
+          const cls = resultClass(val);
           tr.innerHTML = `
             <td>${escHtml(row.item || '')}</td>
-            <td class="${cls}">${escHtml(row.result || row.assessment || '')}</td>
+            <td><span class="${cls}">${escHtml(val)}</span></td>
             <td>${escHtml(row.comment || '')}</td>
           `;
           tbody.appendChild(tr);
         });
       }
 
-      // S7 — Frequency column
-      function buildFrequencyTable(tableId, items) {
-        const tbody = document.querySelector(`#${tableId} tbody`);
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        (items || []).forEach(row => {
-          const tr = document.createElement('tr');
-          const cls = resultClass(row.frequency || '');
-          tr.innerHTML = `
-            <td>${escHtml(row.item || '')}</td>
-            <td class="${cls}">${escHtml(row.frequency || '')}</td>
-            <td>${escHtml(row.comment || '')}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      if (result.sections) {
-        buildChecklistTable('table-s5', result.sections.s5);
-        buildChecklistTable('table-s6', result.sections.s6);
-        buildFrequencyTable('table-s7', result.sections.s7);
-        buildChecklistTable('table-s8', result.sections.s8);
-      }
+      // S5, S6, S8 use item.result; S7 uses item.frequency
+      buildChecklistTable('table-s5', result.section5 && result.section5.checklist, 'result');
+      buildChecklistTable('table-s6', result.section6 && result.section6.checklist, 'result');
+      buildChecklistTable('table-s7', result.section7 && result.section7.items,    'frequency');
+      buildChecklistTable('table-s8', result.section8 && result.section8.checklist, 'result');
 
       // Download buttons
       document.getElementById('dl-docx').onclick = () => {

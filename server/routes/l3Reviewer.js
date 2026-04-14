@@ -214,6 +214,9 @@ async function runPipeline(jobId, transcriptFile, formData) {
           pushEvent(jobId, { step: 'reviewing_connected', message: 'Claude is generating the assessment…' });
         }
       });
+    } catch (err) {
+      console.error('[l3Reviewer] Claude API error:', err);
+      throw err;
     } finally {
       clearInterval(heartbeat);
     }
@@ -226,8 +229,11 @@ async function runPipeline(jobId, transcriptFile, formData) {
     // ── Step 3: Generate reports ──────────────────────────────────────────
     pushEvent(jobId, { step: 'generating', message: 'Generating Word and Markdown reports…' });
 
-    job.mdReport   = buildMarkdownReport(formData, review);
-    job.docxBuffer = buildDocxBuffer(formData, review);
+    const j = jobs.get(jobId);
+    if (j) {
+      j.mdReport   = buildMarkdownReport(formData, review);
+      j.docxBuffer = buildDocxBuffer(formData, review);
+    }
 
     pushEvent(jobId, { step: 'generating_done', message: 'Reports ready' });
 

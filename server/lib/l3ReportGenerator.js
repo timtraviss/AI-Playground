@@ -235,7 +235,7 @@ export function buildMarkdownReport(formData, review) {
   lines.push('');
   lines.push(`**What Went Well:** ${val(f.whatWentWell)}`);
   lines.push('');
-  lines.push(`**Learning Points:** ${val(f.learningPoints)}`);
+  lines.push(`**Learning Points Identified by Interviewer:** ${val(f.learningPoints)}`);
   lines.push('');
   lines.push(`**Assessor Positive Feedback:** ${val(f.assessorPositiveFeedback)}`);
   lines.push('');
@@ -329,7 +329,7 @@ function checklistRow(item) {
 function table(...rows) {
   return (
     `<w:tbl>` +
-    `<w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="0" w:type="auto"/></w:tblPr>` +
+    `<w:tblPr><w:tblW w:w="0" w:type="auto"/></w:tblPr>` +
     rows.join('') +
     `</w:tbl>`
   );
@@ -467,7 +467,7 @@ export function buildDocxBuffer(formData, review) {
   bodyParts.push(para('Section 9 — Evaluation', { bold: true, size: '28' }));
   bodyParts.push(para(`Enquiries Identified: ${val(f.enquiriesIdentified)}`));
   bodyParts.push(para(`What Went Well: ${val(f.whatWentWell)}`));
-  bodyParts.push(para(`Learning Points: ${val(f.learningPoints)}`));
+  bodyParts.push(para(`Learning Points Identified by Interviewer: ${val(f.learningPoints)}`));
   bodyParts.push(para(`Assessor Positive Feedback: ${val(f.assessorPositiveFeedback)}`));
   bodyParts.push(para(`Assessor Learning Points: ${val(f.assessorLearningPoints)}`));
   if (f.learningDevelopmentPlan) {

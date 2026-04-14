@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L3 Interview Reviewer — Traviss.org</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/nav.css" />
+  <style>
+    /* ── Base ── */
+    html, body {
+      background: #0d1117;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── Screens ── */
+    .l3-screen[hidden] { display: none !important; }
+    .l3-screen {
+      min-height: calc(100vh - 52px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px 24px 80px;
+    }
+
+    /* ── Layout containers ── */
+    .l3-center {
+      max-width: 600px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .l3-wide {
+      max-width: 760px;
+      width: 100%;
+    }
+    .l3-form-wrap {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    /* ── Typography ── */
+    .l3-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #e8c96a;
+      background: rgba(232,201,106,0.1);
+      border: 1px solid rgba(232,201,106,0.2);
+      padding: 4px 10px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+      display: inline-block;
+    }
+    .l3-title {
+      font-family: 'Fugaz One', cursive;
+      font-size: clamp(32px, 8vw, 52px);
+      font-weight: 400;
+      color: #e8c96a;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      margin: 0 0 16px;
+    }
+    .l3-subtitle {
+      font-family: 'Fugaz One', cursive;
+      font-size: 26px;
+      font-weight: 400;
+      color: #e2e8f0;
+      margin: 0 0 8px;
+      letter-spacing: 0.02em;
+    }
+    .l3-desc {
+      font-size: 15px;
+      color: #94a3b8;
+      line-height: 1.7;
+      margin: 0 0 28px;
+      max-width: 520px;
+    }
+
+    /* ── Privacy disclaimer ── */
+    .privacy-box {
+      background: rgba(232,201,106,0.05);
+      border: 1px solid rgba(232,201,106,0.15);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.6;
+      text-align: left;
+      width: 100%;
+      margin-bottom: 28px;
+      box-sizing: border-box;
+    }
+    .privacy-box strong {
+      color: #e8c96a;
+    }
+
+    /* ── Step indicator (pips) ── */
+    .pip-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .pip {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 2px solid #334155;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .pip.active {
+      background: #e8c96a;
+      border-color: #e8c96a;
+    }
+    .pip.done {
+      background: #334155;
+      border-color: #475569;
+    }
+    .pip-connector {
+      width: 24px;
+      height: 2px;
+      background: #1e293b;
+    }
+
+    /* ── Form sections ── */
+    .form-section {
+      background: #161b22;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-bottom: 16px;
+      text-align: left;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin: 0 0 16px;
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+    .form-input,
+    .form-select,
+    .form-textarea {
+      background: #0d1117;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 9px 12px;
+      transition: border-color 0.2s;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: rgba(232,201,106,0.5);
+    }
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* ── Toggle buttons (Yes/No) ── */
+    .toggle-group {
+      display: flex;
+      gap: 8px;
+    }
+    .toggle-btn {
+      padding: 7px 18px;
+      border-radius: 7px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: #0d1117;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .toggle-btn:hover {
+      border-color: rgba(232,201,106,0.3);
+      color: #94a3b8;
+    }
+    .toggle-btn.selected {
+      border-color: #e8c96a;
+      background: rgba(232,201,106,0.1);
+      color: #e8c96a;
+    }
+
+    /* ── Multi-select chips ── */
+    .multi-select {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      padding: 5px 14px;
+      border-radius: 100px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: #0d1117;
+      color: #64748b;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .chip:hover {
+      border-color: rgba(232,201,106,0.3);
+      color: #94a3b8;
+    }
+    .chip.selected {
+      border-color: #e8c96a;
+      background: rgba(232,201,106,0.1);
+      color: #e8c96a;
+    }
+
+    /* ── File upload field ── */
+    .file-field {
+      background: #0d1117;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .file-field:hover { border-color: rgba(232,201,106,0.4); }
+    .file-field.has-file { border-color: rgba(232,201,106,0.5); }
+    .file-field-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .file-field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .file-field-name {
+      font-size: 14px;
+      color: #64748b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-field-name.selected { color: #e8c96a; }
+    .file-field-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e2e8f0;
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .file-field-btn:hover { background: rgba(255,255,255,0.1); }
+
+    /* ── Error panel ── */
+    .l3-error {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 10px;
+      padding: 14px 18px;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+    .l3-error-msg {
+      font-size: 14px;
+      color: #fca5a5;
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      background: #e8c96a;
+      color: #0d1117;
+      border: none;
+      padding: 14px 36px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary:not(:disabled):hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.06);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .nav-row .btn-primary {
+      flex: 1;
+    }
+    .nav-row .btn-ghost {
+      white-space: nowrap;
+    }
+
+    /* ── Progress screen step list ── */
+    .step-list {
+      width: 100%;
+      max-width: 480px;
+      text-align: left;
+      margin-bottom: 28px;
+    }
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-track {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 3px;
+    }
+    .step-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #334155;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      color: #475569;
+      transition: all 0.2s;
+    }
+    .step-connector {
+      width: 2px;
+      background: #1e293b;
+      flex: 1;
+      min-height: 24px;
+      margin: 4px 0;
+    }
+    .step-body {
+      flex: 1;
+      padding-bottom: 20px;
+    }
+    .step-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #475569;
+      transition: color 0.2s;
+    }
+    .step-note {
+      font-size: 12px;
+      color: #334155;
+      margin-top: 2px;
+      min-height: 16px;
+    }
+
+    /* Step icon states */
+    .step-item[data-state="active"] .step-icon {
+      border-color: #e8c96a;
+      background: rgba(232,201,106,0.1);
+      color: #e8c96a;
+    }
+    .step-item[data-state="active"] .step-name { color: #e8c96a; }
+    .step-item[data-state="active"] .step-note { color: #94a3b8; }
+    .step-item[data-state="done"] .step-icon {
+      border-color: #22c55e;
+      background: #22c55e;
+      color: #0d1117;
+    }
+    .step-item[data-state="done"] .step-name { color: #e2e8f0; }
+    .step-item[data-state="done"] .step-note { color: #64748b; }
+    .step-item[data-state="done"] .step-connector { background: #22c55e; }
+    .step-item[data-state="error"] .step-icon {
+      border-color: #ef4444;
+      background: #ef4444;
+      color: white;
+    }
+    .step-item[data-state="error"] .step-name { color: #ef4444; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    .spinner {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+
+    /* ── Results screen ── */
+    .verdict-banner {
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .verdict-banner.competent {
+      background: rgba(34,197,94,0.07);
+      border: 1.5px solid rgba(34,197,94,0.3);
+    }
+    .verdict-banner.not-competent {
+      background: rgba(239,68,68,0.07);
+      border: 1.5px solid rgba(239,68,68,0.3);
+    }
+    .verdict-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .verdict-text {
+      font-family: 'Fugaz One', cursive;
+      font-size: 36px;
+      margin: 0 0 12px;
+    }
+    .verdict-text.green { color: #22c55e; }
+    .verdict-text.red   { color: #ef4444; }
+    .verdict-summary {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.7;
+    }
+
+    /* ── Rating bars ── */
+    .ratings-block {
+      background: #161b22;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-bottom: 20px;
+    }
+    .ratings-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin: 0 0 16px;
+    }
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .rating-row:last-child { margin-bottom: 0; }
+    .rating-name {
+      font-size: 13px;
+      color: #94a3b8;
+      width: 160px;
+      flex-shrink: 0;
+    }
+    .rating-bar-wrap {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .rating-bar-fill {
+      height: 100%;
+      background: #e8c96a;
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.6s ease;
+    }
+    .rating-score {
+      font-size: 13px;
+      color: #64748b;
+      width: 100px;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    /* ── Strengths / Learning cards ── */
+    .cards-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 600px) {
+      .cards-row { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .card-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin: 0 0 12px;
+    }
+    .card ul {
+      margin: 0;
+      padding: 0 0 0 18px;
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .card li { margin-bottom: 6px; }
+
+    /* ── Download row ── */
+    .download-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .btn-download {
+      background: #e8c96a;
+      color: #0d1117;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-download:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-download-ghost {
+      background: rgba(255,255,255,0.06);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-download-ghost:hover { background: rgba(255,255,255,0.1); }
+
+    /* ── Collapsible section details ── */
+    .section-detail {
+      background: #161b22;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .section-detail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .section-detail-header:hover { background: rgba(255,255,255,0.02); border-radius: 12px; }
+    .section-detail-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-detail-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+    .section-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 100px;
+      background: rgba(232,201,106,0.1);
+      border: 1px solid rgba(232,201,106,0.2);
+      color: #e8c96a;
+    }
+    .section-chevron {
+      color: #475569;
+      font-size: 16px;
+      transition: transform 0.2s;
+    }
+    .section-detail.open .section-chevron { transform: rotate(180deg); }
+    .section-detail-body {
+      display: none;
+      padding: 0 20px 18px;
+    }
+    .section-detail.open .section-detail-body { display: block; }
+
+    /* ── Checklist table ── */
+    .checklist-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .checklist-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #475569;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 6px 10px 10px;
+    }
+    .checklist-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: #94a3b8;
+      vertical-align: top;
+    }
+    .checklist-table tr:last-child td { border-bottom: none; }
+    .result-yes    { color: #22c55e; font-weight: 500; }
+    .result-no     { color: #ef4444; font-weight: 500; }
+    .result-na     { color: #475569; }
+    .result-often  { color: #22c55e; font-weight: 500; }
+    .result-sometimes { color: #f59e0b; font-weight: 500; }
+    .result-hardly { color: #f97316; font-weight: 500; }
+    .result-never  { color: #ef4444; font-weight: 500; }
+
+    /* ── Misc ── */
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin: 6px 0 18px;
+    }
+    .results-header {
+      margin-bottom: 24px;
+    }
+    .btn-new-review {
+      background: rgba(255,255,255,0.06);
+      color: #94a3b8;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 8px;
+    }
+    .btn-new-review:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+  </style>
+</head>
+<body>
+
+  <!-- Shared nav -->
+  <nav class="site-nav" id="site-nav">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-drawer" id="nav-drawer">
+      <div class="nav-logo"><a href="/">Traviss.org</a></div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+        <li><a href="/podcast-reviewer/">Podcast Reviewer</a></li>
+        <li><a href="/podcast-converter/">Podcast Converter</a></li>
+        <li><a href="/proofreader/">Module Proofreader</a></li>
+        <li><a href="/l3-reviewer/" class="active">L3 Interview Reviewer</a></li>
+      </ul>
+    </div>
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </nav>
+
+  <!-- ── Step 1: Admin + Transcript Upload ── -->
+  <main class="l3-screen" id="step-admin">
+    <div class="l3-form-wrap">
+      <div style="text-align:center; margin-bottom: 32px;">
+        <div class="l3-tag">AI + Interview Assessment</div>
+        <h1 class="l3-title">L3 Interview<br>Reviewer</h1>
+        <p class="l3-desc">Upload a Level 3 interview transcript and complete the assessment details to receive an AI-assisted evaluation aligned to the PEACE framework.</p>
+        <div class="privacy-box">
+          <strong>Privacy Notice:</strong> Transcripts may contain sensitive victim/witness accounts. Uploaded content is processed in memory only and is not stored.
+        </div>
+        <div class="pip-row" style="justify-content:center;">
+          <div class="pip active" id="pip1-1"></div>
+          <div class="pip-connector"></div>
+          <div class="pip" id="pip1-2"></div>
+          <div class="pip-connector"></div>
+          <div class="pip" id="pip1-3"></div>
+        </div>
+      </div>
+
+      <form id="admin-form" novalidate>
+
+        <!-- Interview Details -->
+        <div class="form-section">
+          <div class="form-section-title">Interview Details</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="dateOfInterview">Date of Interview</label>
+              <input class="form-input" type="date" name="dateOfInterview" id="dateOfInterview" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fileNumber">File Number</label>
+              <input class="form-input" type="text" name="fileNumber" id="fileNumber" placeholder="e.g. 123456" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reasonForInterview">Reason for Interview</label>
+              <input class="form-input" type="text" name="reasonForInterview" id="reasonForInterview" placeholder="e.g. Witness — burglary" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lengthMinutes">Length of Interview (minutes)</label>
+              <input class="form-input" type="number" name="lengthMinutes" id="lengthMinutes" min="1" placeholder="e.g. 45" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 1 — Interviewer -->
+        <div class="form-section">
+          <div class="form-section-title">Section 1 — Interviewer</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="interviewerName">Name</label>
+              <input class="form-input" type="text" name="interviewerName" id="interviewerName" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="interviewerQid">QID</label>
+              <input class="form-input" type="text" name="interviewerQid" id="interviewerQid" placeholder="e.g. Q12345" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="interviewerSection">Section</label>
+              <input class="form-input" type="text" name="interviewerSection" id="interviewerSection" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="interviewerSupervisor">Supervisor</label>
+              <input class="form-input" type="text" name="interviewerSupervisor" id="interviewerSupervisor" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Wellcheck Support Policy acknowledged?</label>
+              <div class="toggle-group" data-name="wellcheckAcknowledged">
+                <button type="button" class="toggle-btn" data-value="Yes">Yes</button>
+                <button type="button" class="toggle-btn" data-value="No">No</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">First-time Level 3 accreditation?</label>
+              <div class="toggle-group" data-name="firstTimeAccreditation">
+                <button type="button" class="toggle-btn" data-value="Yes">Yes</button>
+                <button type="button" class="toggle-btn" data-value="No">No</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2 — Assessor -->
+        <div class="form-section">
+          <div class="form-section-title">Section 2 — Assessor</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="assessorName">Name</label>
+              <input class="form-input" type="text" name="assessorName" id="assessorName" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="assessorQid">QID</label>
+              <input class="form-input" type="text" name="assessorQid" id="assessorQid" placeholder="e.g. Q12345" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dateEvaluated">Date interview evaluated</label>
+              <input class="form-input" type="date" name="dateEvaluated" id="dateEvaluated" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dateFeedbackGiven">Date feedback given</label>
+              <input class="form-input" type="date" name="dateFeedbackGiven" id="dateFeedbackGiven" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3 — Interviewee -->
+        <div class="form-section">
+          <div class="form-section-title">Section 3 — Interviewee</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="intervieweeName">Name</label>
+              <input class="form-input" type="text" name="intervieweeName" id="intervieweeName" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="intervieweeGender">Gender</label>
+              <select class="form-select" name="intervieweeGender" id="intervieweeGender">
+                <option value="">Select…</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Special considerations</label>
+              <div class="multi-select" data-name="specialConsiderations">
+                <span class="chip" data-value="None">None</span>
+                <span class="chip" data-value="Language">Language</span>
+                <span class="chip" data-value="Hearing">Hearing</span>
+                <span class="chip" data-value="Intellectual">Intellectual</span>
+                <span class="chip" data-value="Mental disorder">Mental disorder</span>
+                <span class="chip" data-value="Youth">Youth</span>
+                <span class="chip" data-value="Other">Other</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Other persons present</label>
+              <div class="multi-select" data-name="otherPersonsPresent">
+                <span class="chip" data-value="None">None</span>
+                <span class="chip" data-value="Support person">Support person</span>
+                <span class="chip" data-value="Interpreter">Interpreter</span>
+                <span class="chip" data-value="Other">Other</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Supporting documents</label>
+              <div class="multi-select" data-name="supportingDocuments">
+                <span class="chip" data-value="Diagrams/sketches">Diagrams/sketches</span>
+                <span class="chip" data-value="Notes (interviewer)">Notes (interviewer)</span>
+                <span class="chip" data-value="Transcript (only if completed)">Transcript (only if completed)</span>
+                <span class="chip" data-value="Other">Other</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transcript Upload -->
+        <div class="form-section">
+          <div class="form-section-title">Transcript Upload</div>
+          <div class="file-field" id="transcript-field" onclick="document.getElementById('transcript-input').click()">
+            <div class="file-field-label">Interview Transcript (.docx) — required</div>
+            <div class="file-field-row">
+              <span class="file-field-name" id="transcript-name">No file selected</span>
+              <button class="file-field-btn" type="button" onclick="event.stopPropagation(); document.getElementById('transcript-input').click()">Browse</button>
+            </div>
+            <input type="file" name="transcript" id="transcript-input" accept=".docx" hidden required />
+          </div>
+        </div>
+
+        <!-- Error panel -->
+        <div class="l3-error" id="admin-error" hidden>
+          <div class="l3-error-msg" id="admin-error-msg"></div>
+        </div>
+
+        <!-- Submit -->
+        <button class="btn-primary" type="submit" style="width:100%; margin-top:8px;">Next: Planning →</button>
+
+      </form>
+    </div>
+  </main>
+
+  <!-- ── Step 2: Planning & Preparation ── -->
+  <main class="l3-screen" id="step-planning" hidden>
+    <div class="l3-form-wrap">
+      <div style="text-align:center; margin-bottom: 32px;">
+        <div class="l3-tag">Step 2 of 3</div>
+        <h2 class="l3-title" style="font-size: clamp(26px, 6vw, 38px);">Planning &amp; Preparation</h2>
+        <div class="pip-row" style="justify-content:center;">
+          <div class="pip done"></div>
+          <div class="pip-connector"></div>
+          <div class="pip active"></div>
+          <div class="pip-connector"></div>
+          <div class="pip"></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Planning Notes</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="planningNotes">Planning notes</label>
+            <textarea class="form-textarea" name="planningNotes" id="planningNotes" rows="5" placeholder="Enter any planning notes prepared before the interview…"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Detailed knowledge of investigation?</label>
+            <div class="toggle-group" data-name="detailedKnowledge">
+              <button type="button" class="toggle-btn" data-value="Yes">Yes</button>
+              <button type="button" class="toggle-btn" data-value="No">No</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="planningComments">Comments</label>
+            <textarea class="form-textarea" name="planningComments" id="planningComments" rows="3" placeholder="Additional comments on planning…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-ghost" type="button" id="planning-back">← Admin</button>
+        <button class="btn-primary" type="button" id="planning-next">Next: Self-Reflection →</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Step 3: Self-Reflection / Evaluation ── -->
+  <main class="l3-screen" id="step-reflection" hidden>
+    <div class="l3-form-wrap">
+      <div style="text-align:center; margin-bottom: 32px;">
+        <div class="l3-tag">Step 3 of 3</div>
+        <h2 class="l3-title" style="font-size: clamp(26px, 6vw, 38px);">Evaluation</h2>
+        <div class="pip-row" style="justify-content:center;">
+          <div class="pip done"></div>
+          <div class="pip-connector"></div>
+          <div class="pip done"></div>
+          <div class="pip-connector"></div>
+          <div class="pip active"></div>
+        </div>
+      </div>
+
+      <!-- Interviewer self-reflection -->
+      <div class="form-section">
+        <div class="form-section-title">Interviewer Self-Reflection</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="enquiriesIdentified">What enquiries did you identify?</label>
+            <textarea class="form-textarea" name="enquiriesIdentified" id="enquiriesIdentified" rows="4" placeholder="Describe the enquiries you identified during the interview…"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="whatWentWell">What did you do well?</label>
+            <textarea class="form-textarea" name="whatWentWell" id="whatWentWell" rows="4" placeholder="Describe what you feel you did well…"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="learningPoints">What learning points did you identify?</label>
+            <textarea class="form-textarea" name="learningPoints" id="learningPoints" rows="4" placeholder="Describe any learning points from this interview…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assessor evaluation -->
+      <div class="form-section">
+        <div class="form-section-title">Assessor Evaluation</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="assessorPositiveFeedback">Positive feedback</label>
+            <textarea class="form-textarea" name="assessorPositiveFeedback" id="assessorPositiveFeedback" rows="4" placeholder="Provide positive feedback on the interview performance…"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="assessorLearningPoints">Learning points</label>
+            <textarea class="form-textarea" name="assessorLearningPoints" id="assessorLearningPoints" rows="4" placeholder="Provide learning points for the interviewer…"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="learningDevelopmentPlan">Suggested Learning Development Plan <span style="color:#475569; font-weight:400;">(optional)</span></label>
+            <textarea class="form-textarea" name="learningDevelopmentPlan" id="learningDevelopmentPlan" rows="4" placeholder="Suggest a learning development plan if appropriate…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-ghost" type="button" id="reflection-back">← Planning</button>
+        <button class="btn-primary" type="button" id="reflection-submit">Submit for Review</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Step 4: Progress ── -->
+  <main class="l3-screen" id="step-progress" hidden>
+    <div class="l3-center">
+      <div class="l3-tag">Processing</div>
+      <h2 class="l3-subtitle">Reviewing Interview</h2>
+      <p class="l3-desc" style="margin-bottom: 36px;">Please wait — this takes 30–60 seconds.</p>
+
+      <div class="step-list">
+
+        <div class="step-item" id="ps-uploading">
+          <div class="step-track">
+            <div class="step-icon" id="si-uploading">↑</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-name">Uploading</div>
+            <div class="step-note" id="sn-uploading"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="ps-extracting">
+          <div class="step-track">
+            <div class="step-icon" id="si-extracting">≡</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-name">Extracting transcript</div>
+            <div class="step-note" id="sn-extracting"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="ps-reviewing">
+          <div class="step-track">
+            <div class="step-icon" id="si-reviewing">✦</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-name">Reviewing with AI</div>
+            <div class="step-note" id="sn-reviewing"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="ps-generating">
+          <div class="step-track">
+            <div class="step-icon" id="si-generating">⊞</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-name">Generating reports</div>
+            <div class="step-note" id="sn-generating"></div>
+          </div>
+        </div>
+
+        <div class="step-item" id="ps-done">
+          <div class="step-track">
+            <div class="step-icon" id="si-done">★</div>
+          </div>
+          <div class="step-body">
+            <div class="step-name">Done</div>
+            <div class="step-note" id="sn-done"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="l3-error" id="progress-error" hidden>
+        <p id="progress-error-msg" style="margin:0; font-size:14px; color:#fca5a5;"></p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── Step 5: Results ── -->
+  <main class="l3-screen" id="step-results" hidden>
+    <div class="l3-wide">
+
+      <div class="results-header" style="text-align:center;">
+        <div class="l3-tag">Assessment Complete</div>
+      </div>
+
+      <!-- Verdict banner -->
+      <div class="verdict-banner" id="verdict-banner">
+        <div class="verdict-label">Overall Outcome</div>
+        <div class="verdict-text" id="verdict-text"></div>
+        <div class="verdict-summary" id="verdict-summary"></div>
+      </div>
+
+      <!-- Rating bars -->
+      <div class="ratings-block">
+        <div class="ratings-title">Section Ratings</div>
+        <div class="rating-row">
+          <div class="rating-name">Engage &amp; Explain</div>
+          <div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-s5"></div></div>
+          <div class="rating-score" id="score-s5">—</div>
+        </div>
+        <div class="rating-row">
+          <div class="rating-name">Account</div>
+          <div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-s6"></div></div>
+          <div class="rating-score" id="score-s6">—</div>
+        </div>
+        <div class="rating-row">
+          <div class="rating-name">Questioning</div>
+          <div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-s7"></div></div>
+          <div class="rating-score" id="score-s7">—</div>
+        </div>
+      </div>
+
+      <!-- Strengths / Learning points -->
+      <div class="cards-row">
+        <div class="card">
+          <div class="card-title">Strengths</div>
+          <ul id="strengths-list"></ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Learning Points</div>
+          <ul id="learning-list"></ul>
+        </div>
+      </div>
+
+      <!-- Download row -->
+      <div class="download-row">
+        <button class="btn-download" id="dl-docx" type="button">⬇ Download Word (.docx)</button>
+        <button class="btn-download-ghost" id="dl-md" type="button">⬇ Download Markdown</button>
+      </div>
+
+      <!-- Collapsible section details -->
+      <div class="section-detail" id="detail-s5">
+        <div class="section-detail-header" onclick="toggleDetail('detail-s5')">
+          <div class="section-detail-title-row">
+            <span class="section-detail-title">Engage &amp; Explain</span>
+            <span class="section-badge" id="badge-s5"></span>
+          </div>
+          <span class="section-chevron">▾</span>
+        </div>
+        <div class="section-detail-body">
+          <table class="checklist-table" id="table-s5">
+            <thead><tr><th>Item</th><th>Assessment</th><th>Comment</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-detail" id="detail-s6">
+        <div class="section-detail-header" onclick="toggleDetail('detail-s6')">
+          <div class="section-detail-title-row">
+            <span class="section-detail-title">Account</span>
+            <span class="section-badge" id="badge-s6"></span>
+          </div>
+          <span class="section-chevron">▾</span>
+        </div>
+        <div class="section-detail-body">
+          <table class="checklist-table" id="table-s6">
+            <thead><tr><th>Item</th><th>Assessment</th><th>Comment</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-detail" id="detail-s7">
+        <div class="section-detail-header" onclick="toggleDetail('detail-s7')">
+          <div class="section-detail-title-row">
+            <span class="section-detail-title">Questioning</span>
+            <span class="section-badge" id="badge-s7"></span>
+          </div>
+          <span class="section-chevron">▾</span>
+        </div>
+        <div class="section-detail-body">
+          <table class="checklist-table" id="table-s7">
+            <thead><tr><th>Item</th><th>Frequency</th><th>Comment</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-detail" id="detail-s8">
+        <div class="section-detail-header" onclick="toggleDetail('detail-s8')">
+          <div class="section-detail-title-row">
+            <span class="section-detail-title">Closure</span>
+            <span class="section-badge" id="badge-s8"></span>
+          </div>
+          <span class="section-chevron">▾</span>
+        </div>
+        <div class="section-detail-body">
+          <table class="checklist-table" id="table-s8">
+            <thead><tr><th>Item</th><th>Assessment</th><th>Comment</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top: 24px;">
+        <button class="btn-new-review" onclick="location.reload()">Start a new review</button>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/js/nav.js" defer></script>
+  <script>
+    // ── State ──────────────────────────────────────────────────────────────
+    let formState = {};
+    let reviewingTimer = null;
+    let reviewingStart = 0;
+    let currentEventSource = null;
+
+    // ── Screen helpers ─────────────────────────────────────────────────────
+    function showScreen(id) {
+      ['step-admin','step-planning','step-reflection','step-progress','step-results'].forEach(sid => {
+        const el = document.getElementById(sid);
+        if (el) el.hidden = (sid !== id);
+      });
+      window.scrollTo(0, 0);
+    }
+
+    // ── Toggle buttons ─────────────────────────────────────────────────────
+    document.querySelectorAll('.toggle-group').forEach(group => {
+      group.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        });
+      });
+    });
+
+    // ── Multi-select chips ─────────────────────────────────────────────────
+    document.querySelectorAll('.multi-select .chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('selected');
+      });
+    });
+
+    // ── Transcript file input ──────────────────────────────────────────────
+    const transcriptInput = document.getElementById('transcript-input');
+    const transcriptName  = document.getElementById('transcript-name');
+    const transcriptField = document.getElementById('transcript-field');
+
+    transcriptInput.addEventListener('change', () => {
+      const file = transcriptInput.files[0] || null;
+      if (file) {
+        transcriptName.textContent = file.name;
+        transcriptName.classList.add('selected');
+        transcriptField.classList.add('has-file');
+      } else {
+        transcriptName.textContent = 'No file selected';
+        transcriptName.classList.remove('selected');
+        transcriptField.classList.remove('has-file');
+      }
+    });
+
+    // ── collectInputs ──────────────────────────────────────────────────────
+    function collectInputs(container) {
+      const data = {};
+
+      // Regular inputs (skip file inputs)
+      container.querySelectorAll('input[name], select[name], textarea[name]').forEach(el => {
+        if (el.type === 'file') return;
+        data[el.name] = el.value;
+      });
+
+      // Toggle groups
+      container.querySelectorAll('.toggle-group[data-name]').forEach(group => {
+        const selected = group.querySelector('.toggle-btn.selected');
+        data[group.dataset.name] = selected ? selected.dataset.value : '';
+      });
+
+      // Multi-select chips
+      container.querySelectorAll('.multi-select[data-name]').forEach(ms => {
+        const selected = [...ms.querySelectorAll('.chip.selected')].map(c => c.dataset.value);
+        data[ms.dataset.name] = selected;
+      });
+
+      return data;
+    }
+
+    // ── Admin form submit ──────────────────────────────────────────────────
+    document.getElementById('admin-form').addEventListener('submit', e => {
+      e.preventDefault();
+
+      const errorEl = document.getElementById('admin-error');
+      const errorMsg = document.getElementById('admin-error-msg');
+
+      // Validate transcript file
+      const file = transcriptInput.files[0] || null;
+      if (!file) {
+        errorMsg.textContent = 'Please select a transcript (.docx) file before continuing.';
+        errorEl.hidden = false;
+        return;
+      }
+      if (!file.name.toLowerCase().endsWith('.docx')) {
+        errorMsg.textContent = 'Only .docx files are accepted. Please select a Word document.';
+        errorEl.hidden = false;
+        return;
+      }
+
+      errorEl.hidden = true;
+
+      // Collect admin fields
+      const adminData = collectInputs(document.getElementById('admin-form'));
+      Object.assign(formState, adminData);
+      formState._file = file;
+
+      showScreen('step-planning');
+    });
+
+    // ── Planning navigation ────────────────────────────────────────────────
+    document.getElementById('planning-back').addEventListener('click', () => {
+      showScreen('step-admin');
+    });
+
+    document.getElementById('planning-next').addEventListener('click', () => {
+      const planningData = collectInputs(document.getElementById('step-planning'));
+      Object.assign(formState, planningData);
+      showScreen('step-reflection');
+    });
+
+    // ── Reflection navigation ──────────────────────────────────────────────
+    document.getElementById('reflection-back').addEventListener('click', () => {
+      showScreen('step-planning');
+    });
+
+    document.getElementById('reflection-submit').addEventListener('click', () => {
+      const reflectionData = collectInputs(document.getElementById('step-reflection'));
+      Object.assign(formState, reflectionData);
+      showScreen('step-progress');
+      startReview();
+    });
+
+    // ── Progress step helpers ──────────────────────────────────────────────
+    function setStepState(psId, state, note) {
+      const el = document.getElementById(psId);
+      if (!el) return;
+      el.dataset.state = state;
+
+      // Update icon
+      const iconId = 'si-' + psId.replace('ps-', '');
+      const iconEl = document.getElementById(iconId);
+      if (iconEl) {
+        if (state === 'active') {
+          iconEl.innerHTML = '<span class="spinner">⟳</span>';
+        } else if (state === 'done') {
+          iconEl.textContent = '✓';
+        } else if (state === 'error') {
+          iconEl.textContent = '✗';
+        }
+      }
+
+      // Update note
+      const noteId = 'sn-' + psId.replace('ps-', '');
+      const noteEl = document.getElementById(noteId);
+      if (noteEl && note !== undefined) {
+        noteEl.textContent = note;
+      }
+    }
+
+    function showProgressError(msg) {
+      clearInterval(reviewingTimer);
+      reviewingTimer = null;
+      if (currentEventSource) { currentEventSource.close(); currentEventSource = null; }
+      document.getElementById('progress-error-msg').textContent = msg;
+      document.getElementById('progress-error').hidden = false;
+    }
+
+    // ── startReview ────────────────────────────────────────────────────────
+    async function startReview() {
+      // Reset all step states
+      ['ps-uploading','ps-extracting','ps-reviewing','ps-generating','ps-done'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) delete el.dataset.state;
+        const iconId = 'si-' + id.replace('ps-', '');
+        const iconEl = document.getElementById(iconId);
+        if (iconEl) {
+          // Restore default icons
+          const defaults = { 'si-uploading': '↑', 'si-extracting': '≡', 'si-reviewing': '✦', 'si-generating': '⊞', 'si-done': '★' };
+          iconEl.innerHTML = defaults[iconId] || '';
+        }
+        const noteId = 'sn-' + id.replace('ps-', '');
+        const noteEl = document.getElementById(noteId);
+        if (noteEl) noteEl.textContent = '';
+      });
+      document.getElementById('progress-error').hidden = true;
+
+      setStepState('ps-uploading', 'active', 'Uploading…');
+
+      // Build FormData
+      const fd = new FormData();
+      fd.append('transcript', formState._file);
+      for (const [k, v] of Object.entries(formState)) {
+        if (k === '_file') continue;
+        if (Array.isArray(v)) {
+          fd.append(k, v.join(','));
+        } else {
+          fd.append(k, v);
+        }
+      }
+
+      // Upload
+      let jobId;
+      try {
+        const res = await fetch('/api/l3-reviewer/upload', { method: 'POST', body: fd });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || `Upload failed (${res.status})`);
+        jobId = json.jobId;
+      } catch (err) {
+        showProgressError(err.message || 'Upload failed');
+        return;
+      }
+
+      setStepState('ps-uploading', 'done');
+      setStepState('ps-extracting', 'active', 'Extracting…');
+
+      // SSE
+      if (currentEventSource) currentEventSource.close();
+      currentEventSource = new EventSource(`/api/l3-reviewer/status/${jobId}`);
+
+      currentEventSource.addEventListener('message', e => {
+        try {
+          const data = JSON.parse(e.data);
+          handleSseEvent(data, jobId);
+        } catch {
+          // ignore parse errors
+        }
+      });
+
+      currentEventSource.addEventListener('error', () => {
+        currentEventSource.close();
+        currentEventSource = null;
+        showProgressError('Connection lost. Please try again.');
+      });
+    }
+
+    // ── handleSseEvent ─────────────────────────────────────────────────────
+    function handleSseEvent(data, jobId) {
+      switch (data.step) {
+        case 'extracting':
+          setStepState('ps-extracting', 'active', data.message || 'Extracting transcript…');
+          break;
+
+        case 'extracting_done':
+          setStepState('ps-extracting', 'done', data.message || '');
+          setStepState('ps-reviewing', 'active', 'Connecting to Claude…');
+          // Start elapsed timer
+          reviewingStart = Date.now();
+          clearInterval(reviewingTimer);
+          reviewingTimer = setInterval(() => {
+            const elapsed = Math.round((Date.now() - reviewingStart) / 1000);
+            const label = elapsed >= 60
+              ? `${Math.floor(elapsed / 60)}m ${elapsed % 60}s`
+              : `${elapsed}s`;
+            document.getElementById('sn-reviewing').textContent = `Reviewing… ${label}`;
+          }, 1000);
+          break;
+
+        case 'reviewing_connected':
+          document.getElementById('sn-reviewing').textContent = data.message || 'Connected — reviewing…';
+          break;
+
+        case 'reviewing_done':
+          clearInterval(reviewingTimer);
+          reviewingTimer = null;
+          setStepState('ps-reviewing', 'done', data.message || '');
+          setStepState('ps-generating', 'active', 'Generating reports…');
+          break;
+
+        case 'generating_done':
+          setStepState('ps-generating', 'done', data.message || '');
+          break;
+
+        case 'heartbeat':
+          // no UI change
+          break;
+
+        case 'done':
+          clearInterval(reviewingTimer);
+          reviewingTimer = null;
+          setStepState('ps-done', 'done', 'Review ready');
+          if (currentEventSource) { currentEventSource.close(); currentEventSource = null; }
+          setTimeout(() => {
+            renderResults(data.result, jobId);
+            showScreen('step-results');
+          }, 600);
+          break;
+
+        case 'error':
+          showProgressError(data.message || data.error || 'An error occurred during review');
+          break;
+      }
+    }
+
+    // ── Rating label helper ────────────────────────────────────────────────
+    function ratingLabel(rating) {
+      const labels = ['', 'Unsatisfactory', 'Developing', 'Satisfactory', 'Good', 'Excellent'];
+      return labels[rating] || String(rating);
+    }
+
+    // ── Result class helper ────────────────────────────────────────────────
+    function resultClass(val) {
+      const v = String(val).trim().toLowerCase();
+      if (v === 'yes') return 'result-yes';
+      if (v === 'no') return 'result-no';
+      if (v === 'n/a') return 'result-na';
+      if (v === 'often') return 'result-often';
+      if (v === 'sometimes') return 'result-sometimes';
+      if (v === 'hardly ever') return 'result-hardly';
+      if (v === 'never') return 'result-never';
+      return '';
+    }
+
+    // ── renderResults ──────────────────────────────────────────────────────
+    function renderResults(result, jobId) {
+      if (!result) return;
+
+      // Verdict banner
+      const banner = document.getElementById('verdict-banner');
+      const isCompetent = String(result.verdict).toLowerCase() !== 'not competent';
+      banner.className = 'verdict-banner ' + (isCompetent ? 'competent' : 'not-competent');
+      const verdictEl = document.getElementById('verdict-text');
+      verdictEl.textContent = result.verdict || '';
+      verdictEl.className = 'verdict-text ' + (isCompetent ? 'green' : 'red');
+      document.getElementById('verdict-summary').textContent = result.summary || '';
+
+      // Rating bars
+      function setBar(barId, scoreId, rating) {
+        const pct = rating ? (rating / 5 * 100) + '%' : '0%';
+        document.getElementById(barId).style.width = pct;
+        document.getElementById(scoreId).textContent = rating
+          ? `${rating}/5 — ${ratingLabel(rating)}`
+          : '—';
+      }
+      setBar('bar-s5', 'score-s5', result.ratings && result.ratings.s5);
+      setBar('bar-s6', 'score-s6', result.ratings && result.ratings.s6);
+      setBar('bar-s7', 'score-s7', result.ratings && result.ratings.s7);
+
+      // Section badges
+      if (result.ratings) {
+        ['s5','s6','s7'].forEach(s => {
+          const badge = document.getElementById('badge-' + s);
+          if (badge) badge.textContent = result.ratings[s] ? `${result.ratings[s]}/5` : '';
+        });
+      }
+      if (result.ratings && result.ratings.s8 !== undefined) {
+        const b = document.getElementById('badge-s8');
+        if (b) b.textContent = result.ratings.s8 ? `${result.ratings.s8}/5` : '';
+      }
+
+      // Strengths and learning lists
+      function buildList(ulId, items) {
+        const ul = document.getElementById(ulId);
+        if (!ul) return;
+        ul.innerHTML = '';
+        (items || []).forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          ul.appendChild(li);
+        });
+      }
+      buildList('strengths-list', result.strengths);
+      buildList('learning-list', result.learningPoints);
+
+      // Checklist tables (S5, S6, S8 — Assessment column)
+      function buildChecklistTable(tableId, items) {
+        const tbody = document.querySelector(`#${tableId} tbody`);
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        (items || []).forEach(row => {
+          const tr = document.createElement('tr');
+          const cls = resultClass(row.result || row.assessment || '');
+          tr.innerHTML = `
+            <td>${escHtml(row.item || '')}</td>
+            <td class="${cls}">${escHtml(row.result || row.assessment || '')}</td>
+            <td>${escHtml(row.comment || '')}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // S7 — Frequency column
+      function buildFrequencyTable(tableId, items) {
+        const tbody = document.querySelector(`#${tableId} tbody`);
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        (items || []).forEach(row => {
+          const tr = document.createElement('tr');
+          const cls = resultClass(row.frequency || '');
+          tr.innerHTML = `
+            <td>${escHtml(row.item || '')}</td>
+            <td class="${cls}">${escHtml(row.frequency || '')}</td>
+            <td>${escHtml(row.comment || '')}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      if (result.sections) {
+        buildChecklistTable('table-s5', result.sections.s5);
+        buildChecklistTable('table-s6', result.sections.s6);
+        buildFrequencyTable('table-s7', result.sections.s7);
+        buildChecklistTable('table-s8', result.sections.s8);
+      }
+
+      // Download buttons
+      document.getElementById('dl-docx').onclick = () => {
+        window.location.href = `/api/l3-reviewer/download/${jobId}/docx`;
+      };
+      document.getElementById('dl-md').onclick = () => {
+        window.location.href = `/api/l3-reviewer/download/${jobId}/md`;
+      };
+    }
+
+    // ── HTML escape helper ─────────────────────────────────────────────────
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ── toggleDetail ───────────────────────────────────────────────────────
+    function toggleDetail(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('open');
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    showScreen('step-admin');
+  </script>
+</body>
+</html>

@@ -211,6 +211,7 @@ git push heroku main
 - [x] DOCX upload (module + optional reference) with 50 MB limit
 - [x] Plain text extraction via mammoth
 - [x] Claude Sonnet 4.6 review against full DDP style ruleset (8 categories: STRUCTURE, GRAMMAR, LANGUAGE, CONSISTENCY, CONTENT, FORMATTING, LEARNING_OBJ, LEGISLATION)
+- [x] Expanded system prompt — full NZ English rules (punctuation, Te Reo, plain language, dates/times/numbers), complete heading style spec, terminology consistency table with case law citation format, tense/voice rules; richer issue and suggestion output (no character caps)
 - [x] LEGISLATION issues always flagged as critical severity
 - [x] Word comments injected into DOCX ZIP via pizzip — opens in Word with comment sidebar
 - [x] SSE progress stream (Uploading → Extracting → Reviewing → Annotating → Done)

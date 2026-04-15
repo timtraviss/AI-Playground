@@ -156,6 +156,8 @@ git push heroku main
 - [x] Removed dead `elevenlabs-convai:call_end` listener (widget only emits call-start)
 - [x] Transcript polling: removed redundant 5s delay on first attempt; detailed client-side error logging
 - [x] `formatTranscriptForCritique` filters null/empty message turns before sending to Claude
+- [x] conversationId captured from widget `call` event detail — skips `latest-conversation` lookup when available
+- [x] `latest-conversation` lookup retried up to 6× (3s initial wait, 5s between retries) — handles ElevenLabs API registration lag
 - [ ] Additional witness scenarios beyond Catherine
 - [ ] Student session history and progress tracking
 - [ ] Instructor dashboard to review student submissions

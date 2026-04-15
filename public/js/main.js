@@ -87,6 +87,8 @@ btnStart.addEventListener('click', () => {
 // The widget only dispatches 'elevenlabs-convai:call' (call start) — there is no call_end event.
 // If it fires, enable Get Critique immediately and start the visual timer.
 // The 30s fallback above covers cases where the event doesn't fire.
+// Capture conversationId from the event detail if provided — avoids the
+// latest-conversation lookup entirely for most sessions.
 if (widget) {
   widget.addEventListener('elevenlabs-convai:call', (e) => {
     console.log('[interview] widget call started:', e.detail);
@@ -94,6 +96,10 @@ if (widget) {
     btnEnd.disabled = false;
     setStatus('live');
     startTimer();
+    if (e.detail?.conversationId) {
+      conversationId = e.detail.conversationId;
+      console.log('[interview] conversationId from widget event:', conversationId);
+    }
   });
 }
 
@@ -106,24 +112,13 @@ btnEnd.addEventListener('click', async () => {
   showScreen('processing');
   setProcessingStep('step-transcript');
 
-  // Give ElevenLabs time to register the completed call in their API
-  await delay(5000);
-
-  // Look up the most recent conversation for this session
-  try {
-    const url = `/api/latest-conversation?since=${encodeURIComponent(sessionStartedAt)}`;
-    console.log('[interview] fetching latest-conversation, since:', sessionStartedAt);
-    const res  = await fetch(url);
-    if (!res.ok) {
-      const errBody = await res.json().catch(() => ({}));
-      console.warn('[interview] latest-conversation failed:', res.status, JSON.stringify(errBody));
-      throw new Error(`latest-conversation returned ${res.status}`);
-    }
-    const data = await res.json();
-    conversationId = data.conversationId;
-    console.log('[interview] got conversationId:', conversationId);
-  } catch (err) {
-    console.warn('[interview] latest-conversation error:', err.message);
+  // If the widget call event already gave us the conversationId, skip the lookup.
+  // Otherwise poll latest-conversation (ElevenLabs may take several seconds to register
+  // the completed call in their list API — a single attempt is too fragile).
+  if (!conversationId) {
+    conversationId = await resolveConversationId();
+  } else {
+    console.log('[interview] skipping latest-conversation lookup — ID already known from widget event');
   }
 
   if (!conversationId) {
@@ -137,6 +132,40 @@ btnEnd.addEventListener('click', async () => {
   await runPostCall();
 });
 
+// ── Resolve conversation ID via polling ────────────────
+// Polls /api/latest-conversation up to MAX times with INTERVAL between attempts.
+// ElevenLabs registers completed conversations in their API with a variable delay —
+// a single attempt is unreliable. The initial 3s wait covers the common fast case.
+async function resolveConversationId() {
+  const MAX      = 6;
+  const INTERVAL = 5000; // 5s between retries
+
+  for (let i = 1; i <= MAX; i++) {
+    // Short initial wait on first attempt; full interval on subsequent attempts
+    await delay(i === 1 ? 3000 : INTERVAL);
+    try {
+      const url = `/api/latest-conversation?since=${encodeURIComponent(sessionStartedAt)}`;
+      console.log(`[interview] latest-conversation attempt ${i}/${MAX}, since:`, sessionStartedAt);
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.conversationId) {
+          console.log(`[interview] got conversationId on attempt ${i}:`, data.conversationId);
+          return data.conversationId;
+        }
+      } else {
+        const errBody = await res.json().catch(() => ({}));
+        console.warn(`[interview] latest-conversation attempt ${i}/${MAX} failed:`, res.status, JSON.stringify(errBody));
+      }
+    } catch (err) {
+      console.warn(`[interview] latest-conversation attempt ${i}/${MAX} error:`, err.message);
+    }
+  }
+
+  console.warn('[interview] latest-conversation: all attempts exhausted, no conversationId found');
+  return null;
+}
+
 // ── Post-call: transcript fetch + critique ─────────────
 async function runPostCall() {
   // ElevenLabs processes the conversation server-side after the call ends.
@@ -147,7 +176,7 @@ async function runPostCall() {
 
   let turns = null;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    // No extra delay on attempt 1 — btnEnd already waited 5s before calling runPostCall
+    // No extra delay on attempt 1 — resolveConversationId already waited before returning
     if (attempt > 1) await delay(POLL_INTERVAL);
     try {
       const res = await fetch(`/api/transcript/${encodeURIComponent(conversationId)}`);

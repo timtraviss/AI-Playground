@@ -147,13 +147,24 @@ Return ONLY this JSON structure (no markdown, no prose):
       "severity": "<normal or critical>",
       "searchText": "<verbatim text from the document to locate the paragraph, or null if not anchorable to specific text>",
       "issue": "<clear description of the problem — be specific and explain why it matters>",
-      "suggestion": "<specific actionable instruction for what to change, including the corrected text where possible>"
+      "suggestion": "<specific actionable instruction for what to change, including the corrected text where possible>",
+      "originalText": "<the exact verbatim word or short phrase to replace — must appear in the document, or null>",
+      "suggestedText": "<the replacement text only, or null>"
     }
   ]
 }
 
 LEGISLATION issues must always have severity "critical".
+
 searchText must be a short, unique phrase (under 60 characters) that appears verbatim in the document. If the issue is structural (e.g., missing section) or cannot be anchored to specific text, set searchText to null.
+
+originalText and suggestedText — populate these ONLY for issues where there is a concrete, unambiguous text substitution (a specific word or phrase that should be replaced with a specific alternative):
+- Good candidates: spelling variants ("offense" → "offence"), terminology ("program" → "programme"), date formats ("13/03/26" → "13 March 2026"), wrong word ("while" used inconsistently where "whilst" is established), missing macron ("Maori" → "Māori")
+- Do NOT populate for: structural issues, missing sections, passive voice rewrites that require author judgment, content logic issues, or any issue where the "fix" depends on context the author must supply
+- originalText must be the shortest unique string needed — just the word or phrase being changed, not the whole sentence
+- originalText must appear verbatim in the document (case-insensitive match is acceptable)
+- suggestedText must be the replacement text only — not a full sentence or explanation
+
 Be thorough — review the entire module from start to finish. It is better to flag a possible issue than to miss one.
 Write clear, specific issue descriptions and concrete suggestions — include the corrected text in the suggestion wherever possible so the author knows exactly what change to make.`;
 

@@ -226,7 +226,8 @@ git push heroku main
 - [x] Summary panel with issue counts by category and critical issue callouts
 - [x] Download reviewed `.docx` with `_reviewed` suffix
 - [x] Landing page card and nav links added across all subpages
-- [ ] Tracked changes (v2) — in addition to comments, insert Word tracked-change insertions/deletions
+- [x] Tracked changes — `w:del`/`w:ins` pairs injected at run level for concrete text substitutions (spelling, terminology, date format); Accept/Reject in Word; IDs computed above existing document IDs to avoid collisions
+- [x] Claude returns `originalText`/`suggestedText` fields for unambiguous substitutions; annotator falls back gracefully when text not found in any run
 
 ### L3 Interview Reviewer
 - [x] 3-step wizard capturing admin fields, planning notes, and self-reflection (Sections 1–4, 9)

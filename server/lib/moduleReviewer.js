@@ -191,12 +191,13 @@ export async function reviewModule(moduleText, referenceText, onProgress) {
   let raw = '';
   let connected = false;
 
-  // Extended output beta: allows up to 64 K output tokens so large modules
-  // don't truncate the JSON mid-response (standard limit is 8 192).
+  // Extended output beta: allows up to 64 K output tokens.
+  // Set to the maximum — billed on tokens used, not tokens requested,
+  // so there is no cost penalty. Eliminates truncation on large modules.
   const stream = client.messages.stream(
     {
       model: 'claude-sonnet-4-6',
-      max_tokens: 16000,
+      max_tokens: 64000,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userContent }],
     },
@@ -211,7 +212,15 @@ export async function reviewModule(moduleText, referenceText, onProgress) {
     }
   });
 
-  await stream.finalMessage();
+  const finalMsg = await stream.finalMessage();
+  const stopReason = finalMsg.stop_reason;
+
+  if (stopReason === 'max_tokens') {
+    console.error(`[moduleReviewer] Response truncated at max_tokens. Response length: ${raw.length} chars.`);
+    throw new Error(
+      'The review response was too long and got cut off. The document may be too large for a single pass — try uploading a shorter module or a single section.'
+    );
+  }
 
   // Strip any accidental markdown fences
   const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
@@ -220,10 +229,10 @@ export async function reviewModule(moduleText, referenceText, onProgress) {
   try {
     result = JSON.parse(cleaned);
   } catch {
-    const likelyTruncated = !cleaned.trimEnd().endsWith('}');
-    console.error(`[moduleReviewer] JSON parse failed. Response length: ${cleaned.length} chars. Last 100 chars: ${cleaned.slice(-100)}`);
+    const truncated = stopReason === 'max_tokens' || !cleaned.trimEnd().endsWith('}');
+    console.error(`[moduleReviewer] JSON parse failed. stop_reason=${stopReason} length=${cleaned.length} last100=${cleaned.slice(-100)}`);
     throw new Error(
-      likelyTruncated
+      truncated
         ? 'The review response was too long and got cut off. The document may be too large for a single pass — try uploading a shorter module or a single section.'
         : `Claude returned invalid JSON (${cleaned.length} chars). Check server logs for details.`
     );

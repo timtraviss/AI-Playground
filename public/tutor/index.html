@@ -489,8 +489,17 @@
         sendMessage(transcript);
       };
 
-      recognition.onerror = () => micBtn.classList.remove('listening');
-      recognition.onend   = () => micBtn.classList.remove('listening');
+      recognition.onerror = (e) => {
+        micBtn.classList.remove('listening');
+        const msg = e.error === 'not-allowed'
+          ? 'Microphone access denied. Allow microphone permission in your browser settings.'
+          : e.error === 'network'
+          ? 'Speech recognition requires an internet connection.'
+          : `Speech recognition error: ${e.error}. Try Chrome or Edge.`;
+        voiceUnsupported.textContent = msg;
+        voiceUnsupported.style.display = 'block';
+      };
+      recognition.onend = () => micBtn.classList.remove('listening');
 
       micBtn.addEventListener('click', () => {
         if (isStreaming) return;
@@ -498,6 +507,7 @@
           recognition.stop();
           micBtn.classList.remove('listening');
         } else {
+          voiceUnsupported.style.display = 'none';
           recognition.start();
           micBtn.classList.add('listening');
         }

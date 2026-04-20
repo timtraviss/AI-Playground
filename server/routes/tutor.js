@@ -79,7 +79,7 @@ tutorRouter.post('/knowledge/upload', (req, res, next) => {
 
   try {
     const markdown = await convertDocxToMarkdown(file.path);
-    const mdPath = join(KNOWLEDGE_DIR, `${id}.md`);
+    const mdPath = safeKnowledgePath(id);
     writeFileSync(mdPath, markdown, 'utf8');
 
     const modules = readModules().filter(m => m.id !== id);
@@ -221,29 +221,33 @@ tutorRouter.post('/tts', async (req, res) => {
     return res.status(503).json({ error: 'ElevenLabs TTS not configured. Set ELEVENLABS_API_KEY and ELEVENLABS_TUTOR_VOICE_ID.' });
   }
 
-  const ttsRes = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}`,
-    {
-      method: 'POST',
-      headers: {
-        'xi-api-key': apiKey,
-        'Content-Type': 'application/json',
-        Accept: 'audio/mpeg',
-      },
-      body: JSON.stringify({
-        text: text.slice(0, 2500),
-        model_id: 'eleven_flash_v2_5',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 },
-      }),
+  try {
+    const ttsRes = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}`,
+      {
+        method: 'POST',
+        headers: {
+          'xi-api-key': apiKey,
+          'Content-Type': 'application/json',
+          Accept: 'audio/mpeg',
+        },
+        body: JSON.stringify({
+          text: text.slice(0, 2500),
+          model_id: 'eleven_flash_v2_5',
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+        }),
+      }
+    );
+
+    if (!ttsRes.ok) {
+      const err = (await ttsRes.text()).slice(0, 500);
+      return res.status(ttsRes.status).json({ error: `ElevenLabs error: ${err}` });
     }
-  );
 
-  if (!ttsRes.ok) {
-    const err = (await ttsRes.text()).slice(0, 500);
-    return res.status(ttsRes.status).json({ error: `ElevenLabs error: ${err}` });
+    res.setHeader('Content-Type', 'audio/mpeg');
+    const buf = await ttsRes.arrayBuffer();
+    res.send(Buffer.from(buf));
+  } catch (err) {
+    res.status(502).json({ error: 'TTS service unreachable.' });
   }
-
-  res.setHeader('Content-Type', 'audio/mpeg');
-  const buf = await ttsRes.arrayBuffer();
-  res.send(Buffer.from(buf));
 });

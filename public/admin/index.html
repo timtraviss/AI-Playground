@@ -245,7 +245,7 @@
         const res = await fetch('/api/tutor/knowledge/upload', { method: 'POST', body: fd });
         const data = await res.json();
         if (res.ok) {
-          showMsg(msgUpload, `"${data.name}" saved successfully.`, 'success');
+          showMsg(msgUpload, `"${name}" saved successfully.`, 'success');
           moduleNameEl.value = '';
           moduleFileEl.value = '';
           fileLabelEl.textContent = 'Choose file…';

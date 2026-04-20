@@ -125,8 +125,15 @@ tutorRouter.delete('/knowledge/:id', (req, res) => {
 tutorRouter.post('/chat', async (req, res) => {
   const { moduleId, messages } = req.body || {};
 
-  if (!moduleId || !Array.isArray(messages)) {
+  if (typeof moduleId !== 'string' || !moduleId || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'moduleId and messages are required.' });
+  }
+
+  const safeMessages = messages.filter(
+    m => ['user', 'assistant'].includes(m.role) && typeof m.content === 'string'
+  );
+  if (safeMessages.length === 0) {
+    return res.status(400).json({ error: 'messages must contain at least one valid message.' });
   }
 
   let mdPath;
@@ -180,7 +187,7 @@ STRICT RULES:
       model: 'claude-sonnet-4-6',
       max_tokens: 1024,
       system: systemBlocks,
-      messages,
+      messages: safeMessages,
     });
 
     for await (const event of stream) {
@@ -232,7 +239,7 @@ tutorRouter.post('/tts', async (req, res) => {
   );
 
   if (!ttsRes.ok) {
-    const err = await ttsRes.text();
+    const err = (await ttsRes.text()).slice(0, 500);
     return res.status(ttsRes.status).json({ error: `ElevenLabs error: ${err}` });
   }
 

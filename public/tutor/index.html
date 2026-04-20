@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DDP Tutor — Traviss.org</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/nav.css" />
+  <style>
+    html, body {
+      background: #0d1117; color: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Inter', sans-serif;
+      font-size: 15px; line-height: 1.6; margin: 0;
+    }
+    .screen[hidden] { display: none !important; }
+
+    /* ── Setup screen ── */
+    .setup-screen {
+      min-height: calc(100vh - 52px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 60px 24px;
+    }
+    .setup-center { max-width: 480px; width: 100%; text-align: center; }
+    .tag {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #e8c96a;
+      background: rgba(232,201,106,0.1); border: 1px solid rgba(232,201,106,0.2);
+      padding: 4px 10px; border-radius: 100px; display: inline-block; margin-bottom: 24px;
+    }
+    .title {
+      font-family: 'Fugaz One', cursive; font-size: clamp(32px, 8vw, 48px);
+      color: #e8c96a; letter-spacing: 0.02em; line-height: 1.1; margin: 0 0 16px;
+    }
+    .desc { color: #94a3b8; font-size: 15px; margin-bottom: 40px; }
+    .select-wrap { position: relative; margin-bottom: 16px; }
+    select {
+      width: 100%; appearance: none; background: #161b22;
+      border: 1px solid #21262d; border-radius: 12px;
+      color: #e2e8f0; font-family: inherit; font-size: 16px;
+      padding: 16px 44px 16px 18px; cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    select:focus { outline: none; border-color: #e8c96a; }
+    .select-arrow {
+      position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; color: #64748b;
+    }
+    .btn-start {
+      width: 100%; background: #e8c96a; color: #0d1117;
+      border: none; border-radius: 12px; font-size: 16px;
+      font-weight: 700; padding: 16px; cursor: pointer;
+      transition: opacity 0.15s; margin-top: 8px;
+    }
+    .btn-start:hover { opacity: 0.88; }
+    .btn-start:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Chat screen ── */
+    .chat-screen {
+      display: flex; flex-direction: column;
+      height: calc(100vh - 52px);
+    }
+    .chat-header {
+      padding: 16px 24px; border-bottom: 1px solid #21262d;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .chat-module-name { font-size: 14px; font-weight: 600; color: #e8c96a; }
+    .chat-actions { display: flex; align-items: center; gap: 12px; }
+    .mode-toggle {
+      display: flex; background: #161b22; border: 1px solid #21262d;
+      border-radius: 8px; overflow: hidden;
+    }
+    .mode-btn {
+      padding: 6px 14px; font-size: 13px; font-weight: 500;
+      background: none; border: none; color: #64748b;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .mode-btn.active { background: #e8c96a; color: #0d1117; font-weight: 700; }
+    .mode-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-new {
+      padding: 6px 14px; font-size: 13px; font-weight: 600;
+      background: transparent; border: 1px solid #21262d; border-radius: 8px;
+      color: #94a3b8; cursor: pointer; transition: border-color 0.15s;
+    }
+    .btn-new:hover { border-color: #e8c96a; color: #e2e8f0; }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .message { display: flex; gap: 12px; max-width: 85%; }
+    .message.user { flex-direction: row-reverse; align-self: flex-end; }
+    .message.assistant { align-self: flex-start; }
+    .bubble {
+      padding: 12px 16px; border-radius: 16px;
+      font-size: 15px; line-height: 1.6; white-space: pre-wrap;
+    }
+    .message.user .bubble {
+      background: #e8c96a; color: #0d1117; border-bottom-right-radius: 4px;
+    }
+    .message.assistant .bubble {
+      background: #161b22; border: 1px solid #21262d;
+      border-bottom-left-radius: 4px;
+    }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; flex-shrink: 0;
+      background: #21262d; color: #94a3b8;
+    }
+    .message.user .avatar { background: rgba(232,201,106,0.2); color: #e8c96a; }
+    .replay-btn {
+      background: none; border: none; color: #64748b;
+      cursor: pointer; padding: 4px 6px; font-size: 13px;
+      border-radius: 4px; margin-top: 4px; display: none;
+    }
+    .replay-btn:hover { color: #e8c96a; }
+    .replay-btn.visible { display: inline-block; }
+
+    .chat-footer {
+      padding: 16px 24px; border-top: 1px solid #21262d; flex-shrink: 0;
+    }
+    .input-row { display: flex; gap: 10px; align-items: flex-end; }
+    textarea#user-input {
+      flex: 1; background: #161b22; border: 1px solid #21262d;
+      border-radius: 12px; color: #e2e8f0; font-family: inherit;
+      font-size: 15px; line-height: 1.5; padding: 12px 16px;
+      resize: none; min-height: 48px; max-height: 160px;
+      transition: border-color 0.15s;
+    }
+    textarea#user-input:focus { outline: none; border-color: #e8c96a; }
+    .btn-send {
+      background: #e8c96a; color: #0d1117; border: none;
+      border-radius: 12px; width: 48px; height: 48px;
+      font-size: 20px; cursor: pointer; flex-shrink: 0;
+      transition: opacity 0.15s; display: flex; align-items: center; justify-content: center;
+    }
+    .btn-send:hover { opacity: 0.88; }
+    .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mic-btn {
+      background: #161b22; border: 1px solid #21262d;
+      border-radius: 12px; width: 48px; height: 48px;
+      font-size: 20px; cursor: pointer; flex-shrink: 0;
+      display: none; align-items: center; justify-content: center;
+      transition: all 0.15s; color: #94a3b8;
+    }
+    .mic-btn.visible { display: flex; }
+    .mic-btn.listening { background: rgba(248,113,113,0.15); border-color: #f87171; color: #f87171; }
+
+    .typing-indicator { display: flex; gap: 4px; padding: 8px 0; }
+    .typing-dot {
+      width: 8px; height: 8px; background: #64748b; border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+    .voice-unsupported {
+      font-size: 12px; color: #64748b; text-align: center; margin-top: 8px; display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-drawer" id="nav-drawer">
+      <div class="nav-logo"><a href="/">Traviss.org</a></div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+        <li><a href="/tutor/" class="active">DDP Tutor</a></li>
+        <li><a href="/podcast-reviewer/">Podcast Reviewer</a></li>
+        <li><a href="/podcast-converter/">Podcast Converter</a></li>
+        <li><a href="/proofreader/">Module Proofreader</a></li>
+        <li><a href="/l3-reviewer/">L3 Interview Reviewer</a></li>
+      </ul>
+    </div>
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </nav>
+
+  <!-- ── Setup screen ── -->
+  <div class="screen setup-screen" id="setup-screen">
+    <div class="setup-center">
+      <div class="tag">DDP Training</div>
+      <h1 class="title">DDP Tutor</h1>
+      <p class="desc">Select a module to study. Ask questions and the tutor will guide you through the content — exactly as it appears in your training material.</p>
+      <div class="select-wrap">
+        <select id="module-select">
+          <option value="">Loading modules…</option>
+        </select>
+        <span class="select-arrow">▾</span>
+      </div>
+      <button class="btn-start" id="btn-start" disabled>Start Session →</button>
+    </div>
+  </div>
+
+  <!-- ── Chat screen ── -->
+  <div class="screen chat-screen" id="chat-screen" hidden>
+    <div class="chat-header">
+      <span class="chat-module-name" id="chat-module-name"></span>
+      <div class="chat-actions">
+        <div class="mode-toggle" id="mode-toggle">
+          <button class="mode-btn active" id="btn-text-mode" title="Text mode">✏️ Text</button>
+          <button class="mode-btn" id="btn-voice-mode" title="Voice mode">🎤 Voice</button>
+        </div>
+        <button class="btn-new" id="btn-new-session">New Session</button>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chat-messages"></div>
+
+    <div class="chat-footer">
+      <div class="input-row">
+        <textarea id="user-input" rows="1" placeholder="Ask a question about this module…"></textarea>
+        <button class="btn-send" id="btn-send" title="Send">➤</button>
+        <button class="mic-btn" id="mic-btn" title="Hold to speak">🎤</button>
+      </div>
+      <div class="voice-unsupported" id="voice-unsupported">
+        Voice input is not supported in this browser. Use Chrome or Edge.
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/nav.js" defer></script>
+  <script>
+    // ── State ────────────────────────────────────────────
+    let currentModuleId   = null;
+    let currentModuleName = null;
+    let messages          = [];
+    let isStreaming       = false;
+    let voiceMode         = false;
+    let recognition       = null;
+    let audioQueue        = [];
+    let isPlayingAudio    = false;
+    const audioCache      = new Map(); // messageIndex → objectURL
+
+    // ── Elements ─────────────────────────────────────────
+    const setupScreen   = document.getElementById('setup-screen');
+    const chatScreen    = document.getElementById('chat-screen');
+    const moduleSelect  = document.getElementById('module-select');
+    const btnStart      = document.getElementById('btn-start');
+    const chatModuleName = document.getElementById('chat-module-name');
+    const chatMessages  = document.getElementById('chat-messages');
+    const userInput     = document.getElementById('user-input');
+    const btnSend       = document.getElementById('btn-send');
+    const micBtn        = document.getElementById('mic-btn');
+    const btnNewSession = document.getElementById('btn-new-session');
+    const btnTextMode   = document.getElementById('btn-text-mode');
+    const btnVoiceMode  = document.getElementById('btn-voice-mode');
+    const voiceUnsupported = document.getElementById('voice-unsupported');
+
+    // ── Load modules ─────────────────────────────────────
+    fetch('/api/tutor/modules')
+      .then(r => r.json())
+      .then(mods => {
+        if (!mods.length) {
+          moduleSelect.innerHTML = '<option value="">No modules available — ask admin to upload one</option>';
+          return;
+        }
+        moduleSelect.innerHTML = '<option value="">Select a module…</option>' +
+          mods.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+        moduleSelect.addEventListener('change', () => {
+          btnStart.disabled = !moduleSelect.value;
+        });
+      })
+      .catch(() => {
+        moduleSelect.innerHTML = '<option value="">Failed to load modules</option>';
+      });
+
+    // ── Start session ────────────────────────────────────
+    btnStart.addEventListener('click', () => {
+      currentModuleId   = moduleSelect.value;
+      currentModuleName = moduleSelect.options[moduleSelect.selectedIndex].text;
+      messages          = [];
+      chatModuleName.textContent = currentModuleName;
+      chatMessages.innerHTML = '';
+      setupScreen.hidden = true;
+      chatScreen.hidden  = false;
+      userInput.focus();
+    });
+
+    // ── New session ──────────────────────────────────────
+    btnNewSession.addEventListener('click', () => {
+      messages = [];
+      chatMessages.innerHTML = '';
+      chatScreen.hidden  = true;
+      setupScreen.hidden = false;
+    });
+
+    // ── Auto-resize textarea ─────────────────────────────
+    userInput.addEventListener('input', () => {
+      userInput.style.height = 'auto';
+      userInput.style.height = Math.min(userInput.scrollHeight, 160) + 'px';
+    });
+
+    // ── Send on Enter (Shift+Enter = newline) ────────────
+    userInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!isStreaming) sendMessage();
+      }
+    });
+
+    btnSend.addEventListener('click', () => { if (!isStreaming) sendMessage(); });
+
+    // ── Send message ─────────────────────────────────────
+    async function sendMessage(text) {
+      const content = (text || userInput.value).trim();
+      if (!content || isStreaming) return;
+
+      userInput.value = '';
+      userInput.style.height = 'auto';
+      isStreaming = true;
+      btnSend.disabled = true;
+
+      messages.push({ role: 'user', content });
+      appendMessage('user', content);
+
+      const typingEl = appendTyping();
+
+      try {
+        const res = await fetch('/api/tutor/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ moduleId: currentModuleId, messages }),
+        });
+
+        if (!res.ok) {
+          typingEl.remove();
+          appendMessage('assistant', 'Sorry, something went wrong. Please try again.');
+          return;
+        }
+
+        const msgIndex = messages.length;
+        const bubbleEl = replaceTypingWithBubble(typingEl);
+        let fullText = '';
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const payload = line.slice(6).trim();
+            if (payload === '[DONE]') break;
+            try {
+              const { text: chunk, error } = JSON.parse(payload);
+              if (error) { bubbleEl.textContent = `Error: ${error}`; return; }
+              if (chunk) {
+                fullText += chunk;
+                bubbleEl.textContent = fullText;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+              }
+            } catch {}
+          }
+        }
+
+        messages.push({ role: 'assistant', content: fullText });
+
+        // Show replay button and queue TTS if in voice mode
+        const replayBtn = bubbleEl.parentElement.querySelector('.replay-btn');
+        if (replayBtn) {
+          replayBtn.classList.add('visible');
+          replayBtn.dataset.text = fullText;
+          replayBtn.dataset.index = msgIndex;
+        }
+        if (voiceMode && fullText) queueTts(fullText, msgIndex);
+
+      } finally {
+        isStreaming = false;
+        btnSend.disabled = false;
+        userInput.focus();
+      }
+    }
+
+    // ── DOM helpers ──────────────────────────────────────
+    function appendMessage(role, text) {
+      const wrapper = document.createElement('div');
+      wrapper.className = `message ${role}`;
+
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = role === 'user' ? 'You' : 'T';
+
+      const col = document.createElement('div');
+      col.style.display = 'flex';
+      col.style.flexDirection = 'column';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      col.appendChild(bubble);
+
+      if (role === 'assistant') {
+        const replay = document.createElement('button');
+        replay.className = 'replay-btn';
+        replay.title = 'Replay audio';
+        replay.textContent = '🔊 Replay';
+        replay.addEventListener('click', () => {
+          const idx = parseInt(replay.dataset.index, 10);
+          if (audioCache.has(idx)) {
+            playAudio(audioCache.get(idx));
+          } else if (replay.dataset.text) {
+            fetchAndPlayTts(replay.dataset.text, idx);
+          }
+        });
+        col.appendChild(replay);
+      }
+
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(col);
+      chatMessages.appendChild(wrapper);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return bubble;
+    }
+
+    function appendTyping() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'message assistant';
+      wrapper.innerHTML = `
+        <div class="avatar">T</div>
+        <div class="bubble">
+          <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>`;
+      chatMessages.appendChild(wrapper);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return wrapper;
+    }
+
+    function replaceTypingWithBubble(typingEl) {
+      const bubble = typingEl.querySelector('.bubble');
+      bubble.innerHTML = '';
+      return bubble;
+    }
+
+    // ── Voice mode ───────────────────────────────────────
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+      micBtn.classList.add('visible');
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-NZ';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        micBtn.classList.remove('listening');
+        sendMessage(transcript);
+      };
+
+      recognition.onerror = () => micBtn.classList.remove('listening');
+      recognition.onend   = () => micBtn.classList.remove('listening');
+
+      micBtn.addEventListener('click', () => {
+        if (isStreaming) return;
+        if (micBtn.classList.contains('listening')) {
+          recognition.stop();
+          micBtn.classList.remove('listening');
+        } else {
+          recognition.start();
+          micBtn.classList.add('listening');
+        }
+      });
+    } else {
+      // Voice mode toggle will be disabled but voice unsupported msg shown on click
+    }
+
+    btnTextMode.addEventListener('click', () => {
+      voiceMode = false;
+      btnTextMode.classList.add('active');
+      btnVoiceMode.classList.remove('active');
+      userInput.style.display = '';
+      btnSend.style.display = '';
+      if (SpeechRecognition) micBtn.style.display = 'none';
+      voiceUnsupported.style.display = 'none';
+    });
+
+    btnVoiceMode.addEventListener('click', () => {
+      if (!SpeechRecognition) {
+        voiceUnsupported.style.display = 'block';
+        return;
+      }
+      voiceMode = true;
+      btnVoiceMode.classList.add('active');
+      btnTextMode.classList.remove('active');
+      userInput.style.display = 'none';
+      btnSend.style.display = 'none';
+      micBtn.style.display = 'flex';
+    });
+
+    // ── TTS ──────────────────────────────────────────────
+    function queueTts(text, index) {
+      audioQueue.push({ text, index });
+      if (!isPlayingAudio) drainAudioQueue();
+    }
+
+    async function drainAudioQueue() {
+      if (!audioQueue.length) { isPlayingAudio = false; return; }
+      isPlayingAudio = true;
+      const { text, index } = audioQueue.shift();
+      await fetchAndPlayTts(text, index);
+      drainAudioQueue();
+    }
+
+    async function fetchAndPlayTts(text, index) {
+      if (audioCache.has(index)) { await playAudio(audioCache.get(index)); return; }
+      try {
+        const res = await fetch('/api/tutor/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        if (!res.ok) return;
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        audioCache.set(index, url);
+        await playAudio(url);
+      } catch {}
+    }
+
+    function playAudio(url) {
+      return new Promise(resolve => {
+        const audio = new Audio(url);
+        audio.onended = resolve;
+        audio.onerror = resolve;
+        audio.play().catch(resolve);
+      });
+    }
+  </script>
+</body>
+</html>

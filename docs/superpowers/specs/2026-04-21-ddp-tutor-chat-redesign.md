@@ -9,7 +9,7 @@
 
 Redesign the DDP Tutor chat interface (`public/tutor/index.html`) for better readability. The current layout spans the full screen width with heavy bubble styling on assistant messages. The redesign centres the conversation in a constrained 700px column, removes avatars, and strips the assistant bubble so responses read as clean flowing text — closer to a document than a chat widget.
 
-This is a CSS-only change to `public/tutor/index.html`. No backend changes, no new dependencies.
+Changes are confined to `public/tutor/index.html` — CSS updates and minor JS DOM changes. No backend changes, no new dependencies.
 
 ---
 
@@ -33,7 +33,20 @@ Both the "You" (user) and "T" (tutor) avatars are removed. Message alignment (us
 
 ### 5. Typing indicator
 
-The bouncing dots typing indicator stays, but rendered as plain text-line-height dots within the column (no bubble wrapper).
+The bouncing dots typing indicator stays, rendered as plain dots within the column — no bubble wrapper.
+
+### 6. Voice mode footer
+
+When voice mode is active the textarea is hidden. The footer shows:
+
+- **Idle:** A placeholder input area with text "Tap the mic to speak" (same height/border-radius as the textarea) + mic button in the same right-side corner position as the send button.
+- **Listening:** The placeholder area replaced by five animated vertical bars (CSS `@keyframes` height pulse) in red (`#f87171`) with a red border — gives clear visual feedback that the mic is active. The mic button itself also turns red.
+
+This keeps the footer layout identical between text and voice modes — the input area is always present, only its content changes.
+
+### 7. Replay button
+
+With no assistant bubble, the 🔊 Replay link sits inline directly below each assistant response as a small muted text link (`color: #64748b; font-size: 12px`). It becomes visible after the response completes streaming, same as before.
 
 ---
 
@@ -61,6 +74,9 @@ The bouncing dots typing indicator stays, but rendered as plain text-line-height
 | `.avatar` | displayed | removed from DOM |
 | `.chat-header` inner | `padding: 16px 24px` direct | inner `div.chat-inner` wrapper constrained to 700px |
 | `.chat-footer` inner | `padding: 16px 24px` direct | inner `div.chat-inner` wrapper constrained to 700px |
+| Voice idle state | textarea hidden, mic button shown | placeholder input area ("Tap the mic to speak") + mic button right-aligned |
+| Voice listening state | mic button turns red | placeholder replaced by animated red waveform bars + red mic button |
+| `.replay-btn` | below assistant bubble | inline below assistant text, `font-size: 12px`, `color: #64748b` |
 
 ---
 
@@ -73,3 +89,6 @@ Single file change: `public/tutor/index.html`
 - Remove avatar elements from `appendMessage()` and `appendTyping()` JS functions
 - Update `.message.assistant .bubble` CSS to remove background/border
 - Update `.message` max-width values
+- Add `.voice-placeholder` element to footer HTML (hidden in text mode, shown in voice mode)
+- Add `.waveform` bars inside `.voice-placeholder` for listening state (CSS animation)
+- Voice mode JS: toggle between textarea and `.voice-placeholder`; toggle `.listening` class on placeholder for waveform animation

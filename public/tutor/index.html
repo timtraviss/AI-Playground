@@ -349,6 +349,15 @@
       chatInner.innerHTML = '';
       chatScreen.hidden  = true;
       setupScreen.hidden = false;
+      voiceMode = false;
+      btnTextMode.classList.add('active');
+      btnVoiceMode.classList.remove('active');
+      userInput.style.display = '';
+      btnSend.style.display = '';
+      if (SpeechRecognition) micBtn.style.display = 'none';
+      voicePlaceholder.classList.remove('visible', 'listening');
+      if (recognition && micBtn.classList.contains('listening')) recognition.stop();
+      micBtn.classList.remove('listening');
     });
 
     // ── Auto-resize textarea ─────────────────────────────
@@ -548,7 +557,7 @@
           voicePlaceholder.classList.remove('listening');
         } else {
           voiceUnsupported.style.display = 'none';
-          recognition.start();
+          try { recognition.start(); } catch(e) { /* already starting */ }
           micBtn.classList.add('listening');
           voicePlaceholder.classList.add('listening');
         }
@@ -558,6 +567,9 @@
     }
 
     btnTextMode.addEventListener('click', () => {
+      if (recognition && micBtn.classList.contains('listening')) {
+        recognition.stop();
+      }
       voiceMode = false;
       btnTextMode.classList.add('active');
       btnVoiceMode.classList.remove('active');

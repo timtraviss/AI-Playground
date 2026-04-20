@@ -20,6 +20,7 @@ const { podcastReviewRouter } = await import('./routes/podcastReview.js');
 const { podcastConverterRouter } = await import('./routes/podcastConverter.js');
 const { proofreaderRouter } = await import('./routes/proofreader.js');
 const { l3ReviewerRouter } = await import('./routes/l3Reviewer.js');
+const { tutorRouter } = await import('./routes/tutor.js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,6 +39,7 @@ app.use('/api/podcast-review', podcastReviewRouter);
 app.use('/api/podcast-converter', podcastConverterRouter);
 app.use('/api/proofreader', proofreaderRouter);
 app.use('/api/l3-reviewer', l3ReviewerRouter);
+app.use('/api/tutor', tutorRouter);
 
 // Return JSON for unknown API routes instead of HTML fallback pages.
 app.use('/api', (req, res) => {
@@ -87,6 +89,12 @@ app.get('/l3-reviewer', (req, res) => {
 });
 app.get('/l3-reviewer/', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'l3-reviewer', 'index.html'));
+});
+
+// DDP Tutor subpage
+app.get('/tutor', (req, res) => res.redirect('/tutor/'));
+app.get('/tutor/', (req, res) => {
+  res.sendFile(resolve(projectRoot, 'public', 'tutor', 'index.html'));
 });
 
 // Landing page fallback

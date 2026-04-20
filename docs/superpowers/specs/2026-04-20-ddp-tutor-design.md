@@ -75,7 +75,7 @@ Uses `mammoth` (already a project dependency) with a custom style map for DDP-sp
 | List Paragraph | `- bullet` (nested with indentation) |
 | Quote DDP | `> blockquote` |
 | annotation text | `*italic paragraph*` |
-| Two-column legislation table | `**LABEL**\n> content` |
+| Two-column legislation table | `**LABEL**\n> content` (requires custom table-walking logic — mammoth style maps cover paragraph styles only, not tables) |
 | Images | `[IMAGE: placeholder]` |
 
 ### Server Endpoints (`server/routes/tutor.js`)
@@ -84,7 +84,7 @@ Uses `mammoth` (already a project dependency) with a custom style map for DDP-sp
 |---|---|---|
 | `POST` | `/api/tutor/knowledge/upload` | multer accepts .docx, converts, saves .md + updates modules.json |
 | `GET` | `/api/tutor/modules` | returns module list from modules.json (used by admin + trainee UI) |
-| `DELETE` | `/api/tutor/knowledge/:id` | removes .md and modules.json entry |
+| `DELETE` | `/api/tutor/knowledge/:id` | removes .md and modules.json entry; validate `:id` against slug pattern to prevent path traversal (same pattern as `witness.js`) |
 
 ### Storage
 

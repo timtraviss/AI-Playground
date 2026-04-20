@@ -181,7 +181,17 @@
     const modulesBody  = document.getElementById('modules-body');
 
     moduleFileEl.addEventListener('change', () => {
-      fileLabelEl.textContent = moduleFileEl.files[0]?.name || 'Choose file…';
+      const file = moduleFileEl.files[0];
+      fileLabelEl.textContent = file?.name || 'Choose file…';
+      if (file) {
+        const versionMatch = file.name.match(/[_-]v(\d+)/i);
+        if (versionMatch) {
+          const currentName = moduleNameEl.value.trim();
+          if (currentName && !/ v\d+$/i.test(currentName)) {
+            moduleNameEl.value = `${currentName} v${versionMatch[1]}`;
+          }
+        }
+      }
     });
 
     async function loadModules() {

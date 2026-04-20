@@ -3,7 +3,6 @@ import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from '
 import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
-import Anthropic from '@anthropic-ai/sdk';
 import { convertDocxToMarkdown, slugify } from '../lib/docxToMarkdown.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -51,7 +50,12 @@ tutorRouter.get('/modules', (_req, res) => {
 // POST /api/tutor/knowledge/upload
 tutorRouter.post('/knowledge/upload', (req, res, next) => {
   upload.single('module')(req, res, (err) => {
-    if (err) return res.status(400).json({ error: err.message });
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({ error: 'File exceeds the 50 MB limit.' });
+      }
+      return res.status(400).json({ error: err.message });
+    }
     next();
   });
 }, async (req, res) => {

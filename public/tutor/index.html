@@ -96,6 +96,7 @@
     .chat-messages .chat-inner {
       display: flex; flex-direction: column; gap: 20px;
     }
+    .chat-footer .chat-inner { display: flex; flex-direction: column; }
     .message { display: flex; gap: 12px; }
     .message.user { flex-direction: row-reverse; align-self: flex-end; max-width: 75%; }
     .message.assistant { align-self: flex-start; width: 100%; }
@@ -109,6 +110,7 @@
     .message.assistant .bubble {
       padding: 0; background: none; border: none; border-radius: 0;
     }
+    .message.assistant .bubble .typing-indicator { padding: 8px 0; }
     .message.assistant .bubble p { margin: 0 0 10px; }
     .message.assistant .bubble p:last-child { margin-bottom: 0; }
     .message.assistant .bubble ul, .message.assistant .bubble ol { margin: 0 0 10px; padding-left: 20px; }

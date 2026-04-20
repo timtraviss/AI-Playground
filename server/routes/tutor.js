@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from '
 import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
+import Anthropic from '@anthropic-ai/sdk';
 import { convertDocxToMarkdown, slugify } from '../lib/docxToMarkdown.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -118,4 +119,124 @@ tutorRouter.delete('/knowledge/:id', (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// POST /api/tutor/chat
+tutorRouter.post('/chat', async (req, res) => {
+  const { moduleId, messages } = req.body || {};
+
+  if (!moduleId || !Array.isArray(messages)) {
+    return res.status(400).json({ error: 'moduleId and messages are required.' });
+  }
+
+  let mdPath;
+  try {
+    mdPath = safeKnowledgePath(moduleId);
+  } catch {
+    return res.status(400).json({ error: 'Invalid moduleId.' });
+  }
+
+  if (!existsSync(mdPath)) {
+    return res.status(404).json({ error: 'Module not found.' });
+  }
+
+  const moduleMarkdown = readFileSync(mdPath, 'utf8');
+  const modules = readModules();
+  const moduleMeta = modules.find(m => m.id === moduleId);
+  const moduleName = moduleMeta?.name || moduleId;
+
+  const apiKey = process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return res.status(503).json({ error: 'Claude API key not configured.' });
+
+  const client = new Anthropic({ apiKey });
+
+  const systemBlocks = [
+    {
+      type: 'text',
+      text: `You are a DDP Tutor — an AI study guide for New Zealand Police trainee detectives studying the Detective Development Programme (DDP).
+
+STRICT RULES:
+1. Answer ONLY from the module content provided below. Do not use outside knowledge, case law, or legislation not present in the module.
+2. If a question cannot be answered from the module, say clearly: "That topic isn't covered in this module — I can only help with content from ${moduleName}."
+3. Use NZ English throughout (e.g. "offence" not "offense", "licence" not "license").
+4. Reference specific sections, legislation, or case law exactly as they appear in the module.
+5. After answering, occasionally (not every time) ask a short reflective question to check the trainee's understanding.
+6. Keep answers clear and appropriately detailed — trainees are preparing for assessment.`,
+      cache_control: { type: 'ephemeral' },
+    },
+    {
+      type: 'text',
+      text: `MODULE: ${moduleName}\n\n---\n${moduleMarkdown}\n---`,
+      cache_control: { type: 'ephemeral' },
+    },
+  ];
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  try {
+    const stream = client.messages.stream({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1024,
+      system: systemBlocks,
+      messages,
+    });
+
+    for await (const event of stream) {
+      if (
+        event.type === 'content_block_delta' &&
+        event.delta?.type === 'text_delta'
+      ) {
+        res.write(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`);
+      }
+    }
+
+    res.write('data: [DONE]\n\n');
+    res.end();
+  } catch (err) {
+    res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+    res.end();
+  }
+});
+
+// POST /api/tutor/tts
+tutorRouter.post('/tts', async (req, res) => {
+  const { text } = req.body || {};
+  if (!text || typeof text !== 'string') {
+    return res.status(400).json({ error: 'text is required.' });
+  }
+
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+  const voiceId = process.env.ELEVENLABS_TUTOR_VOICE_ID;
+
+  if (!apiKey || !voiceId) {
+    return res.status(503).json({ error: 'ElevenLabs TTS not configured. Set ELEVENLABS_API_KEY and ELEVENLABS_TUTOR_VOICE_ID.' });
+  }
+
+  const ttsRes = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}`,
+    {
+      method: 'POST',
+      headers: {
+        'xi-api-key': apiKey,
+        'Content-Type': 'application/json',
+        Accept: 'audio/mpeg',
+      },
+      body: JSON.stringify({
+        text: text.slice(0, 2500),
+        model_id: 'eleven_flash_v2_5',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+      }),
+    }
+  );
+
+  if (!ttsRes.ok) {
+    const err = await ttsRes.text();
+    return res.status(ttsRes.status).json({ error: `ElevenLabs error: ${err}` });
+  }
+
+  res.setHeader('Content-Type', 'audio/mpeg');
+  const buf = await ttsRes.arrayBuffer();
+  res.send(Buffer.from(buf));
 });

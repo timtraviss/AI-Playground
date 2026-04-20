@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scenario Editor — P.E.A.C.E. Tutor</title>
+  <title>Admin — Traviss.org</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -14,152 +14,248 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 60px 24px;
+      padding: 60px 24px 80px;
     }
-    .container {
-      width: 100%;
-      max-width: 560px;
+    .container { width: 100%; max-width: 600px; }
+    h1 { font-size: 22px; font-weight: 700; color: #e8c96a; margin-bottom: 8px; }
+    .subtitle { font-size: 13px; color: #64748b; margin-bottom: 40px; }
+    .section { margin-bottom: 48px; }
+    .section-title {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #64748b;
+      border-bottom: 1px solid #21262d; padding-bottom: 8px; margin-bottom: 24px;
     }
-    h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: #e8c96a;
-      margin-bottom: 8px;
-    }
-    .subtitle {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 40px;
-    }
-    .field { margin-bottom: 24px; }
+    .field { margin-bottom: 20px; }
     label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #94a3b8;
-      margin-bottom: 8px;
+      display: block; font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #94a3b8; margin-bottom: 8px;
     }
-    textarea, input[type="password"] {
-      width: 100%;
-      background: #161b22;
-      border: 1px solid #21262d;
-      border-radius: 8px;
-      color: #e2e8f0;
-      font-family: inherit;
-      font-size: 14px;
-      line-height: 1.6;
-      padding: 12px 14px;
-      resize: vertical;
-      transition: border-color 0.15s;
+    textarea, input[type="text"], input[type="password"] {
+      width: 100%; background: #161b22; border: 1px solid #21262d;
+      border-radius: 8px; color: #e2e8f0; font-family: inherit;
+      font-size: 14px; line-height: 1.6; padding: 12px 14px;
+      resize: vertical; transition: border-color 0.15s;
     }
-    textarea:focus, input[type="password"]:focus {
-      outline: none;
-      border-color: #e8c96a;
+    textarea:focus, input:focus { outline: none; border-color: #e8c96a; }
+    input[type="text"], input[type="password"] { resize: none; }
+    .btn {
+      width: 100%; background: #e8c96a; color: #0d1117;
+      border: none; border-radius: 8px; font-size: 15px;
+      font-weight: 700; padding: 14px; cursor: pointer;
+      transition: opacity 0.15s; margin-top: 8px;
     }
-    input[type="password"] { resize: none; }
-    .btn-save {
-      width: 100%;
-      background: #e8c96a;
-      color: #0d1117;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 700;
-      padding: 14px;
-      cursor: pointer;
-      transition: opacity 0.15s;
-      margin-top: 8px;
+    .btn:hover { opacity: 0.88; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-danger {
+      background: transparent; color: #f87171;
+      border: 1px solid rgba(248,113,113,0.3);
+      width: auto; padding: 6px 12px; font-size: 13px; font-weight: 600;
+      border-radius: 6px; cursor: pointer; margin-top: 0;
     }
-    .btn-save:hover { opacity: 0.88; }
-    .btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-danger:hover { background: rgba(248,113,113,0.1); }
     .msg {
-      margin-top: 16px;
-      font-size: 14px;
-      padding: 12px 14px;
-      border-radius: 8px;
-      display: none;
+      margin-top: 16px; font-size: 14px; padding: 12px 14px;
+      border-radius: 8px; display: none;
     }
     .msg.success { display: block; background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
     .msg.error   { display: block; background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+    .modules-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    .modules-table th {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #64748b; text-align: left;
+      padding: 8px 12px; border-bottom: 1px solid #21262d;
+    }
+    .modules-table td {
+      padding: 12px; font-size: 14px; border-bottom: 1px solid #161b22;
+      vertical-align: middle;
+    }
+    .modules-table td:last-child { text-align: right; }
+    .empty-state { color: #64748b; font-size: 14px; padding: 16px 0; }
+    .file-label {
+      display: block; background: #161b22; border: 1px solid #21262d;
+      border-radius: 8px; padding: 11px 14px; font-size: 14px;
+      color: #64748b; cursor: pointer; transition: border-color 0.15s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .file-label:hover { border-color: #e8c96a; }
+    input[type="file"] { display: none; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>P.E.A.C.E. Scenario Editor</h1>
-    <p class="subtitle">Changes take effect immediately on the interview page.</p>
+    <h1>Admin</h1>
+    <p class="subtitle">Server-side configuration for all tools.</p>
 
-    <div class="field">
-      <label for="briefing">Scenario Briefing</label>
-      <textarea id="briefing" rows="4" placeholder="Loading…"></textarea>
+    <!-- ── Scenario Editor ───────────────────────────── -->
+    <div class="section">
+      <div class="section-title">P.E.A.C.E. Scenario Editor</div>
+      <div class="field">
+        <label for="briefing">Scenario Briefing</label>
+        <textarea id="briefing" rows="4" placeholder="Loading…"></textarea>
+      </div>
+      <div class="field">
+        <label for="task">Your Task</label>
+        <textarea id="task" rows="4" placeholder="Loading…"></textarea>
+      </div>
+      <div class="field">
+        <label for="password-scenario">Admin Password</label>
+        <input type="password" id="password-scenario" placeholder="Enter password to save" />
+      </div>
+      <button class="btn" id="btn-save-scenario">Save Scenario</button>
+      <div class="msg" id="msg-scenario"></div>
     </div>
 
-    <div class="field">
-      <label for="task">Your Task</label>
-      <textarea id="task" rows="4" placeholder="Loading…"></textarea>
+    <!-- ── Knowledge Base ─────────────────────────────── -->
+    <div class="section">
+      <div class="section-title">DDP Tutor — Knowledge Base</div>
+
+      <div class="field">
+        <label for="module-name">Module Display Name</label>
+        <input type="text" id="module-name" placeholder="e.g. Arson &amp; Intentional Damage" />
+      </div>
+      <div class="field">
+        <label>Module File (.docx)</label>
+        <label class="file-label" id="file-label" for="module-file">Choose file…</label>
+        <input type="file" id="module-file" accept=".docx" />
+      </div>
+      <div class="field">
+        <label for="password-kb">Admin Password</label>
+        <input type="password" id="password-kb" placeholder="Required to upload" />
+      </div>
+      <button class="btn" id="btn-upload">Convert &amp; Save Module</button>
+      <div class="msg" id="msg-upload"></div>
+
+      <table class="modules-table" id="modules-table" style="margin-top:32px">
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>Last Updated</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="modules-body">
+          <tr><td colspan="3" class="empty-state">Loading…</td></tr>
+        </tbody>
+      </table>
     </div>
-
-    <div class="field">
-      <label for="password">Admin Password</label>
-      <input type="password" id="password" placeholder="Enter password to save" />
-    </div>
-
-    <button class="btn-save" id="btn-save">Save Changes</button>
-
-    <div class="msg" id="msg"></div>
   </div>
 
   <script>
-    const briefingEl = document.getElementById('briefing');
-    const taskEl     = document.getElementById('task');
-    const passwordEl = document.getElementById('password');
-    const btnSave    = document.getElementById('btn-save');
-    const msgEl      = document.getElementById('msg');
+    // ── Scenario editor ────────────────────────────────
+    const briefingEl       = document.getElementById('briefing');
+    const taskEl           = document.getElementById('task');
+    const passwordScenario = document.getElementById('password-scenario');
+    const btnSaveScenario  = document.getElementById('btn-save-scenario');
+    const msgScenario      = document.getElementById('msg-scenario');
 
-    // Load current scenario
     fetch('/api/admin/scenario')
       .then(r => r.json())
-      .then(d => {
-        briefingEl.value = d.briefing || '';
-        taskEl.value     = d.task || '';
-      })
-      .catch(() => {
-        briefingEl.placeholder = 'Failed to load scenario.';
-      });
+      .then(d => { briefingEl.value = d.briefing || ''; taskEl.value = d.task || ''; })
+      .catch(() => { briefingEl.placeholder = 'Failed to load.'; });
 
-    btnSave.addEventListener('click', async () => {
-      msgEl.className = 'msg';
-      btnSave.disabled = true;
-      btnSave.textContent = 'Saving…';
-
+    btnSaveScenario.addEventListener('click', async () => {
+      showMsg(msgScenario, '', '');
+      btnSaveScenario.disabled = true;
+      btnSaveScenario.textContent = 'Saving…';
       try {
         const res = await fetch('/api/admin/scenario', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            password: passwordEl.value,
-            briefing: briefingEl.value,
-            task:     taskEl.value,
-          }),
+          body: JSON.stringify({ password: passwordScenario.value, briefing: briefingEl.value, task: taskEl.value }),
         });
         const data = await res.json();
-        if (res.ok) {
-          msgEl.textContent = 'Saved successfully.';
-          msgEl.className   = 'msg success';
-          passwordEl.value  = '';
-        } else {
-          msgEl.textContent = data.error || 'Save failed.';
-          msgEl.className   = 'msg error';
-        }
-      } catch {
-        msgEl.textContent = 'Network error — is the server running?';
-        msgEl.className   = 'msg error';
-      } finally {
-        btnSave.disabled = false;
-        btnSave.textContent = 'Save Changes';
-      }
+        if (res.ok) { showMsg(msgScenario, 'Saved successfully.', 'success'); passwordScenario.value = ''; }
+        else showMsg(msgScenario, data.error || 'Save failed.', 'error');
+      } catch { showMsg(msgScenario, 'Network error.', 'error'); }
+      finally { btnSaveScenario.disabled = false; btnSaveScenario.textContent = 'Save Scenario'; }
     });
+
+    // ── Knowledge Base ─────────────────────────────────
+    const moduleNameEl = document.getElementById('module-name');
+    const moduleFileEl = document.getElementById('module-file');
+    const fileLabelEl  = document.getElementById('file-label');
+    const passwordKb   = document.getElementById('password-kb');
+    const btnUpload    = document.getElementById('btn-upload');
+    const msgUpload    = document.getElementById('msg-upload');
+    const modulesBody  = document.getElementById('modules-body');
+
+    moduleFileEl.addEventListener('change', () => {
+      fileLabelEl.textContent = moduleFileEl.files[0]?.name || 'Choose file…';
+    });
+
+    async function loadModules() {
+      try {
+        const modules = await fetch('/api/tutor/modules').then(r => r.json());
+        if (!modules.length) {
+          modulesBody.innerHTML = '<tr><td colspan="3" class="empty-state">No modules uploaded yet.</td></tr>';
+          return;
+        }
+        modulesBody.innerHTML = modules.map(m => `
+          <tr data-id="${m.id}">
+            <td>${m.name}</td>
+            <td style="color:#64748b;font-size:13px">${new Date(m.updatedAt).toLocaleDateString('en-NZ')}</td>
+            <td><button class="btn-danger" onclick="deleteModule('${m.id}', '${m.name}')">Delete</button></td>
+          </tr>`).join('');
+      } catch {
+        modulesBody.innerHTML = '<tr><td colspan="3" class="empty-state">Failed to load modules.</td></tr>';
+      }
+    }
+
+    btnUpload.addEventListener('click', async () => {
+      const name = moduleNameEl.value.trim();
+      const file = moduleFileEl.files[0];
+      const password = passwordKb.value;
+      if (!name) return showMsg(msgUpload, 'Module display name is required.', 'error');
+      if (!file)  return showMsg(msgUpload, 'Please select a .docx file.', 'error');
+      if (!password) return showMsg(msgUpload, 'Admin password is required.', 'error');
+
+      showMsg(msgUpload, '', '');
+      btnUpload.disabled = true;
+      btnUpload.textContent = 'Converting…';
+
+      const fd = new FormData();
+      fd.append('module', file);
+      fd.append('name', name);
+      fd.append('password', password);
+
+      try {
+        const res = await fetch('/api/tutor/knowledge/upload', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (res.ok) {
+          showMsg(msgUpload, `"${data.name}" saved successfully.`, 'success');
+          moduleNameEl.value = '';
+          moduleFileEl.value = '';
+          fileLabelEl.textContent = 'Choose file…';
+          loadModules();
+        } else {
+          showMsg(msgUpload, data.error || 'Upload failed.', 'error');
+        }
+      } catch { showMsg(msgUpload, 'Network error.', 'error'); }
+      finally { btnUpload.disabled = false; btnUpload.textContent = 'Convert & Save Module'; }
+    });
+
+    async function deleteModule(id, name) {
+      const password = prompt(`Enter admin password to delete "${name}":`);
+      if (!password) return;
+      try {
+        const res = await fetch(`/api/tutor/knowledge/${id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+        if (res.ok) loadModules();
+        else alert(data.error || 'Delete failed.');
+      } catch { alert('Network error.'); }
+    }
+
+    function showMsg(el, text, type) {
+      el.textContent = text;
+      el.className = type ? `msg ${type}` : 'msg';
+    }
+
+    loadModules();
   </script>
 </body>
 </html>

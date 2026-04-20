@@ -187,16 +187,38 @@
     async function loadModules() {
       try {
         const modules = await fetch('/api/tutor/modules').then(r => r.json());
+        modulesBody.replaceChildren();
         if (!modules.length) {
-          modulesBody.innerHTML = '<tr><td colspan="3" class="empty-state">No modules uploaded yet.</td></tr>';
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 3;
+          td.className = 'empty-state';
+          td.textContent = 'No modules uploaded yet.';
+          tr.appendChild(td);
+          modulesBody.appendChild(tr);
           return;
         }
-        modulesBody.innerHTML = modules.map(m => `
-          <tr data-id="${m.id}">
-            <td>${m.name}</td>
-            <td style="color:#64748b;font-size:13px">${new Date(m.updatedAt).toLocaleDateString('en-NZ')}</td>
-            <td><button class="btn-danger" onclick="deleteModule('${m.id}', '${m.name}')">Delete</button></td>
-          </tr>`).join('');
+        for (const m of modules) {
+          const tr = document.createElement('tr');
+          tr.dataset.id = m.id;
+
+          const tdName = document.createElement('td');
+          tdName.textContent = m.name;
+
+          const tdDate = document.createElement('td');
+          tdDate.style.cssText = 'color:#64748b;font-size:13px';
+          tdDate.textContent = new Date(m.updatedAt).toLocaleDateString('en-NZ');
+
+          const tdAction = document.createElement('td');
+          const btn = document.createElement('button');
+          btn.className = 'btn-danger';
+          btn.textContent = 'Delete';
+          btn.addEventListener('click', () => deleteModule(m.id, m.name));
+          tdAction.appendChild(btn);
+
+          tr.append(tdName, tdDate, tdAction);
+          modulesBody.appendChild(tr);
+        }
       } catch {
         modulesBody.innerHTML = '<tr><td colspan="3" class="empty-state">Failed to load modules.</td></tr>';
       }

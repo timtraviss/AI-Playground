@@ -177,6 +177,30 @@
     .voice-unsupported {
       font-size: 12px; color: #64748b; text-align: center; margin-top: 8px; display: none;
     }
+    .voice-placeholder {
+      flex: 1; background: #161b22; border: 1px solid #21262d;
+      border-radius: 12px; min-height: 48px; padding: 0 16px;
+      display: none; align-items: center; justify-content: center; gap: 8px;
+    }
+    .voice-placeholder.visible { display: flex; }
+    .voice-placeholder.listening { border-color: #f87171; }
+    .voice-placeholder-text { color: #64748b; font-size: 14px; }
+    .voice-placeholder.listening .voice-placeholder-text { display: none; }
+    .waveform { display: none; gap: 3px; align-items: center; height: 24px; }
+    .voice-placeholder.listening .waveform { display: flex; }
+    .waveform-bar {
+      width: 3px; height: 6px; background: #f87171; border-radius: 2px;
+      animation: wave 0.8s ease-in-out infinite;
+    }
+    .waveform-bar:nth-child(1) { animation-delay: 0s; }
+    .waveform-bar:nth-child(2) { animation-delay: 0.1s; }
+    .waveform-bar:nth-child(3) { animation-delay: 0.2s; }
+    .waveform-bar:nth-child(4) { animation-delay: 0.1s; }
+    .waveform-bar:nth-child(5) { animation-delay: 0s; }
+    @keyframes wave {
+      0%, 100% { height: 6px; }
+      50% { height: 22px; }
+    }
   </style>
 </head>
 <body>
@@ -241,6 +265,16 @@
           <textarea id="user-input" rows="1" placeholder="Ask a question about this module…"></textarea>
           <button class="btn-send" id="btn-send" title="Send">➤</button>
           <button class="mic-btn" id="mic-btn" title="Tap to speak">🎤</button>
+          <div class="voice-placeholder" id="voice-placeholder">
+            <div class="waveform">
+              <div class="waveform-bar"></div>
+              <div class="waveform-bar"></div>
+              <div class="waveform-bar"></div>
+              <div class="waveform-bar"></div>
+              <div class="waveform-bar"></div>
+            </div>
+            <span class="voice-placeholder-text">Tap the mic to speak</span>
+          </div>
         </div>
         <div class="voice-unsupported" id="voice-unsupported">
           Voice input is not supported in this browser. Use Chrome or Edge.
@@ -277,6 +311,7 @@
     const btnTextMode   = document.getElementById('btn-text-mode');
     const btnVoiceMode  = document.getElementById('btn-voice-mode');
     const voiceUnsupported = document.getElementById('voice-unsupported');
+    const voicePlaceholder = document.getElementById('voice-placeholder');
 
     // ── Load modules ─────────────────────────────────────
     fetch('/api/tutor/modules')
@@ -406,7 +441,7 @@
       } finally {
         isStreaming = false;
         btnSend.disabled = false;
-        userInput.focus();
+        if (!voiceMode) userInput.focus();
       }
     }
 
@@ -485,11 +520,13 @@
       recognition.onresult = (e) => {
         const transcript = e.results[0][0].transcript;
         micBtn.classList.remove('listening');
+        voicePlaceholder.classList.remove('listening');
         sendMessage(transcript);
       };
 
       recognition.onerror = (e) => {
         micBtn.classList.remove('listening');
+        voicePlaceholder.classList.remove('listening');
         const msg = e.error === 'not-allowed'
           ? 'Microphone access denied. Allow microphone permission in your browser settings.'
           : e.error === 'network'
@@ -498,17 +535,22 @@
         voiceUnsupported.textContent = msg;
         voiceUnsupported.style.display = 'block';
       };
-      recognition.onend = () => micBtn.classList.remove('listening');
+      recognition.onend = () => {
+        micBtn.classList.remove('listening');
+        voicePlaceholder.classList.remove('listening');
+      };
 
       micBtn.addEventListener('click', () => {
         if (isStreaming) return;
         if (micBtn.classList.contains('listening')) {
           recognition.stop();
           micBtn.classList.remove('listening');
+          voicePlaceholder.classList.remove('listening');
         } else {
           voiceUnsupported.style.display = 'none';
           recognition.start();
           micBtn.classList.add('listening');
+          voicePlaceholder.classList.add('listening');
         }
       });
     } else {
@@ -522,6 +564,8 @@
       userInput.style.display = '';
       btnSend.style.display = '';
       if (SpeechRecognition) micBtn.style.display = 'none';
+      voicePlaceholder.classList.remove('visible');
+      voicePlaceholder.classList.remove('listening');
       voiceUnsupported.style.display = 'none';
     });
 
@@ -536,6 +580,7 @@
       userInput.style.display = 'none';
       btnSend.style.display = 'none';
       micBtn.style.display = 'flex';
+      voicePlaceholder.classList.add('visible');
     });
 
     // ── TTS ──────────────────────────────────────────────

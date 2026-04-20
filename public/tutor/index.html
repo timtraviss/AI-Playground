@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/nav.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <style>
     html, body {
       background: #0d1117; color: #e2e8f0;
@@ -103,6 +105,20 @@
     .message.assistant .bubble {
       background: #161b22; border: 1px solid #21262d;
       border-bottom-left-radius: 4px;
+    }
+    .message.assistant .bubble p { margin: 0 0 10px; }
+    .message.assistant .bubble p:last-child { margin-bottom: 0; }
+    .message.assistant .bubble ul, .message.assistant .bubble ol { margin: 0 0 10px; padding-left: 20px; }
+    .message.assistant .bubble li { margin-bottom: 4px; }
+    .message.assistant .bubble strong { color: #e8c96a; }
+    .message.assistant .bubble h1, .message.assistant .bubble h2, .message.assistant .bubble h3 {
+      color: #e2e8f0; margin: 12px 0 6px; font-size: 15px;
+    }
+    .message.assistant .bubble blockquote {
+      border-left: 3px solid #e8c96a; margin: 8px 0; padding-left: 12px; color: #94a3b8;
+    }
+    .message.assistant .bubble code {
+      background: #0d1117; border-radius: 4px; padding: 2px 5px; font-size: 13px;
     }
     .avatar {
       width: 32px; height: 32px; border-radius: 50%;
@@ -364,7 +380,7 @@
               if (error) { bubbleEl.textContent = `Error: ${error}`; return; }
               if (chunk) {
                 fullText += chunk;
-                bubbleEl.textContent = fullText;
+                bubbleEl.innerHTML = DOMPurify.sanitize(marked.parse(fullText));
                 chatMessages.scrollTop = chatMessages.scrollHeight;
               }
             } catch {}
@@ -404,7 +420,11 @@
 
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-      bubble.textContent = text;
+      if (role === 'assistant') {
+        bubble.innerHTML = DOMPurify.sanitize(marked.parse(text));
+      } else {
+        bubble.textContent = text;
+      }
       col.appendChild(bubble);
 
       if (role === 'assistant') {

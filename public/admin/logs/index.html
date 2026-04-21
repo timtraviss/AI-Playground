@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Access Logs — Traviss.org</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/css/nav.css" />
   <style>
     :root {
       --bg:         #0d1117;
@@ -106,6 +107,27 @@
   </style>
 </head>
 <body>
+
+<!-- Shared hamburger nav -->
+<nav class="site-nav" id="site-nav">
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-drawer" id="nav-drawer">
+    <div class="nav-logo"><a href="/">Traviss.org</a></div>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+      <li><a href="/tutor/">DDP Tutor</a></li>
+      <li><a href="/podcast-reviewer/">Podcast Reviewer</a></li>
+      <li><a href="/podcast-converter/">Podcast Converter</a></li>
+      <li><a href="/proofreader/">Module Proofreader</a></li>
+      <li><a href="/l3-reviewer/">L3 Interview Reviewer</a></li>
+      <li style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.08);padding-top:12px"><a href="/admin" class="active">Admin</a></li>
+    </ul>
+  </div>
+  <div class="nav-overlay" id="nav-overlay"></div>
+</nav>
 
 <!-- Auth gate -->
 <div id="auth-gate">
@@ -219,6 +241,7 @@
   </div>
 </div>
 
+<script src="/js/nav.js" defer></script>
 <script>
 let PASSWORD = '';
 let chartInstance = null;

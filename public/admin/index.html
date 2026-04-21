@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Traviss.org</title>
+  <link rel="stylesheet" href="/css/nav.css" />
+  <link rel="stylesheet" href="/shared/theme.css" />
   <style>
     :root {
       --bg:           #0d1117;
@@ -23,7 +25,7 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 60px 24px 80px;
+      padding: 80px 24px 80px;
     }
     .container { width: 100%; max-width: 600px; }
     h1 { font-size: 22px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
@@ -89,205 +91,254 @@
     }
     .file-label:hover { border-color: var(--gold); }
     input[type="file"] { display: none; }
+
+    /* Auth gate */
+    #auth-gate { max-width: 360px; margin: 40px auto; }
+    #auth-gate h2 { font-size: 18px; color: var(--gold); margin-bottom: 6px; }
+    #auth-gate p  { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    #auth-gate input {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 14px;
+      padding: 12px 14px; margin-bottom: 12px; resize: none;
+    }
+    #auth-gate input:focus { outline: none; border-color: var(--gold); }
+    #auth-gate button {
+      width: 100%; background: var(--gold); color: var(--gold-on-dark);
+      font-size: 15px; font-weight: 700; padding: 14px;
+      border: none; border-radius: 8px; cursor: pointer;
+    }
+    #auth-gate button:hover { opacity: 0.88; }
+    #auth-error { font-size: 13px; color: #f87171; margin-top: 10px; display: none; }
   </style>
-  <link rel="stylesheet" href="/shared/theme.css" />
 </head>
 <body>
+
+  <!-- Shared hamburger nav -->
+  <nav class="site-nav" id="site-nav">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-drawer" id="nav-drawer">
+      <div class="nav-logo"><a href="/">Traviss.org</a></div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+        <li><a href="/tutor/">DDP Tutor</a></li>
+        <li><a href="/podcast-reviewer/">Podcast Reviewer</a></li>
+        <li><a href="/podcast-converter/">Podcast Converter</a></li>
+        <li><a href="/proofreader/">Module Proofreader</a></li>
+        <li><a href="/l3-reviewer/">L3 Interview Reviewer</a></li>
+        <li style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.08);padding-top:12px"><a href="/admin" class="active">Admin</a></li>
+      </ul>
+    </div>
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </nav>
+
   <div class="container">
-    <a href="/" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);text-decoration:none;margin-bottom:28px;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text-muted)'">← Back to site</a>
-    <h1>Admin</h1>
-    <p class="subtitle">Server-side configuration for all tools. &nbsp;·&nbsp; <a href="/admin/logs" style="color:var(--gold);text-decoration:none;">View Access Logs →</a></p>
 
-    <!-- ── Scenario Editor ───────────────────────────── -->
-    <div class="section">
-      <div class="section-title">P.E.A.C.E. Scenario Editor</div>
-      <div class="field">
-        <label for="briefing">Scenario Briefing</label>
-        <textarea id="briefing" rows="4" placeholder="Loading…"></textarea>
-      </div>
-      <div class="field">
-        <label for="task">Your Task</label>
-        <textarea id="task" rows="4" placeholder="Loading…"></textarea>
-      </div>
-      <div class="field">
-        <label for="password-scenario">Admin Password</label>
-        <input type="password" id="password-scenario" placeholder="Enter password to save" />
-      </div>
-      <button class="btn" id="btn-save-scenario">Save Scenario</button>
-      <div class="msg" id="msg-scenario"></div>
+    <!-- Auth gate -->
+    <div id="auth-gate">
+      <h2>Admin</h2>
+      <p>Enter your admin password to continue.</p>
+      <input type="password" id="pw-input" placeholder="Admin password" />
+      <button onclick="login()">Sign In</button>
+      <div id="auth-error">Incorrect password.</div>
     </div>
 
-    <!-- ── Knowledge Base ─────────────────────────────── -->
-    <div class="section">
-      <div class="section-title">DDP Tutor — Knowledge Base</div>
+    <!-- Admin content (hidden until authenticated) -->
+    <div id="admin-content" style="display:none">
+      <h1>Admin</h1>
+      <p class="subtitle">Server-side configuration for all tools. &nbsp;·&nbsp; <a href="/admin/logs" style="color:var(--gold);text-decoration:none;">View Access Logs →</a></p>
 
-      <div class="field">
-        <label for="module-name">Module Display Name</label>
-        <input type="text" id="module-name" placeholder="e.g. Arson &amp; Intentional Damage" />
+      <!-- ── Scenario Editor ───────────────────────────── -->
+      <div class="section">
+        <div class="section-title">P.E.A.C.E. Scenario Editor</div>
+        <div class="field">
+          <label for="briefing">Scenario Briefing</label>
+          <textarea id="briefing" rows="4" placeholder="Loading…"></textarea>
+        </div>
+        <div class="field">
+          <label for="task">Your Task</label>
+          <textarea id="task" rows="4" placeholder="Loading…"></textarea>
+        </div>
+        <button class="btn" id="btn-save-scenario">Save Scenario</button>
+        <div class="msg" id="msg-scenario"></div>
       </div>
-      <div class="field">
-        <label>Module File (.docx)</label>
-        <label class="file-label" id="file-label" for="module-file">Choose file…</label>
-        <input type="file" id="module-file" accept=".docx" />
-      </div>
-      <div class="field">
-        <label for="password-kb">Admin Password</label>
-        <input type="password" id="password-kb" placeholder="Required to upload" />
-      </div>
-      <button class="btn" id="btn-upload">Convert &amp; Save Module</button>
-      <div class="msg" id="msg-upload"></div>
 
-      <table class="modules-table" id="modules-table" style="margin-top:32px">
-        <thead>
-          <tr>
-            <th>Module</th>
-            <th>Last Updated</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="modules-body">
-          <tr><td colspan="3" class="empty-state">Loading…</td></tr>
-        </tbody>
-      </table>
+      <!-- ── Knowledge Base ─────────────────────────────── -->
+      <div class="section">
+        <div class="section-title">DDP Tutor — Knowledge Base</div>
+        <div class="field">
+          <label for="module-name">Module Display Name</label>
+          <input type="text" id="module-name" placeholder="e.g. Arson &amp; Intentional Damage" />
+        </div>
+        <div class="field">
+          <label>Module File (.docx)</label>
+          <label class="file-label" id="file-label" for="module-file">Choose file…</label>
+          <input type="file" id="module-file" accept=".docx" />
+        </div>
+        <button class="btn" id="btn-upload">Convert &amp; Save Module</button>
+        <div class="msg" id="msg-upload"></div>
+
+        <table class="modules-table" id="modules-table" style="margin-top:32px">
+          <thead>
+            <tr><th>Module</th><th>Last Updated</th><th></th></tr>
+          </thead>
+          <tbody id="modules-body">
+            <tr><td colspan="3" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
   </div>
 
   <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark">☀️</button>
   <script src="/shared/theme.js"></script>
+  <script src="/js/nav.js" defer></script>
   <script>
+    let ADMIN_PASSWORD = '';
+
+    function login() {
+      const pw = document.getElementById('pw-input').value;
+      if (!pw) return;
+      // Verify against the logs API (requires admin password)
+      fetch('/api/logs/summary', { headers: { 'x-admin-password': pw } })
+        .then(res => {
+          if (res.status === 401) {
+            document.getElementById('auth-error').style.display = 'block';
+            return;
+          }
+          ADMIN_PASSWORD = pw;
+          document.getElementById('auth-gate').style.display    = 'none';
+          document.getElementById('admin-content').style.display = 'block';
+          initAdmin();
+        })
+        .catch(() => { document.getElementById('auth-error').style.display = 'block'; });
+    }
+
+    document.getElementById('pw-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') login();
+    });
+
+    function initAdmin() {
+      // Load scenario
+      fetch('/api/admin/scenario')
+        .then(r => r.json())
+        .then(d => {
+          document.getElementById('briefing').value = d.briefing || '';
+          document.getElementById('task').value     = d.task || '';
+        })
+        .catch(() => { document.getElementById('briefing').placeholder = 'Failed to load.'; });
+
+      loadModules();
+    }
+
     // ── Scenario editor ────────────────────────────────
-    const briefingEl       = document.getElementById('briefing');
-    const taskEl           = document.getElementById('task');
-    const passwordScenario = document.getElementById('password-scenario');
-    const btnSaveScenario  = document.getElementById('btn-save-scenario');
-    const msgScenario      = document.getElementById('msg-scenario');
-
-    fetch('/api/admin/scenario')
-      .then(r => r.json())
-      .then(d => { briefingEl.value = d.briefing || ''; taskEl.value = d.task || ''; })
-      .catch(() => { briefingEl.placeholder = 'Failed to load.'; });
-
-    btnSaveScenario.addEventListener('click', async () => {
-      showMsg(msgScenario, '', '');
-      btnSaveScenario.disabled = true;
-      btnSaveScenario.textContent = 'Saving…';
+    document.getElementById('btn-save-scenario').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-save-scenario');
+      const msg = document.getElementById('msg-scenario');
+      showMsg(msg, '', '');
+      btn.disabled = true; btn.textContent = 'Saving…';
       try {
         const res = await fetch('/api/admin/scenario', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: passwordScenario.value, briefing: briefingEl.value, task: taskEl.value }),
+          body: JSON.stringify({
+            password: ADMIN_PASSWORD,
+            briefing: document.getElementById('briefing').value,
+            task:     document.getElementById('task').value,
+          }),
         });
         const data = await res.json();
-        if (res.ok) { showMsg(msgScenario, 'Saved successfully.', 'success'); passwordScenario.value = ''; }
-        else showMsg(msgScenario, data.error || 'Save failed.', 'error');
-      } catch { showMsg(msgScenario, 'Network error.', 'error'); }
-      finally { btnSaveScenario.disabled = false; btnSaveScenario.textContent = 'Save Scenario'; }
+        if (res.ok) showMsg(msg, 'Saved successfully.', 'success');
+        else showMsg(msg, data.error || 'Save failed.', 'error');
+      } catch { showMsg(msg, 'Network error.', 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Save Scenario'; }
     });
 
     // ── Knowledge Base ─────────────────────────────────
-    const moduleNameEl = document.getElementById('module-name');
-    const moduleFileEl = document.getElementById('module-file');
-    const fileLabelEl  = document.getElementById('file-label');
-    const passwordKb   = document.getElementById('password-kb');
-    const btnUpload    = document.getElementById('btn-upload');
-    const msgUpload    = document.getElementById('msg-upload');
-    const modulesBody  = document.getElementById('modules-body');
-
-    moduleFileEl.addEventListener('change', () => {
-      const file = moduleFileEl.files[0];
-      fileLabelEl.textContent = file?.name || 'Choose file…';
+    document.getElementById('module-file').addEventListener('change', () => {
+      const file = document.getElementById('module-file').files[0];
+      document.getElementById('file-label').textContent = file?.name || 'Choose file…';
       if (file) {
-        const versionMatch = file.name.match(/[_-]v(\d+)/i);
-        if (versionMatch) {
-          const currentName = moduleNameEl.value.trim();
-          if (currentName && !/ v\d+$/i.test(currentName)) {
-            moduleNameEl.value = `${currentName} v${versionMatch[1]}`;
-          }
+        const match = file.name.match(/[_-]v(\d+)/i);
+        if (match) {
+          const name = document.getElementById('module-name').value.trim();
+          if (name && !/ v\d+$/i.test(name))
+            document.getElementById('module-name').value = `${name} v${match[1]}`;
         }
       }
     });
 
     async function loadModules() {
+      const body = document.getElementById('modules-body');
       try {
         const modules = await fetch('/api/tutor/modules').then(r => r.json());
-        modulesBody.replaceChildren();
+        body.replaceChildren();
         if (!modules.length) {
           const tr = document.createElement('tr');
           const td = document.createElement('td');
-          td.colSpan = 3;
-          td.className = 'empty-state';
+          td.colSpan = 3; td.className = 'empty-state';
           td.textContent = 'No modules uploaded yet.';
-          tr.appendChild(td);
-          modulesBody.appendChild(tr);
+          tr.appendChild(td); body.appendChild(tr);
           return;
         }
         for (const m of modules) {
           const tr = document.createElement('tr');
           tr.dataset.id = m.id;
-
           const tdName = document.createElement('td');
           tdName.textContent = m.name;
-
           const tdDate = document.createElement('td');
           tdDate.style.cssText = 'color:var(--text-muted);font-size:13px';
           tdDate.textContent = new Date(m.updatedAt).toLocaleDateString('en-NZ');
-
           const tdAction = document.createElement('td');
           const btn = document.createElement('button');
-          btn.className = 'btn-danger';
-          btn.textContent = 'Delete';
+          btn.className = 'btn-danger'; btn.textContent = 'Delete';
           btn.addEventListener('click', () => deleteModule(m.id, m.name));
           tdAction.appendChild(btn);
-
           tr.append(tdName, tdDate, tdAction);
-          modulesBody.appendChild(tr);
+          body.appendChild(tr);
         }
       } catch {
-        modulesBody.innerHTML = '<tr><td colspan="3" class="empty-state">Failed to load modules.</td></tr>';
+        body.innerHTML = '<tr><td colspan="3" class="empty-state">Failed to load modules.</td></tr>';
       }
     }
 
-    btnUpload.addEventListener('click', async () => {
-      const name = moduleNameEl.value.trim();
-      const file = moduleFileEl.files[0];
-      const password = passwordKb.value;
-      if (!name) return showMsg(msgUpload, 'Module display name is required.', 'error');
-      if (!file)  return showMsg(msgUpload, 'Please select a .docx file.', 'error');
-      if (!password) return showMsg(msgUpload, 'Admin password is required.', 'error');
-
-      showMsg(msgUpload, '', '');
-      btnUpload.disabled = true;
-      btnUpload.textContent = 'Converting…';
-
+    document.getElementById('btn-upload').addEventListener('click', async () => {
+      const name     = document.getElementById('module-name').value.trim();
+      const file     = document.getElementById('module-file').files[0];
+      const msg      = document.getElementById('msg-upload');
+      const btn      = document.getElementById('btn-upload');
+      if (!name) return showMsg(msg, 'Module display name is required.', 'error');
+      if (!file) return showMsg(msg, 'Please select a .docx file.', 'error');
+      showMsg(msg, '', '');
+      btn.disabled = true; btn.textContent = 'Converting…';
       const fd = new FormData();
       fd.append('module', file);
       fd.append('name', name);
-      fd.append('password', password);
-
+      fd.append('password', ADMIN_PASSWORD);
       try {
-        const res = await fetch('/api/tutor/knowledge/upload', { method: 'POST', body: fd });
+        const res  = await fetch('/api/tutor/knowledge/upload', { method: 'POST', body: fd });
         const data = await res.json();
         if (res.ok) {
-          showMsg(msgUpload, `"${name}" saved successfully.`, 'success');
-          moduleNameEl.value = '';
-          moduleFileEl.value = '';
-          fileLabelEl.textContent = 'Choose file…';
+          showMsg(msg, `"${name}" saved successfully.`, 'success');
+          document.getElementById('module-name').value = '';
+          document.getElementById('module-file').value = '';
+          document.getElementById('file-label').textContent = 'Choose file…';
           loadModules();
-        } else {
-          showMsg(msgUpload, data.error || 'Upload failed.', 'error');
-        }
-      } catch { showMsg(msgUpload, 'Network error.', 'error'); }
-      finally { btnUpload.disabled = false; btnUpload.textContent = 'Convert & Save Module'; }
+        } else showMsg(msg, data.error || 'Upload failed.', 'error');
+      } catch { showMsg(msg, 'Network error.', 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Convert & Save Module'; }
     });
 
     async function deleteModule(id, name) {
-      const password = prompt(`Enter admin password to delete "${name}":`);
-      if (!password) return;
+      if (!confirm(`Delete "${name}"?`)) return;
       try {
-        const res = await fetch(`/api/tutor/knowledge/${id}`, {
+        const res  = await fetch(`/api/tutor/knowledge/${id}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password }),
+          body: JSON.stringify({ password: ADMIN_PASSWORD }),
         });
         const data = await res.json();
         if (res.ok) loadModules();
@@ -299,8 +350,6 @@
       el.textContent = text;
       el.className = type ? `msg ${type}` : 'msg';
     }
-
-    loadModules();
   </script>
 </body>
 </html>

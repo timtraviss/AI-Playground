@@ -46,7 +46,7 @@
       font-family: 'Fugaz One', cursive; font-size: clamp(32px, 8vw, 48px);
       color: var(--gold); letter-spacing: 0.02em; line-height: 1.1; margin: 0 0 16px;
     }
-    .desc { color: #94a3b8; font-size: 15px; margin-bottom: 40px; }
+    .desc { color: var(--text-muted); font-size: 15px; margin-bottom: 40px; }
     .select-wrap { position: relative; margin-bottom: 16px; }
     select {
       width: 100%; appearance: none; background: var(--surface);
@@ -97,7 +97,7 @@
     .btn-new {
       padding: 6px 14px; font-size: 13px; font-weight: 600;
       background: transparent; border: 1px solid var(--border); border-radius: 8px;
-      color: #94a3b8; cursor: pointer; transition: border-color 0.15s;
+      color: var(--text-muted); cursor: pointer; transition: border-color 0.15s;
     }
     .btn-new:hover { border-color: var(--gold); color: var(--text); }
 
@@ -131,7 +131,7 @@
       color: var(--text); margin: 12px 0 6px; font-size: 15px;
     }
     .message.assistant .bubble blockquote {
-      border-left: 3px solid var(--gold); margin: 8px 0; padding-left: 12px; color: #94a3b8;
+      border-left: 3px solid var(--gold); margin: 8px 0; padding-left: 12px; color: var(--text-muted);
     }
     .message.assistant .bubble code {
       background: var(--surface); border-radius: 4px; padding: 2px 5px; font-size: 13px;
@@ -169,7 +169,7 @@
       border-radius: 12px; width: 48px; height: 48px;
       font-size: 20px; cursor: pointer; flex-shrink: 0;
       display: none; align-items: center; justify-content: center;
-      transition: all 0.15s; color: #94a3b8;
+      transition: all 0.15s; color: var(--text-muted);
     }
     .mic-btn.visible { display: flex; }
     .mic-btn.listening { background: rgba(248,113,113,0.15); border-color: #f87171; color: #f87171; }

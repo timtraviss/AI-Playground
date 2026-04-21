@@ -9,10 +9,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/nav.css" />
   <style>
+    :root {
+      --bg:           #0d1117;
+      --surface:      #161b22;
+      --border:       #21262d;
+      --text:         #e2e8f0;
+      --text-muted:   #64748b;
+      --text-sub:     #94a3b8;
+      --gold:         #e8c96a;
+      --gold-on-dark: #0d1117;
+    }
+
     /* ── Base ── */
     html, body {
-      background: #0d1117;
-      color: #e2e8f0;
+      background: var(--bg);
+      color: var(--text);
       font-family: system-ui, -apple-system, 'Inter', sans-serif;
       font-size: 15px;
       line-height: 1.6;
@@ -43,7 +54,7 @@
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #e8c96a;
+      color: var(--gold);
       background: rgba(232,201,106,0.1);
       border: 1px solid rgba(232,201,106,0.2);
       padding: 4px 10px;
@@ -54,7 +65,7 @@
       font-family: 'Fugaz One', cursive;
       font-size: clamp(32px, 8vw, 52px);
       font-weight: 400;
-      color: #e8c96a;
+      color: var(--gold);
       letter-spacing: 0.02em;
       line-height: 1.1;
       margin: 0 0 16px;
@@ -63,13 +74,13 @@
       font-family: 'Fugaz One', cursive;
       font-size: 28px;
       font-weight: 400;
-      color: #e2e8f0;
+      color: var(--text);
       margin: 0 0 32px;
       letter-spacing: 0.02em;
     }
     .pr-desc {
       font-size: 15px;
-      color: #94a3b8;
+      color: var(--text-sub);
       line-height: 1.7;
       margin: 0 0 36px;
       max-width: 460px;
@@ -84,7 +95,7 @@
       margin-bottom: 24px;
     }
     .file-field {
-      background: #161b22;
+      background: var(--surface);
       border: 1.5px solid rgba(255,255,255,0.1);
       border-radius: 12px;
       padding: 16px 20px;
@@ -99,7 +110,7 @@
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #64748b;
+      color: var(--text-muted);
       margin-bottom: 6px;
     }
     .file-field-row {
@@ -110,16 +121,16 @@
     }
     .file-field-name {
       font-size: 14px;
-      color: #94a3b8;
+      color: var(--text-sub);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .file-field-name.selected { color: #e8c96a; }
+    .file-field-name.selected { color: var(--gold); }
     .file-field-btn {
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.12);
-      color: #e2e8f0;
+      color: var(--text);
       padding: 5px 14px;
       border-radius: 6px;
       font-size: 13px;
@@ -132,8 +143,8 @@
 
     /* ── Buttons ── */
     .btn-primary {
-      background: #e8c96a;
-      color: #0d1117;
+      background: var(--gold);
+      color: var(--gold-on-dark);
       border: none;
       padding: 14px 36px;
       border-radius: 10px;
@@ -148,7 +159,7 @@
     .btn-primary:not(:disabled):hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-ghost {
       background: rgba(255,255,255,0.06);
-      color: #e2e8f0;
+      color: var(--text);
       border: 1px solid rgba(255,255,255,0.12);
       padding: 10px 20px;
       border-radius: 8px;
@@ -159,7 +170,7 @@
     .btn-ghost:hover { background: rgba(255,255,255,0.1); }
     .file-limit-note {
       font-size: 12px;
-      color: #475569;
+      color: var(--text-muted);
       margin-top: 16px;
     }
 
@@ -174,7 +185,7 @@
     }
     .upload-bar-fill {
       height: 100%;
-      background: #e8c96a;
+      background: var(--gold);
       width: 0%;
       transition: width 0.2s;
     }
@@ -221,7 +232,7 @@
     .step-name {
       font-size: 14px;
       font-weight: 500;
-      color: #475569;
+      color: var(--text-muted);
       transition: color 0.2s;
     }
     .step-note {
@@ -234,12 +245,12 @@
 
     /* Step states */
     .step-item[data-state="active"] .step-dot {
-      border-color: #e8c96a;
+      border-color: var(--gold);
       background: rgba(232,201,106,0.15);
       animation: pulse-dot 1.4s ease-in-out infinite;
     }
-    .step-item[data-state="active"] .step-name { color: #e8c96a; }
-    .step-item[data-state="active"] .step-note { color: #94a3b8; }
+    .step-item[data-state="active"] .step-name { color: var(--gold); }
+    .step-item[data-state="active"] .step-note { color: var(--text-sub); }
     .step-item[data-state="done"] .step-dot {
       border-color: #22c55e;
       background: #22c55e;
@@ -251,13 +262,13 @@
       left: 50%;
       width: 4px;
       height: 7px;
-      border: 2px solid #0d1117;
+      border: 2px solid var(--gold-on-dark);
       border-top: none;
       border-left: none;
       transform: translate(-50%, -60%) rotate(45deg);
     }
-    .step-item[data-state="done"] .step-name { color: #e2e8f0; }
-    .step-item[data-state="done"] .step-note { color: #64748b; }
+    .step-item[data-state="done"] .step-name { color: var(--text); }
+    .step-item[data-state="done"] .step-note { color: var(--text-muted); }
     .step-item[data-state="done"] .step-connector { background: #22c55e; }
     .step-item[data-state="error"] .step-dot { border-color: #ef4444; background: #ef4444; }
     .step-item[data-state="error"] .step-name { color: #ef4444; }
@@ -296,10 +307,10 @@
     .results-title {
       font-family: 'Fugaz One', cursive;
       font-size: 26px;
-      color: #e2e8f0;
+      color: var(--text);
       margin: 0 0 4px;
     }
-    .results-subtitle { font-size: 14px; color: #64748b; margin: 0; }
+    .results-subtitle { font-size: 14px; color: var(--text-muted); margin: 0; }
     .results-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
 
     /* Category pills */
@@ -313,7 +324,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      background: #161b22;
+      background: var(--surface);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 8px;
       padding: 6px 12px;
@@ -322,9 +333,9 @@
     .cat-pill-count {
       font-weight: 600;
       font-size: 15px;
-      color: #e8c96a;
+      color: var(--gold);
     }
-    .cat-pill-label { color: #94a3b8; }
+    .cat-pill-label { color: var(--text-sub); }
 
     /* Critical banner */
     .critical-banner {
@@ -353,13 +364,13 @@
 
     /* Summary quote */
     .summary-quote {
-      background: #161b22;
-      border-left: 3px solid #e8c96a;
+      background: var(--surface);
+      border-left: 3px solid var(--gold);
       border-radius: 0 10px 10px 0;
       padding: 16px 20px;
       margin-bottom: 32px;
       font-size: 14px;
-      color: #94a3b8;
+      color: var(--text-sub);
       font-style: italic;
       text-align: left;
     }
@@ -372,8 +383,8 @@
       gap: 12px;
     }
     .btn-download {
-      background: #e8c96a;
-      color: #0d1117;
+      background: var(--gold);
+      color: var(--gold-on-dark);
       border: none;
       padding: 14px 36px;
       border-radius: 10px;
@@ -387,6 +398,7 @@
     }
     .btn-download:hover { opacity: 0.9; transform: translateY(-1px); }
   </style>
+  <link rel="stylesheet" href="/shared/theme.css" />
 </head>
 <body>
 
@@ -550,6 +562,8 @@
     </div>
   </main>
 
+  <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark">☀️</button>
+  <script src="/shared/theme.js"></script>
   <script src="/js/nav.js" defer></script>
   <script>
     // ── State ──────────────────────────────────────────────────────────────

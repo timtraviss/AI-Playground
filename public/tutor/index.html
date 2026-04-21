@@ -11,8 +11,19 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <style>
+    :root {
+      --bg:               #0d1117;
+      --surface:          #161b22;
+      --border:           #21262d;
+      --text:             #e2e8f0;
+      --text-muted:       #64748b;
+      --gold:             #e8c96a;
+      --gold-on-dark:     #0d1117;
+      --user-bubble-bg:   #e8c96a;
+      --user-bubble-text: #0d1117;
+    }
     html, body {
-      background: #0d1117; color: #e2e8f0;
+      background: var(--bg); color: var(--text);
       font-family: system-ui, -apple-system, 'Inter', sans-serif;
       font-size: 15px; line-height: 1.6; margin: 0;
     }
@@ -27,30 +38,30 @@
     .setup-center { max-width: 480px; width: 100%; text-align: center; }
     .tag {
       font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
-      text-transform: uppercase; color: #e8c96a;
+      text-transform: uppercase; color: var(--gold);
       background: rgba(232,201,106,0.1); border: 1px solid rgba(232,201,106,0.2);
       padding: 4px 10px; border-radius: 100px; display: inline-block; margin-bottom: 24px;
     }
     .title {
       font-family: 'Fugaz One', cursive; font-size: clamp(32px, 8vw, 48px);
-      color: #e8c96a; letter-spacing: 0.02em; line-height: 1.1; margin: 0 0 16px;
+      color: var(--gold); letter-spacing: 0.02em; line-height: 1.1; margin: 0 0 16px;
     }
     .desc { color: #94a3b8; font-size: 15px; margin-bottom: 40px; }
     .select-wrap { position: relative; margin-bottom: 16px; }
     select {
-      width: 100%; appearance: none; background: #161b22;
-      border: 1px solid #21262d; border-radius: 12px;
-      color: #e2e8f0; font-family: inherit; font-size: 16px;
+      width: 100%; appearance: none; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 12px;
+      color: var(--text); font-family: inherit; font-size: 16px;
       padding: 16px 44px 16px 18px; cursor: pointer;
       transition: border-color 0.15s;
     }
-    select:focus { outline: none; border-color: #e8c96a; }
+    select:focus { outline: none; border-color: var(--gold); }
     .select-arrow {
       position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
-      pointer-events: none; color: #64748b;
+      pointer-events: none; color: var(--text-muted);
     }
     .btn-start {
-      width: 100%; background: #e8c96a; color: #0d1117;
+      width: 100%; background: var(--user-bubble-bg); color: var(--user-bubble-text);
       border: none; border-radius: 12px; font-size: 16px;
       font-weight: 700; padding: 16px; cursor: pointer;
       transition: opacity 0.15s; margin-top: 8px;
@@ -65,30 +76,30 @@
     }
     .chat-inner { max-width: 700px; margin: 0 auto; width: 100%; }
     .chat-header {
-      padding: 16px 24px; border-bottom: 1px solid #21262d; flex-shrink: 0;
+      padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
     .chat-header .chat-inner {
       display: flex; align-items: center; justify-content: space-between;
     }
-    .chat-module-name { font-size: 14px; font-weight: 600; color: #e8c96a; }
+    .chat-module-name { font-size: 14px; font-weight: 600; color: var(--gold); }
     .chat-actions { display: flex; align-items: center; gap: 12px; }
     .mode-toggle {
-      display: flex; background: #161b22; border: 1px solid #21262d;
+      display: flex; background: var(--surface); border: 1px solid var(--border);
       border-radius: 8px; overflow: hidden;
     }
     .mode-btn {
       padding: 6px 14px; font-size: 13px; font-weight: 500;
-      background: none; border: none; color: #64748b;
+      background: none; border: none; color: var(--text-muted);
       cursor: pointer; transition: all 0.15s;
     }
-    .mode-btn.active { background: #e8c96a; color: #0d1117; font-weight: 700; }
+    .mode-btn.active { background: var(--user-bubble-bg); color: var(--user-bubble-text); font-weight: 700; }
     .mode-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-new {
       padding: 6px 14px; font-size: 13px; font-weight: 600;
-      background: transparent; border: 1px solid #21262d; border-radius: 8px;
+      background: transparent; border: 1px solid var(--border); border-radius: 8px;
       color: #94a3b8; cursor: pointer; transition: border-color 0.15s;
     }
-    .btn-new:hover { border-color: #e8c96a; color: #e2e8f0; }
+    .btn-new:hover { border-color: var(--gold); color: var(--text); }
 
     .chat-messages {
       flex: 1; overflow-y: auto; padding: 28px 24px;
@@ -104,7 +115,7 @@
       font-size: 15px; line-height: 1.75;
     }
     .message.user .bubble {
-      background: #e8c96a; color: #0d1117; border-radius: 18px 18px 4px 18px;
+      background: var(--user-bubble-bg); color: var(--user-bubble-text); border-radius: 18px 18px 4px 18px;
       padding: 10px 15px; font-weight: 500;
     }
     .message.assistant .bubble {
@@ -115,38 +126,38 @@
     .message.assistant .bubble p:last-child { margin-bottom: 0; }
     .message.assistant .bubble ul, .message.assistant .bubble ol { margin: 0 0 10px; padding-left: 20px; }
     .message.assistant .bubble li { margin-bottom: 4px; }
-    .message.assistant .bubble strong { color: #e8c96a; }
+    .message.assistant .bubble strong { color: var(--gold); }
     .message.assistant .bubble h1, .message.assistant .bubble h2, .message.assistant .bubble h3 {
-      color: #e2e8f0; margin: 12px 0 6px; font-size: 15px;
+      color: var(--text); margin: 12px 0 6px; font-size: 15px;
     }
     .message.assistant .bubble blockquote {
-      border-left: 3px solid #e8c96a; margin: 8px 0; padding-left: 12px; color: #94a3b8;
+      border-left: 3px solid var(--gold); margin: 8px 0; padding-left: 12px; color: #94a3b8;
     }
     .message.assistant .bubble code {
-      background: #161b22; border-radius: 4px; padding: 2px 5px; font-size: 13px;
+      background: var(--surface); border-radius: 4px; padding: 2px 5px; font-size: 13px;
     }
     .replay-btn {
-      background: none; border: none; color: #64748b;
+      background: none; border: none; color: var(--text-muted);
       cursor: pointer; padding: 0; font-size: 12px;
       margin-top: 6px; display: none;
     }
-    .replay-btn:hover { color: #e8c96a; }
+    .replay-btn:hover { color: var(--gold); }
     .replay-btn.visible { display: inline-block; }
 
     .chat-footer {
-      padding: 16px 24px; border-top: 1px solid #21262d; flex-shrink: 0;
+      padding: 16px 24px; border-top: 1px solid var(--border); flex-shrink: 0;
     }
     .input-row { display: flex; gap: 10px; align-items: flex-end; }
     textarea#user-input {
-      flex: 1; background: #161b22; border: 1px solid #21262d;
-      border-radius: 12px; color: #e2e8f0; font-family: inherit;
+      flex: 1; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; color: var(--text); font-family: inherit;
       font-size: 15px; line-height: 1.5; padding: 12px 16px;
       resize: none; min-height: 48px; max-height: 160px;
       transition: border-color 0.15s;
     }
-    textarea#user-input:focus { outline: none; border-color: #e8c96a; }
+    textarea#user-input:focus { outline: none; border-color: var(--gold); }
     .btn-send {
-      background: #e8c96a; color: #0d1117; border: none;
+      background: var(--user-bubble-bg); color: var(--user-bubble-text); border: none;
       border-radius: 12px; width: 48px; height: 48px;
       font-size: 20px; cursor: pointer; flex-shrink: 0;
       transition: opacity 0.15s; display: flex; align-items: center; justify-content: center;
@@ -154,7 +165,7 @@
     .btn-send:hover { opacity: 0.88; }
     .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
     .mic-btn {
-      background: #161b22; border: 1px solid #21262d;
+      background: var(--surface); border: 1px solid var(--border);
       border-radius: 12px; width: 48px; height: 48px;
       font-size: 20px; cursor: pointer; flex-shrink: 0;
       display: none; align-items: center; justify-content: center;
@@ -165,7 +176,7 @@
 
     .typing-indicator { display: flex; gap: 4px; padding: 4px 0; }
     .typing-dot {
-      width: 8px; height: 8px; background: #64748b; border-radius: 50%;
+      width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%;
       animation: bounce 1.2s infinite;
     }
     .typing-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -175,16 +186,16 @@
       30% { transform: translateY(-6px); }
     }
     .voice-unsupported {
-      font-size: 12px; color: #64748b; text-align: center; margin-top: 8px; display: none;
+      font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 8px; display: none;
     }
     .voice-placeholder {
-      flex: 1; background: #161b22; border: 1px solid #21262d;
+      flex: 1; background: var(--surface); border: 1px solid var(--border);
       border-radius: 12px; min-height: 48px; padding: 0 16px;
       display: none; align-items: center; justify-content: center; gap: 8px;
     }
     .voice-placeholder.visible { display: flex; }
     .voice-placeholder.listening { border-color: #f87171; }
-    .voice-placeholder-text { color: #64748b; font-size: 14px; }
+    .voice-placeholder-text { color: var(--text-muted); font-size: 14px; }
     .voice-placeholder.listening .voice-placeholder-text { display: none; }
     .waveform { display: none; gap: 3px; align-items: center; height: 24px; }
     .voice-placeholder.listening .waveform { display: flex; }
@@ -202,6 +213,7 @@
       50% { height: 22px; }
     }
   </style>
+  <link rel="stylesheet" href="/shared/theme.css" />
 </head>
 <body>
 
@@ -283,6 +295,8 @@
     </div>
   </div>
 
+  <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark">☀️</button>
+  <script src="/shared/theme.js"></script>
   <script src="/js/nav.js" defer></script>
   <script>
     // ── State ────────────────────────────────────────────

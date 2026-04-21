@@ -113,7 +113,7 @@ html, body {
 
 .pc-drop-label {
   font-size: 15px;
-  color: #cbd5e1;
+  color: var(--text-sub);
   margin: 0;
   font-weight: 500;
 }
@@ -140,7 +140,7 @@ html, body {
 
 .pc-file-name {
   font-size: 13px;
-  color: #cbd5e1;
+  color: var(--text-sub);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

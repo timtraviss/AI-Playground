@@ -4,6 +4,8 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { requestLogger, errorLogger } from './middleware/logger.js';
+import { logsRouter } from './routes/logs.js';
+import { initDb } from './lib/db.js';
 
 dotenv.config();
 
@@ -43,6 +45,7 @@ app.use('/api/podcast-converter', podcastConverterRouter);
 app.use('/api/proofreader', proofreaderRouter);
 app.use('/api/l3-reviewer', l3ReviewerRouter);
 app.use('/api/tutor', tutorRouter);
+app.use('/api/logs', logsRouter);
 
 // Return JSON for unknown API routes instead of HTML fallback pages.
 app.use('/api', (req, res) => {
@@ -110,6 +113,8 @@ app.use(errorLogger);
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: 'Internal server error' });
 });
+
+await initDb();
 
 app.listen(PORT, () => {
   console.log(`\n  W.I.T.N.E.S.S. Tutor running at http://localhost:${PORT}\n`);

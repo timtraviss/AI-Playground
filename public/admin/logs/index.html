@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Access Logs — Traviss.org</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:         #0d1117;
+      --surface:    #161b22;
+      --border:     #21262d;
+      --text:       #e2e8f0;
+      --muted:      #64748b;
+      --gold:       #e8c96a;
+      --gold-dim:   rgba(232,201,106,0.12);
+      --red:        #f87171;
+      --green:      #4ade80;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 48px 24px 80px;
+    }
+    .page { max-width: 1100px; margin: 0 auto; }
+
+    /* Header */
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; flex-wrap: wrap; gap: 16px; }
+    .header-left a { font-size: 13px; color: var(--muted); text-decoration: none; display: inline-block; margin-bottom: 10px; }
+    .header-left a:hover { color: var(--gold); }
+    h1 { font-size: 22px; font-weight: 700; color: var(--gold); }
+    .btn-refresh {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--gold-dim); border: 1px solid var(--gold);
+      color: var(--gold); font-size: 13px; font-weight: 600;
+      padding: 8px 18px; border-radius: 8px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-refresh:hover { background: rgba(232,201,106,0.22); }
+    .last-updated { font-size: 12px; color: var(--muted); margin-top: 4px; text-align: right; }
+
+    /* Auth gate */
+    #auth-gate { max-width: 360px; margin: 80px auto; }
+    #auth-gate h2 { font-size: 16px; color: var(--gold); margin-bottom: 20px; }
+    #auth-gate input {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 14px;
+      padding: 10px 14px; margin-bottom: 12px;
+    }
+    #auth-gate input:focus { outline: none; border-color: var(--gold); }
+    #auth-gate button {
+      width: 100%; background: var(--gold); color: #0d1117;
+      font-size: 14px; font-weight: 700; padding: 10px;
+      border: none; border-radius: 8px; cursor: pointer;
+    }
+    #auth-error { font-size: 13px; color: var(--red); margin-top: 10px; display: none; }
+
+    /* Summary cards */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px;
+    }
+    .card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+    .card-value { font-size: 28px; font-weight: 700; color: var(--gold); }
+    .card-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* Section */
+    .section { margin-bottom: 40px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+    .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    select {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); font-size: 13px; padding: 6px 10px;
+      border-radius: 6px; cursor: pointer;
+    }
+
+    /* Chart */
+    .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+
+    /* Tables */
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 12px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 10px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--gold-dim); color: var(--gold); }
+    .tag.error { background: rgba(248,113,113,0.12); color: var(--red); }
+    .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: var(--muted); }
+    .status-ok  { color: var(--green); font-weight: 600; }
+    .status-err { color: var(--red);   font-weight: 600; }
+
+    /* Two-col layout */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* Error stack */
+    .stack { font-size: 11px; font-family: monospace; color: var(--muted); white-space: pre-wrap; margin-top: 4px; max-height: 80px; overflow: auto; }
+
+    .empty { padding: 32px; text-align: center; color: var(--muted); font-size: 13px; }
+    .loading { color: var(--muted); font-size: 13px; padding: 16px; }
+  </style>
+</head>
+<body>
+
+<!-- Auth gate -->
+<div id="auth-gate">
+  <h2>Access Logs — Admin</h2>
+  <input type="password" id="pw-input" placeholder="Admin password" />
+  <button onclick="login()">View Logs</button>
+  <div id="auth-error">Incorrect password.</div>
+</div>
+
+<!-- Dashboard (hidden until auth) -->
+<div id="dashboard" style="display:none">
+  <div class="page">
+
+    <div class="header">
+      <div class="header-left">
+        <a href="/admin">← Back to Admin</a>
+        <h1>Access Logs</h1>
+      </div>
+      <div>
+        <button class="btn-refresh" onclick="loadAll()">↻ Refresh</button>
+        <div class="last-updated" id="last-updated"></div>
+      </div>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-label">Visits today</div>
+        <div class="card-value" id="s-visits">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Unique IPs today</div>
+        <div class="card-value" id="s-ips">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Top tool (7 days)</div>
+        <div class="card-value" id="s-tool" style="font-size:18px;padding-top:4px">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Errors (7 days)</div>
+        <div class="card-value" id="s-errors" style="color:var(--red)">—</div>
+      </div>
+    </div>
+
+    <!-- Tool usage chart -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Tool Usage</div>
+        <select id="chart-days" onchange="loadChart()">
+          <option value="7">Last 7 days</option>
+          <option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="tool-chart" height="80"></canvas>
+      </div>
+    </div>
+
+    <!-- Recent requests + errors -->
+    <div class="two-col">
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Recent Requests</div>
+          <select id="filter-tool" onchange="loadRecent()">
+            <option value="">All tools</option>
+            <option value="tutor">Tutor</option>
+            <option value="interview">Interview</option>
+            <option value="podcast-reviewer">Podcast Reviewer</option>
+            <option value="podcast-converter">Podcast Converter</option>
+            <option value="proofreader">Proofreader</option>
+            <option value="l3-reviewer">L3 Reviewer</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Time</th><th>Path</th><th>Tool</th><th>Location</th><th>ms</th></tr></thead>
+            <tbody id="recent-body"><tr><td colspan="5" class="loading">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Recent Errors</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Time</th><th>Path</th><th>Status</th><th>Message</th></tr></thead>
+            <tbody id="errors-body"><tr><td colspan="4" class="loading">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Top IPs -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Top Visitors</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>IP</th><th>Location</th><th>Visits</th><th>Tools Used</th><th>Last Seen</th></tr></thead>
+          <tbody id="ips-body"><tr><td colspan="5" class="loading">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let PASSWORD = '';
+let chartInstance = null;
+
+function login() {
+  const pw = document.getElementById('pw-input').value;
+  if (!pw) return;
+  PASSWORD = pw;
+  loadAll();
+}
+
+document.getElementById('pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+
+function headers() {
+  return { 'x-admin-password': PASSWORD };
+}
+
+async function api(path) {
+  const res = await fetch(path, { headers: headers() });
+  if (res.status === 401) throw new Error('unauthorised');
+  return res.json();
+}
+
+function fmtTime(ts) {
+  const d = new Date(ts);
+  return d.toLocaleString('en-NZ', { dateStyle: 'short', timeStyle: 'short' });
+}
+
+function fmtLocation(country, city) {
+  if (city && country) return `${city}, ${country}`;
+  return country || '—';
+}
+
+async function loadSummary() {
+  const d = await api('/api/logs/summary');
+  document.getElementById('s-visits').textContent = d.visitsToday.toLocaleString();
+  document.getElementById('s-ips').textContent    = d.uniqueIpsToday.toLocaleString();
+  document.getElementById('s-tool').textContent   = d.topTool;
+  document.getElementById('s-errors').textContent = d.errorsWeek.toLocaleString();
+}
+
+async function loadChart() {
+  const days = document.getElementById('chart-days').value;
+  const data = await api(`/api/logs/tools?days=${days}`);
+  const labels = data.map(r => r.tool);
+  const values = data.map(r => parseInt(r.n));
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(document.getElementById('tool-chart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Requests',
+        data: values,
+        backgroundColor: 'rgba(232,201,106,0.7)',
+        borderColor: '#e8c96a',
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#64748b' }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#64748b' }, grid: { color: '#21262d' }, beginAtZero: true },
+      }
+    }
+  });
+}
+
+async function loadRecent() {
+  const tool = document.getElementById('filter-tool').value;
+  const url  = `/api/logs/recent?limit=50${tool ? '&tool=' + tool : ''}`;
+  const rows = await api(url);
+  const tbody = document.getElementById('recent-body');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">No requests yet.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="mono">${fmtTime(r.ts)}</td>
+      <td class="mono" title="${r.path}">${r.path.length > 30 ? r.path.slice(0,30)+'…' : r.path}</td>
+      <td>${r.tool ? `<span class="tag">${r.tool}</span>` : '—'}</td>
+      <td>${fmtLocation(r.country, r.city)}</td>
+      <td class="mono">${r.ms ?? '—'}</td>
+    </tr>`).join('');
+}
+
+async function loadErrors() {
+  const rows = await api('/api/logs/errors?limit=20');
+  const tbody = document.getElementById('errors-body');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">No errors recorded.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="mono">${fmtTime(r.ts)}</td>
+      <td class="mono">${r.path || '—'}</td>
+      <td><span class="tag error">${r.status}</span></td>
+      <td>${r.error_msg || '—'}${r.stack ? `<div class="stack">${r.stack}</div>` : ''}</td>
+    </tr>`).join('');
+}
+
+async function loadTopIps() {
+  const rows = await api('/api/logs/top-ips?limit=10');
+  const tbody = document.getElementById('ips-body');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">No data yet.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="mono">${r.ip}</td>
+      <td>${fmtLocation(r.country, r.city)}</td>
+      <td>${parseInt(r.visits).toLocaleString()}</td>
+      <td>${r.tools_used}</td>
+      <td class="mono">${fmtTime(r.last_seen)}</td>
+    </tr>`).join('');
+}
+
+async function loadAll() {
+  document.getElementById('auth-error').style.display = 'none';
+  try {
+    await Promise.all([loadSummary(), loadChart(), loadRecent(), loadErrors(), loadTopIps()]);
+    document.getElementById('auth-gate').style.display  = 'none';
+    document.getElementById('dashboard').style.display  = 'block';
+    document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-NZ');
+  } catch (e) {
+    if (e.message === 'unauthorised') {
+      document.getElementById('auth-error').style.display = 'block';
+      PASSWORD = '';
+    }
+  }
+}
+</script>
+</body>
+</html>

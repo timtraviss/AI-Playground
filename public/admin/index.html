@@ -5,11 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Traviss.org</title>
   <style>
+    :root {
+      --bg:           #0d1117;
+      --surface:      #161b22;
+      --border:       #21262d;
+      --text:         #e2e8f0;
+      --text-muted:   #64748b;
+      --gold:         #e8c96a;
+      --gold-on-dark: #0d1117;
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: Inter, system-ui, sans-serif;
-      background: #0d1117;
-      color: #e2e8f0;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       align-items: flex-start;
@@ -17,30 +26,30 @@
       padding: 60px 24px 80px;
     }
     .container { width: 100%; max-width: 600px; }
-    h1 { font-size: 22px; font-weight: 700; color: #e8c96a; margin-bottom: 8px; }
-    .subtitle { font-size: 13px; color: #64748b; margin-bottom: 40px; }
+    h1 { font-size: 22px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+    .subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 40px; }
     .section { margin-bottom: 48px; }
     .section-title {
       font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
-      text-transform: uppercase; color: #64748b;
-      border-bottom: 1px solid #21262d; padding-bottom: 8px; margin-bottom: 24px;
+      text-transform: uppercase; color: var(--text-muted);
+      border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 24px;
     }
     .field { margin-bottom: 20px; }
     label {
       display: block; font-size: 12px; font-weight: 600;
       text-transform: uppercase; letter-spacing: 0.08em;
-      color: #94a3b8; margin-bottom: 8px;
+      color: var(--text-muted); margin-bottom: 8px;
     }
     textarea, input[type="text"], input[type="password"] {
-      width: 100%; background: #161b22; border: 1px solid #21262d;
-      border-radius: 8px; color: #e2e8f0; font-family: inherit;
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: inherit;
       font-size: 14px; line-height: 1.6; padding: 12px 14px;
       resize: vertical; transition: border-color 0.15s;
     }
-    textarea:focus, input:focus { outline: none; border-color: #e8c96a; }
+    textarea:focus, input:focus { outline: none; border-color: var(--gold); }
     input[type="text"], input[type="password"] { resize: none; }
     .btn {
-      width: 100%; background: #e8c96a; color: #0d1117;
+      width: 100%; background: var(--gold); color: var(--gold-on-dark);
       border: none; border-radius: 8px; font-size: 15px;
       font-weight: 700; padding: 14px; cursor: pointer;
       transition: opacity 0.15s; margin-top: 8px;
@@ -63,24 +72,25 @@
     .modules-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
     .modules-table th {
       font-size: 11px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.08em; color: #64748b; text-align: left;
-      padding: 8px 12px; border-bottom: 1px solid #21262d;
+      letter-spacing: 0.08em; color: var(--text-muted); text-align: left;
+      padding: 8px 12px; border-bottom: 1px solid var(--border);
     }
     .modules-table td {
-      padding: 12px; font-size: 14px; border-bottom: 1px solid #161b22;
+      padding: 12px; font-size: 14px; border-bottom: 1px solid var(--surface);
       vertical-align: middle;
     }
     .modules-table td:last-child { text-align: right; }
-    .empty-state { color: #64748b; font-size: 14px; padding: 16px 0; }
+    .empty-state { color: var(--text-muted); font-size: 14px; padding: 16px 0; }
     .file-label {
-      display: block; background: #161b22; border: 1px solid #21262d;
+      display: block; background: var(--surface); border: 1px solid var(--border);
       border-radius: 8px; padding: 11px 14px; font-size: 14px;
-      color: #64748b; cursor: pointer; transition: border-color 0.15s;
+      color: var(--text-muted); cursor: pointer; transition: border-color 0.15s;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .file-label:hover { border-color: #e8c96a; }
+    .file-label:hover { border-color: var(--gold); }
     input[type="file"] { display: none; }
   </style>
+  <link rel="stylesheet" href="/shared/theme.css" />
 </head>
 <body>
   <div class="container">
@@ -141,6 +151,8 @@
     </div>
   </div>
 
+  <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark">☀️</button>
+  <script src="/shared/theme.js"></script>
   <script>
     // ── Scenario editor ────────────────────────────────
     const briefingEl       = document.getElementById('briefing');

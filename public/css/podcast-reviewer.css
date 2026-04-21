@@ -1,9 +1,20 @@
+:root {
+  --bg:           #0d1117;
+  --surface:      #161b22;
+  --border:       #21262d;
+  --text:         #e2e8f0;
+  --text-muted:   #64748b;
+  --text-sub:     #94a3b8;
+  --gold:         #e8c96a;
+  --gold-on-dark: #0d1117;
+}
+
 /* ── Podcast Reviewer — Page Styles ───────────────────────────────────────── */
 
 /* Dark base — styles.css is not loaded on this page */
 html, body {
-  background: #0d1117;
-  color: #e2e8f0;
+  background: var(--bg);
+  color: var(--text);
   font-family: system-ui, -apple-system, 'Inter', sans-serif;
   font-size: 15px;
   line-height: 1.6;
@@ -37,7 +48,7 @@ html, body {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #e8c96a;
+  color: var(--gold);
   background: rgba(232,201,106,0.1);
   border: 1px solid rgba(232,201,106,0.2);
   padding: 4px 10px;
@@ -50,7 +61,7 @@ html, body {
   font-family: 'Fugaz One', cursive;
   font-size: clamp(32px, 8vw, 52px);
   font-weight: 400;
-  color: #e8c96a;
+  color: var(--gold);
   letter-spacing: 0.02em;
   line-height: 1.1;
   margin: 0 0 16px;
@@ -60,14 +71,14 @@ html, body {
   font-family: 'Fugaz One', cursive;
   font-size: 28px;
   font-weight: 400;
-  color: #e2e8f0;
+  color: var(--text);
   margin: 0 0 32px;
   letter-spacing: 0.02em;
 }
 
 .pr-desc {
   font-size: 15px;
-  color: #94a3b8;
+  color: var(--text-sub);
   line-height: 1.7;
   margin: 0 0 40px;
   max-width: 460px;
@@ -94,18 +105,18 @@ html, body {
   background: rgba(232,201,106,0.04);
 }
 .drop-icon {
-  color: #64748b;
+  color: var(--text-muted);
   margin-bottom: 4px;
 }
 .drop-label {
   font-size: 15px;
   font-weight: 500;
-  color: #cbd5e1;
+  color: var(--border);
   margin: 0;
 }
 .drop-sub {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-muted);
   margin: 0 0 8px;
 }
 
@@ -125,25 +136,25 @@ html, body {
 .file-name {
   flex: 1;
   font-size: 13px;
-  color: #e8c96a;
+  color: var(--gold);
   text-align: left;
   word-break: break-all;
 }
 .btn-clear {
   background: none;
   border: none;
-  color: #64748b;
+  color: var(--text-muted);
   cursor: pointer;
   font-size: 14px;
   padding: 2px 6px;
   line-height: 1;
 }
-.btn-clear:hover { color: #e2e8f0; }
+.btn-clear:hover { color: var(--text); }
 
 /* ── Buttons ───────────────────────────────────────────────────────────────── */
 .btn-primary {
-  background: #e8c96a;
-  color: #0d1117;
+  background: var(--gold);
+  color: var(--gold-on-dark);
   border: none;
   border-radius: 10px;
   padding: 14px 36px;
@@ -166,7 +177,7 @@ html, body {
 .btn-ghost {
   background: none;
   border: 1px solid rgba(255,255,255,0.12);
-  color: #94a3b8;
+  color: var(--text-sub);
   border-radius: 8px;
   padding: 8px 18px;
   font-size: 13px;
@@ -176,7 +187,7 @@ html, body {
 }
 .btn-ghost:hover {
   border-color: rgba(232,201,106,0.4);
-  color: #e8c96a;
+  color: var(--gold);
 }
 
 /* ── Progress steps ────────────────────────────────────────────────────────── */
@@ -244,14 +255,14 @@ html, body {
 .step-name {
   font-size: 15px;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-sub);
   transition: color 0.3s;
   line-height: 1.4;
 }
 
 .step-note {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-muted);
   margin-top: 5px;
   line-height: 1.55;
   min-height: 0;
@@ -270,7 +281,7 @@ html, body {
 .mini-progress-fill {
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, #e8c96a 0%, #facc15 100%);
+  background: linear-gradient(90deg, var(--gold) 0%, #facc15 100%);
   transition: width 0.18s ease-out;
 }
 
@@ -295,12 +306,12 @@ html, body {
 /* ── Active state ── */
 .step-item.active .step-dot {
   background: rgba(232,201,106,0.12);
-  border-color: #e8c96a;
+  border-color: var(--gold);
   box-shadow: 0 0 12px rgba(232,201,106,0.35);
   animation: pulse-dot 1.4s ease-in-out infinite;
 }
 .step-item.active .step-name { color: #f1f5f9; font-weight: 600; }
-.step-item.active .step-note { color: #94a3b8; }
+.step-item.active .step-note { color: var(--text-sub); }
 
 /* ── Complete state ── */
 .step-item.complete .step-dot {
@@ -391,7 +402,7 @@ html, body {
 .results-meta .pr-subtitle { margin-bottom: 4px; }
 .results-date {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-muted);
   margin: 0;
   letter-spacing: 0.03em;
 }
@@ -423,7 +434,7 @@ html, body {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--text-muted);
   margin: 0 0 16px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   padding-bottom: 12px;
@@ -462,7 +473,7 @@ html, body {
 .claim-timestamp {
   font-size: 11px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-muted);
   font-family: monospace;
   background: rgba(255,255,255,0.05);
   padding: 3px 8px;
@@ -471,7 +482,7 @@ html, body {
 
 .claim-quote {
   font-size: 14px;
-  color: #cbd5e1;
+  color: var(--border);
   line-height: 1.65;
   font-style: italic;
   margin: 0 0 14px;
@@ -481,7 +492,7 @@ html, body {
 
 .claim-finding {
   font-size: 13px;
-  color: #cbd5e1;
+  color: var(--border);
   line-height: 1.65;
   margin: 0 0 12px;
 }
@@ -509,7 +520,7 @@ html, body {
 .statutory-toggle {
   background: none;
   border: none;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 12px;
   cursor: pointer;
   padding: 0;
@@ -519,7 +530,7 @@ html, body {
   letter-spacing: 0.04em;
   transition: color 0.2s;
 }
-.statutory-toggle:hover { color: #94a3b8; }
+.statutory-toggle:hover { color: var(--text-sub); }
 .statutory-toggle .toggle-arrow { transition: transform 0.2s; }
 .statutory-toggle.open .toggle-arrow { transform: rotate(90deg); }
 
@@ -530,7 +541,7 @@ html, body {
   border-radius: 8px;
   padding: 12px 14px;
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-sub);
   line-height: 1.7;
   margin-top: 8px;
   font-family: ui-monospace, 'Cascadia Code', monospace;

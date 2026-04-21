@@ -3,16 +3,19 @@
   const btn = document.getElementById('theme-toggle');
 
   function apply(theme) {
-    document.body.classList.toggle('light', theme === 'light');
+    if (document.body) document.body.classList.toggle('light', theme === 'light');
     if (btn) btn.textContent = theme === 'light' ? '🌙' : '☀️';
   }
 
-  apply(localStorage.getItem(KEY) || 'dark');
+  function getTheme() { try { return localStorage.getItem(KEY); } catch { return null; } }
+  function saveTheme(t) { try { localStorage.setItem(KEY, t); } catch {} }
+
+  apply(getTheme() || 'dark');
 
   if (btn) {
     btn.addEventListener('click', function () {
       var next = document.body.classList.contains('light') ? 'dark' : 'light';
-      localStorage.setItem(KEY, next);
+      saveTheme(next);
       apply(next);
     });
   }

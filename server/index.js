@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { requestLogger, errorLogger } from './middleware/logger.js';
 
 dotenv.config();
 
@@ -25,7 +26,9 @@ const { tutorRouter } = await import('./routes/tutor.js');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
 app.use(express.json());
+app.use(requestLogger);
 app.use(express.static(resolve(projectRoot, 'public')));
 
 app.use('/api/config', configRouter);
@@ -103,9 +106,9 @@ app.get('*', (req, res) => {
 });
 
 // Global error handler
+app.use(errorLogger);
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(err.status || 500).json({ error: 'Internal server error' });
 });
 
 app.listen(PORT, () => {

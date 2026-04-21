@@ -9,10 +9,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/nav.css" />
   <style>
+    :root {
+      --bg:           #0d1117;
+      --surface:      #161b22;
+      --surface-mid:  #1e293b;
+      --border:       #21262d;
+      --border-mid:   #334155;
+      --text:         #e2e8f0;
+      --text-muted:   #64748b;
+      --text-sub:     #94a3b8;
+      --text-dim:     #475569;
+      --gold:         #e8c96a;
+      --gold-on-dark: #0d1117;
+    }
+
     /* ── Base ── */
     html, body {
-      background: #0d1117;
-      color: #e2e8f0;
+      background: var(--bg);
+      color: var(--text);
       font-family: system-ui, -apple-system, 'Inter', sans-serif;
       font-size: 15px;
       line-height: 1.6;
@@ -53,7 +67,7 @@
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #e8c96a;
+      color: var(--gold);
       background: rgba(232,201,106,0.1);
       border: 1px solid rgba(232,201,106,0.2);
       padding: 4px 10px;
@@ -65,7 +79,7 @@
       font-family: 'Fugaz One', cursive;
       font-size: clamp(32px, 8vw, 52px);
       font-weight: 400;
-      color: #e8c96a;
+      color: var(--gold);
       letter-spacing: 0.02em;
       line-height: 1.1;
       margin: 0 0 16px;
@@ -74,13 +88,13 @@
       font-family: 'Fugaz One', cursive;
       font-size: 26px;
       font-weight: 400;
-      color: #e2e8f0;
+      color: var(--text);
       margin: 0 0 8px;
       letter-spacing: 0.02em;
     }
     .l3-desc {
       font-size: 15px;
-      color: #94a3b8;
+      color: var(--text-sub);
       line-height: 1.7;
       margin: 0 0 28px;
       max-width: 520px;
@@ -93,7 +107,7 @@
       border-radius: 10px;
       padding: 14px 18px;
       font-size: 13px;
-      color: #94a3b8;
+      color: var(--text-sub);
       line-height: 1.6;
       text-align: left;
       width: 100%;
@@ -101,7 +115,7 @@
       box-sizing: border-box;
     }
     .privacy-box strong {
-      color: #e8c96a;
+      color: var(--gold);
     }
 
     /* ── Step indicator (pips) ── */
@@ -115,27 +129,27 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: #1e293b;
-      border: 2px solid #334155;
+      background: var(--surface-mid);
+      border: 2px solid var(--border-mid);
       transition: background 0.2s, border-color 0.2s;
     }
     .pip.active {
-      background: #e8c96a;
-      border-color: #e8c96a;
+      background: var(--gold);
+      border-color: var(--gold);
     }
     .pip.done {
-      background: #334155;
-      border-color: #475569;
+      background: var(--border-mid);
+      border-color: var(--text-dim);
     }
     .pip-connector {
       width: 24px;
       height: 2px;
-      background: #1e293b;
+      background: var(--surface-mid);
     }
 
     /* ── Form sections ── */
     .form-section {
-      background: #161b22;
+      background: var(--surface);
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 12px;
       padding: 20px 22px;
@@ -149,7 +163,7 @@
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #64748b;
+      color: var(--text-muted);
       margin: 0 0 16px;
     }
     .form-row {
@@ -165,15 +179,15 @@
     .form-label {
       font-size: 13px;
       font-weight: 500;
-      color: #94a3b8;
+      color: var(--text-sub);
     }
     .form-input,
     .form-select,
     .form-textarea {
-      background: #0d1117;
+      background: var(--bg);
       border: 1.5px solid rgba(255,255,255,0.1);
       border-radius: 8px;
-      color: #e2e8f0;
+      color: var(--text);
       font-family: inherit;
       font-size: 14px;
       padding: 9px 12px;
@@ -208,8 +222,8 @@
       padding: 7px 18px;
       border-radius: 7px;
       border: 1.5px solid rgba(255,255,255,0.1);
-      background: #0d1117;
-      color: #64748b;
+      background: var(--bg);
+      color: var(--text-muted);
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
@@ -217,12 +231,12 @@
     }
     .toggle-btn:hover {
       border-color: rgba(232,201,106,0.3);
-      color: #94a3b8;
+      color: var(--text-sub);
     }
     .toggle-btn.selected {
-      border-color: #e8c96a;
+      border-color: var(--gold);
       background: rgba(232,201,106,0.1);
-      color: #e8c96a;
+      color: var(--gold);
     }
 
     /* ── Multi-select chips ── */
@@ -235,8 +249,8 @@
       padding: 5px 14px;
       border-radius: 100px;
       border: 1.5px solid rgba(255,255,255,0.1);
-      background: #0d1117;
-      color: #64748b;
+      background: var(--bg);
+      color: var(--text-muted);
       font-size: 13px;
       cursor: pointer;
       transition: all 0.15s;
@@ -244,17 +258,17 @@
     }
     .chip:hover {
       border-color: rgba(232,201,106,0.3);
-      color: #94a3b8;
+      color: var(--text-sub);
     }
     .chip.selected {
-      border-color: #e8c96a;
+      border-color: var(--gold);
       background: rgba(232,201,106,0.1);
-      color: #e8c96a;
+      color: var(--gold);
     }
 
     /* ── File upload field ── */
     .file-field {
-      background: #0d1117;
+      background: var(--bg);
       border: 1.5px solid rgba(255,255,255,0.1);
       border-radius: 10px;
       padding: 14px 16px;
@@ -270,7 +284,7 @@
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #64748b;
+      color: var(--text-muted);
       margin-bottom: 6px;
     }
     .file-field-row {
@@ -281,16 +295,16 @@
     }
     .file-field-name {
       font-size: 14px;
-      color: #64748b;
+      color: var(--text-muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .file-field-name.selected { color: #e8c96a; }
+    .file-field-name.selected { color: var(--gold); }
     .file-field-btn {
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.12);
-      color: #e2e8f0;
+      color: var(--text);
       padding: 5px 14px;
       border-radius: 6px;
       font-size: 13px;
@@ -319,8 +333,8 @@
 
     /* ── Buttons ── */
     .btn-primary {
-      background: #e8c96a;
-      color: #0d1117;
+      background: var(--gold);
+      color: var(--gold-on-dark);
       border: none;
       padding: 14px 36px;
       border-radius: 10px;
@@ -333,7 +347,7 @@
     .btn-primary:not(:disabled):hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-ghost {
       background: rgba(255,255,255,0.06);
-      color: #e2e8f0;
+      color: var(--text);
       border: 1px solid rgba(255,255,255,0.12);
       padding: 12px 20px;
       border-radius: 8px;
@@ -378,19 +392,19 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      border: 2px solid #334155;
+      border: 2px solid var(--border-mid);
       background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 13px;
       flex-shrink: 0;
-      color: #475569;
+      color: var(--text-dim);
       transition: all 0.2s;
     }
     .step-connector {
       width: 2px;
-      background: #1e293b;
+      background: var(--surface-mid);
       flex: 1;
       min-height: 24px;
       margin: 4px 0;
@@ -402,31 +416,31 @@
     .step-name {
       font-size: 14px;
       font-weight: 500;
-      color: #475569;
+      color: var(--text-dim);
       transition: color 0.2s;
     }
     .step-note {
       font-size: 12px;
-      color: #334155;
+      color: var(--border-mid);
       margin-top: 2px;
       min-height: 16px;
     }
 
     /* Step icon states */
     .step-item[data-state="active"] .step-icon {
-      border-color: #e8c96a;
+      border-color: var(--gold);
       background: rgba(232,201,106,0.1);
-      color: #e8c96a;
+      color: var(--gold);
     }
-    .step-item[data-state="active"] .step-name { color: #e8c96a; }
-    .step-item[data-state="active"] .step-note { color: #94a3b8; }
+    .step-item[data-state="active"] .step-name { color: var(--gold); }
+    .step-item[data-state="active"] .step-note { color: var(--text-sub); }
     .step-item[data-state="done"] .step-icon {
       border-color: #22c55e;
       background: #22c55e;
-      color: #0d1117;
+      color: var(--gold-on-dark);
     }
-    .step-item[data-state="done"] .step-name { color: #e2e8f0; }
-    .step-item[data-state="done"] .step-note { color: #64748b; }
+    .step-item[data-state="done"] .step-name { color: var(--text); }
+    .step-item[data-state="done"] .step-note { color: var(--text-muted); }
     .step-item[data-state="done"] .step-connector { background: #22c55e; }
     .step-item[data-state="error"] .step-icon {
       border-color: #ef4444;
@@ -464,7 +478,7 @@
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #64748b;
+      color: var(--text-muted);
       margin-bottom: 8px;
     }
     .verdict-text {
@@ -476,13 +490,13 @@
     .verdict-text.red   { color: #ef4444; }
     .verdict-summary {
       font-size: 14px;
-      color: #94a3b8;
+      color: var(--text-sub);
       line-height: 1.7;
     }
 
     /* ── Rating bars ── */
     .ratings-block {
-      background: #161b22;
+      background: var(--surface);
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 12px;
       padding: 20px 22px;
@@ -493,7 +507,7 @@
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #64748b;
+      color: var(--text-muted);
       margin: 0 0 16px;
     }
     .rating-row {
@@ -505,7 +519,7 @@
     .rating-row:last-child { margin-bottom: 0; }
     .rating-name {
       font-size: 13px;
-      color: #94a3b8;
+      color: var(--text-sub);
       width: 160px;
       flex-shrink: 0;
     }
@@ -518,14 +532,14 @@
     }
     .rating-bar-fill {
       height: 100%;
-      background: #e8c96a;
+      background: var(--gold);
       border-radius: 4px;
       width: 0%;
       transition: width 0.6s ease;
     }
     .rating-score {
       font-size: 13px;
-      color: #64748b;
+      color: var(--text-muted);
       width: 100px;
       flex-shrink: 0;
       text-align: right;
@@ -542,7 +556,7 @@
       .cards-row { grid-template-columns: 1fr; }
     }
     .card {
-      background: #161b22;
+      background: var(--surface);
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 12px;
       padding: 18px 20px;
@@ -552,13 +566,13 @@
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #64748b;
+      color: var(--text-muted);
       margin: 0 0 12px;
     }
     .card ul {
       margin: 0;
       padding: 0 0 0 18px;
-      color: #94a3b8;
+      color: var(--text-sub);
       font-size: 13px;
       line-height: 1.7;
     }
@@ -572,8 +586,8 @@
       margin-bottom: 24px;
     }
     .btn-download {
-      background: #e8c96a;
-      color: #0d1117;
+      background: var(--gold);
+      color: var(--gold-on-dark);
       border: none;
       padding: 12px 24px;
       border-radius: 10px;
@@ -585,7 +599,7 @@
     .btn-download:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-download-ghost {
       background: rgba(255,255,255,0.06);
-      color: #e2e8f0;
+      color: var(--text);
       border: 1px solid rgba(255,255,255,0.12);
       padding: 12px 24px;
       border-radius: 10px;
@@ -598,7 +612,7 @@
 
     /* ── Collapsible section details ── */
     .section-detail {
-      background: #161b22;
+      background: var(--surface);
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 12px;
       margin-bottom: 12px;
@@ -620,7 +634,7 @@
     .section-detail-title {
       font-size: 14px;
       font-weight: 500;
-      color: #e2e8f0;
+      color: var(--text);
     }
     .section-badge {
       font-size: 11px;
@@ -629,10 +643,10 @@
       border-radius: 100px;
       background: rgba(232,201,106,0.1);
       border: 1px solid rgba(232,201,106,0.2);
-      color: #e8c96a;
+      color: var(--gold);
     }
     .section-chevron {
-      color: #475569;
+      color: var(--text-dim);
       font-size: 16px;
       transition: transform 0.2s;
     }
@@ -655,20 +669,20 @@
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #475569;
+      color: var(--text-dim);
       border-bottom: 1px solid rgba(255,255,255,0.07);
       padding: 6px 10px 10px;
     }
     .checklist-table td {
       padding: 8px 10px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
-      color: #94a3b8;
+      color: var(--text-sub);
       vertical-align: top;
     }
     .checklist-table tr:last-child td { border-bottom: none; }
     .result-yes    { color: #22c55e; font-weight: 500; }
     .result-no     { color: #ef4444; font-weight: 500; }
-    .result-na     { color: #475569; }
+    .result-na     { color: var(--text-dim); }
     .result-often  { color: #22c55e; font-weight: 500; }
     .result-sometimes { color: #f59e0b; font-weight: 500; }
     .result-hardly { color: #f97316; font-weight: 500; }
@@ -686,7 +700,7 @@
     }
     .btn-new-review {
       background: rgba(255,255,255,0.06);
-      color: #94a3b8;
+      color: var(--text-sub);
       border: 1px solid rgba(255,255,255,0.12);
       padding: 12px 24px;
       border-radius: 10px;
@@ -695,8 +709,9 @@
       transition: background 0.15s;
       margin-top: 8px;
     }
-    .btn-new-review:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+    .btn-new-review:hover { background: rgba(255,255,255,0.1); color: var(--text); }
   </style>
+  <link rel="stylesheet" href="/shared/theme.css" />
 </head>
 <body>
 
@@ -987,7 +1002,7 @@
             <textarea class="form-textarea" name="assessorLearningPoints" id="assessorLearningPoints" rows="4" placeholder="Provide learning points for the interviewer…"></textarea>
           </div>
           <div class="form-group">
-            <label class="form-label" for="learningDevelopmentPlan">Suggested Learning Development Plan <span style="color:#475569; font-weight:400;">(optional)</span></label>
+            <label class="form-label" for="learningDevelopmentPlan">Suggested Learning Development Plan <span style="color:var(--text-dim); font-weight:400;">(optional)</span></label>
             <textarea class="form-textarea" name="learningDevelopmentPlan" id="learningDevelopmentPlan" rows="4" placeholder="Suggest a learning development plan if appropriate…"></textarea>
           </div>
         </div>
@@ -1197,6 +1212,8 @@
     </div>
   </section>
 
+  <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark">☀️</button>
+  <script src="/shared/theme.js"></script>
   <script src="/js/nav.js" defer></script>
   <script>
     // ── State ──────────────────────────────────────────────────────────────

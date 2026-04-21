@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   padding: 0 16px;
-  background: rgba(13, 17, 23, 0.92);
+  background: rgba(13, 17, 23, 0.92); /* overridden by body.light in theme.css */
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--nav-border);
 }
@@ -72,7 +72,7 @@
   left: 0;
   width: var(--nav-drawer-width);
   height: 100vh;
-  background: #111827;
+  background: var(--nav-bg);
   border-right: 1px solid var(--nav-border);
   transform: translateX(calc(-1 * var(--nav-drawer-width)));
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);

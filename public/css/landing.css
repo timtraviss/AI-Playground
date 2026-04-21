@@ -5,8 +5,8 @@
 html, body {
   height: 100%;
   margin: 0;
-  background: #0d1117;
-  color: #e2e8f0;
+  background: var(--bg, #0d1117);
+  color: var(--text, #e2e8f0);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -34,7 +34,7 @@ html, body {
   font-family: 'Fugaz One', cursive;
   font-size: clamp(26px, 6vw, 48px);
   font-weight: 400;
-  color: #e8c96a;
+  color: var(--gold, #e8c96a);
   letter-spacing: 0.02em;
   margin: 0 0 16px;
   line-height: 1;
@@ -43,7 +43,7 @@ html, body {
 /* ── Tagline ── */
 .landing-tagline {
   font-size: 16px;
-  color: #64748b;
+  color: var(--text-muted, #64748b);
   letter-spacing: 0.04em;
   margin: 0;
   font-weight: 400;
@@ -89,7 +89,7 @@ html, body {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #e8c96a;
+  color: var(--gold, #e8c96a);
   background: rgba(232,201,106,0.1);
   border: 1px solid rgba(232,201,106,0.2);
   padding: 4px 10px;
@@ -100,14 +100,14 @@ html, body {
   font-family: 'Fugaz One', cursive;
   font-size: 22px;
   font-weight: 400;
-  color: #e2e8f0;
+  color: var(--text, #e2e8f0);
   margin: 0;
   letter-spacing: 0.02em;
 }
 
 .project-desc {
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--text-muted, #94a3b8);
   line-height: 1.65;
   margin: 0;
 }
@@ -115,7 +115,7 @@ html, body {
 .project-cta {
   font-size: 13px;
   font-weight: 600;
-  color: #e8c96a;
+  color: var(--gold, #e8c96a);
   margin-top: 4px;
 }
 

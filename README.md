@@ -94,6 +94,11 @@ npm test
 
 Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingLabel`, `buildMarkdownReport`). No external dependencies required (ffmpeg not needed).
 
+## Recent Updates (2026-04-22)
+
+- **New: DDP AI Tutor** (`/tutor/`) — chat interface for NZ Police DDP module content. Supports text and voice modes; renders markdown in chat bubbles; TTS proxy for voice responses. Admin knowledge base management (upload/delete DOCX modules, auto-versioned filenames). Conversational colleague tone powered by Claude Sonnet 4.6 with per-module context injection.
+- **Site-wide light mode** — toggle persisted to `localStorage` with null-guard safety. All pages (home, interview, tutor, admin, proofreader, l3-reviewer, podcast-converter, podcast-reviewer) fully themed via shared CSS variables and `theme.js`. All hardcoded colours replaced with tokens.
+
 ## Recent Updates (2026-04-14)
 
 - **New: L3 Interview Reviewer** — full end-to-end feature at `/l3-reviewer/`. Upload a Word transcript, fill in the moderation form context via a 3-step wizard, and receive an AI-powered assessment of the interviewer's PEACE technique across all four moderation sections (Engage & Explain, Account, Questioning, Closure). Results displayed on-screen with verdict banner, section rating bars, and collapsible breakdowns. Downloadable as Word or Markdown.

@@ -86,7 +86,7 @@ html, body {
 /* ── Drop zone ──────────────────────────────────────────────────────────────── */
 .pc-drop-zone {
   width: 100%;
-  border: 1.5px dashed rgba(255,255,255,0.15);
+  border: 1.5px dashed var(--border);
   border-radius: 16px;
   padding: 40px 24px;
   display: flex;

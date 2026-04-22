@@ -213,6 +213,7 @@ git push heroku main
 - [x] Env var guard in latest-conversation route — 503 if ElevenLabs not configured
 - [x] Input validation in `promptBuilder` — descriptive errors on missing witness fields
 - [x] Landing page light mode scroll bug fix — `min-height` on body + `html:has(body.light)` override in `theme.css`
+- [x] Stored XSS fix in tutor module dropdown — replaced `innerHTML` string interpolation with `replaceChildren` + `textContent` (DOM API); module names can no longer inject script via admin upload
 
 ### Module Proofreader
 - [x] DOCX upload (module + optional reference) with 50 MB limit

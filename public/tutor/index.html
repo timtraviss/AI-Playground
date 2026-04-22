@@ -336,8 +336,10 @@
           moduleSelect.innerHTML = '<option value="">No modules available — ask admin to upload one</option>';
           return;
         }
-        moduleSelect.innerHTML = '<option value="">Select a module…</option>' +
-          mods.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+        moduleSelect.replaceChildren(
+          Object.assign(document.createElement('option'), { value: '', textContent: 'Select a module…' }),
+          ...mods.map(m => Object.assign(document.createElement('option'), { value: m.id, textContent: m.name }))
+        );
         moduleSelect.addEventListener('change', () => {
           btnStart.disabled = !moduleSelect.value;
         });

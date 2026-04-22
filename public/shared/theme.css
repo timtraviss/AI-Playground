@@ -50,6 +50,11 @@ body.light .nav-links li a.active {
   background: rgba(160,120,0,0.08);
 }
 
+/* html element background — can't inherit --bg from body, so set explicitly */
+html:has(body.light) {
+  background: #faf7f2;
+}
+
 /* Landing page light overrides */
 body.light .landing-divider {
   background: rgba(0,0,0,0.1);

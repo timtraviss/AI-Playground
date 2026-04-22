@@ -98,6 +98,7 @@ Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingL
 
 - **New: DDP AI Tutor** (`/tutor/`) — chat interface for NZ Police DDP module content. Supports text and voice modes; renders markdown in chat bubbles; TTS proxy for voice responses. Admin knowledge base management (upload/delete DOCX modules, auto-versioned filenames). Conversational colleague tone powered by Claude Sonnet 4.6 with per-module context injection.
 - **Site-wide light mode** — toggle persisted to `localStorage` with null-guard safety. All pages (home, interview, tutor, admin, proofreader, l3-reviewer, podcast-converter, podcast-reviewer) fully themed via shared CSS variables and `theme.js`. All hardcoded colours replaced with tokens.
+- **Light mode scroll bug fix** — landing page cards below the viewport no longer stay dark in light mode. Fixed two root causes: `body { height: 100% }` changed to `min-height: 100%` (body now paints its background across the full content height, not just the viewport), and `html:has(body.light)` override added to `theme.css` (CSS custom properties don't travel upward from child to parent, so `html` was always falling back to the dark hardcoded colour).
 
 ## Recent Updates (2026-04-14)
 
@@ -211,6 +212,7 @@ git push heroku main
 - [x] ElevenLabs system prompt override implemented (POST with `conversation_config_override`)
 - [x] Env var guard in latest-conversation route — 503 if ElevenLabs not configured
 - [x] Input validation in `promptBuilder` — descriptive errors on missing witness fields
+- [x] Landing page light mode scroll bug fix — `min-height` on body + `html:has(body.light)` override in `theme.css`
 
 ### Module Proofreader
 - [x] DOCX upload (module + optional reference) with 50 MB limit

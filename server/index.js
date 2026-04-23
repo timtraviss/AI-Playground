@@ -5,7 +5,11 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { requestLogger, errorLogger } from './middleware/logger.js';
 import { logsRouter } from './routes/logs.js';
-import { initDb } from './lib/db.js';
+import { initDb, getPool } from './lib/db.js';
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
+import { authRouter } from './routes/auth.js';
+import { requireAuth } from './middleware/auth.js';
 
 dotenv.config();
 
@@ -31,6 +35,32 @@ const PORT = process.env.PORT || 3000;
 app.set('trust proxy', 1);
 app.use(express.json());
 app.use(requestLogger);
+
+// Session store
+const PgStore = connectPgSimple(session);
+app.use(session({
+  store: new PgStore({ pool: getPool(), tableName: 'sessions', createTableIfMissing: true }),
+  secret: process.env.SESSION_SECRET || 'dev-secret-change-me',
+  resave: false,
+  saveUninitialized: false,
+  rolling: true,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  },
+}));
+
+// Login page and auth API — served BEFORE the auth gate
+app.get('/login', (_req, res) => res.redirect('/login/'));
+app.use('/login', express.static(resolve(projectRoot, 'public', 'login')));
+app.use('/api/auth', authRouter);
+
+// Auth gate — everything below requires a valid session
+app.use(requireAuth);
+
+// Protected static files
 app.use(express.static(resolve(projectRoot, 'public')));
 
 app.use('/api/config', configRouter);

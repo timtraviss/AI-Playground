@@ -91,6 +91,34 @@
     }
     .file-label:hover { border-color: var(--gold); }
     input[type="file"] { display: none; }
+    .users-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .users-table th { text-align: left; padding: 8px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted, #64748b); border-bottom: 1px solid var(--border, #21262d); }
+    .users-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+    .users-table tr:last-child td { border-bottom: none; }
+    .role-pill { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .role-pill.admin { background: rgba(232,201,106,0.12); border: 1px solid rgba(232,201,106,0.25); color: var(--gold, #e8c96a); }
+    .role-pill.other { background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.2); color: var(--text-muted, #94a3b8); }
+    .btn-row { display: flex; gap: 8px; }
+    .table-loading { text-align: center; color: var(--text-muted, #64748b); padding: 24px; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+    .modal { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); border-radius: 12px; padding: 28px; width: 100%; max-width: 400px; }
+    .modal h3 { margin: 0 0 16px; font-size: 16px; }
+    .modal-subtitle { margin: -8px 0 16px; color: var(--text-muted, #64748b); font-size: 13px; }
+    .form-label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted, #64748b); margin-bottom: 12px; }
+    .form-input { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px 10px; font-size: 13px; color: var(--text, #e2e8f0); font-family: inherit; outline: none; }
+    .form-input:focus { border-color: var(--gold, #e8c96a); }
+    .modal-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; border-radius: 6px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+    .btn-primary { background: var(--gold); color: var(--gold-on-dark); border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text); border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: border-color 0.15s; }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-sm { padding: 4px 10px; font-size: 11px; }
+    .btn-danger { color: #ef4444; border-color: rgba(239,68,68,0.3); }
+    .btn-danger:hover { background: rgba(239,68,68,0.1); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 48px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .card-title { font-size: 16px; font-weight: 600; margin: 0; }
 
   </style>
 </head>
@@ -162,6 +190,61 @@
             <tr><td colspan="3" class="empty-state">Loading…</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- ── Users card ─────────────────────────────────────── -->
+      <div class="section">
+        <div class="card" id="users-card">
+          <div class="card-header">
+            <h2 class="card-title">Users</h2>
+            <button class="btn-primary" id="add-user-btn">+ Add User</button>
+          </div>
+
+          <table class="users-table" id="users-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Display Name</th>
+                <th>Role</th>
+                <th>Last Login</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="5" class="table-loading">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Add User modal -->
+      <div class="modal-overlay" id="add-user-modal" style="display:none">
+        <div class="modal">
+          <h3>Add User</h3>
+          <label class="form-label">Username<input class="form-input" type="text" id="new-username" autocapitalize="none" /></label>
+          <label class="form-label">Display Name<input class="form-input" type="text" id="new-display-name" /></label>
+          <label class="form-label">Password<input class="form-input" type="password" id="new-password" /></label>
+          <label class="form-label">Role<input class="form-input" type="text" id="new-role" placeholder="Trainee" /></label>
+          <div class="modal-error" id="add-user-error" style="display:none"></div>
+          <div class="modal-actions">
+            <button class="btn-ghost" id="add-user-cancel">Cancel</button>
+            <button class="btn-primary" id="add-user-submit">Add User</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reset Password modal -->
+      <div class="modal-overlay" id="reset-pw-modal" style="display:none">
+        <div class="modal">
+          <h3>Reset Password</h3>
+          <p class="modal-subtitle" id="reset-pw-name"></p>
+          <label class="form-label">New Password<input class="form-input" type="password" id="reset-pw-input" /></label>
+          <div class="modal-error" id="reset-pw-error" style="display:none"></div>
+          <div class="modal-actions">
+            <button class="btn-ghost" id="reset-pw-cancel">Cancel</button>
+            <button class="btn-primary" id="reset-pw-submit">Reset</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -298,6 +381,125 @@
       el.textContent = text;
       el.className = type ? `msg ${type}` : 'msg';
     }
+
+    // ── Users card ────────────────────────────────────────────────────
+    let resetTargetId = null;
+
+    function relativeTime(iso) {
+      if (!iso) return 'Never';
+      const diff = Date.now() - new Date(iso).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 2) return 'Just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs}h ago`;
+      const days = Math.floor(hrs / 24);
+      if (days < 7) return `${days}d ago`;
+      return new Date(iso).toLocaleDateString('en-NZ');
+    }
+
+    async function loadUsers() {
+      try {
+        const r = await fetch('/api/admin/users');
+        const users = await r.json();
+        const tbody = document.getElementById('users-tbody');
+        if (!users.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="table-loading">No users yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = users.map(u => `
+          <tr data-id="${u.id}">
+            <td>${u.username}</td>
+            <td>${u.display_name}</td>
+            <td><span class="role-pill ${u.role === 'Admin' ? 'admin' : 'other'}">${u.role}</span></td>
+            <td>${relativeTime(u.last_login)}</td>
+            <td>
+              <div class="btn-row">
+                <button class="btn-ghost btn-sm" onclick="openResetPw(${u.id}, '${u.display_name.replace(/'/g, "\\'")}')">Reset pw</button>
+                <button class="btn-ghost btn-sm btn-danger" onclick="deleteUser(${u.id}, '${u.username}')">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        document.getElementById('users-tbody').innerHTML =
+          `<tr><td colspan="5" class="table-loading">Error loading users: ${err.message}</td></tr>`;
+      }
+    }
+
+    document.getElementById('add-user-btn').addEventListener('click', () => {
+      document.getElementById('add-user-modal').style.display = 'flex';
+      document.getElementById('add-user-error').style.display = 'none';
+      ['new-username','new-display-name','new-password','new-role'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    });
+
+    document.getElementById('add-user-cancel').addEventListener('click', () => {
+      document.getElementById('add-user-modal').style.display = 'none';
+    });
+
+    document.getElementById('add-user-submit').addEventListener('click', async () => {
+      const username = document.getElementById('new-username').value.trim();
+      const displayName = document.getElementById('new-display-name').value.trim();
+      const password = document.getElementById('new-password').value;
+      const role = document.getElementById('new-role').value.trim() || 'Trainee';
+      const errEl = document.getElementById('add-user-error');
+      errEl.style.display = 'none';
+
+      const r = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, displayName, password, role }),
+      });
+      const d = await r.json();
+      if (r.ok) {
+        document.getElementById('add-user-modal').style.display = 'none';
+        loadUsers();
+      } else {
+        errEl.textContent = d.error;
+        errEl.style.display = 'block';
+      }
+    });
+
+    function openResetPw(userId, displayName) {
+      resetTargetId = userId;
+      document.getElementById('reset-pw-name').textContent = `Resetting password for ${displayName}`;
+      document.getElementById('reset-pw-input').value = '';
+      document.getElementById('reset-pw-error').style.display = 'none';
+      document.getElementById('reset-pw-modal').style.display = 'flex';
+    }
+
+    document.getElementById('reset-pw-cancel').addEventListener('click', () => {
+      document.getElementById('reset-pw-modal').style.display = 'none';
+    });
+
+    document.getElementById('reset-pw-submit').addEventListener('click', async () => {
+      const password = document.getElementById('reset-pw-input').value;
+      const errEl = document.getElementById('reset-pw-error');
+      const r = await fetch(`/api/admin/users/${resetTargetId}/password`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      const d = await r.json();
+      if (r.ok) {
+        document.getElementById('reset-pw-modal').style.display = 'none';
+      } else {
+        errEl.textContent = d.error;
+        errEl.style.display = 'block';
+      }
+    });
+
+    async function deleteUser(userId, username) {
+      if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
+      const r = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+      const d = await r.json();
+      if (r.ok) loadUsers();
+      else alert(d.error);
+    }
+
+    loadUsers();
   </script>
 </body>
 </html>

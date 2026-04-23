@@ -34,19 +34,9 @@ adminRouter.get('/scenario', (_req, res) => {
   }
 });
 
-// POST /api/admin/scenario — update scenario text (password required)
+// POST /api/admin/scenario — update scenario text (requireAdmin applied in index.js)
 adminRouter.post('/scenario', (req, res) => {
-  const { password, briefing, task } = req.body || {};
-
-  if (!process.env.ADMIN_PASSWORD) {
-    return res.status(503).json({
-      error: 'ADMIN_PASSWORD environment variable is not set. Contact the server administrator.',
-    });
-  }
-
-  if (!password || password !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Incorrect password.' });
-  }
+  const { briefing, task } = req.body || {};
 
   if (typeof briefing !== 'string' || typeof task !== 'string') {
     return res.status(400).json({ error: 'briefing and task are required strings.' });

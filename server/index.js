@@ -71,7 +71,7 @@ app.use('/api/witness', witnessRouter);
 app.use('/api/latest-conversation', latestConversationRouter);
 app.use('/api/critique', critiqueRouter);
 app.use('/api/scenario', scenarioRouter);
-app.use('/api/admin', adminRouter);
+app.use('/api/admin', requireAdmin, adminRouter);
 app.use('/api/podcast-review', podcastReviewRouter);
 app.use('/api/podcast-converter', podcastConverterRouter);
 app.use('/api/proofreader', proofreaderRouter);

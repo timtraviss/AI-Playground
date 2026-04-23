@@ -42,14 +42,14 @@
       text-transform: uppercase; letter-spacing: 0.08em;
       color: var(--text-muted); margin-bottom: 8px;
     }
-    textarea, input[type="text"], input[type="password"] {
+    textarea, input[type="text"] {
       width: 100%; background: var(--surface); border: 1px solid var(--border);
       border-radius: 8px; color: var(--text); font-family: inherit;
       font-size: 14px; line-height: 1.6; padding: 12px 14px;
       resize: vertical; transition: border-color 0.15s;
     }
     textarea:focus, input:focus { outline: none; border-color: var(--gold); }
-    input[type="text"], input[type="password"] { resize: none; }
+    input[type="text"] { resize: none; }
     .btn {
       width: 100%; background: var(--gold); color: var(--gold-on-dark);
       border: none; border-radius: 8px; font-size: 15px;
@@ -92,23 +92,6 @@
     .file-label:hover { border-color: var(--gold); }
     input[type="file"] { display: none; }
 
-    /* Auth gate */
-    #auth-gate { max-width: 360px; margin: 40px auto; }
-    #auth-gate h2 { font-size: 18px; color: var(--gold); margin-bottom: 6px; }
-    #auth-gate p  { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
-    #auth-gate input {
-      width: 100%; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--text); font-size: 14px;
-      padding: 12px 14px; margin-bottom: 12px; resize: none;
-    }
-    #auth-gate input:focus { outline: none; border-color: var(--gold); }
-    #auth-gate button {
-      width: 100%; background: var(--gold); color: var(--gold-on-dark);
-      font-size: 15px; font-weight: 700; padding: 14px;
-      border: none; border-radius: 8px; cursor: pointer;
-    }
-    #auth-gate button:hover { opacity: 0.88; }
-    #auth-error { font-size: 13px; color: #f87171; margin-top: 10px; display: none; }
   </style>
 </head>
 <body>
@@ -136,17 +119,8 @@
 
   <div class="container">
 
-    <!-- Auth gate -->
-    <div id="auth-gate">
-      <h2>Admin</h2>
-      <p>Enter your admin password to continue.</p>
-      <input type="password" id="pw-input" placeholder="Admin password" />
-      <button onclick="login()">Sign In</button>
-      <div id="auth-error">Incorrect password.</div>
-    </div>
-
-    <!-- Admin content (hidden until authenticated) -->
-    <div id="admin-content" style="display:none">
+    <!-- Admin content -->
+    <div id="admin-content">
       <h1>Admin</h1>
       <p class="subtitle">Server-side configuration for all tools. &nbsp;·&nbsp; <a href="/admin/logs" style="color:var(--gold);text-decoration:none;">View Access Logs →</a></p>
 
@@ -197,29 +171,7 @@
   <script src="/shared/theme.js"></script>
   <script src="/js/nav.js" defer></script>
   <script>
-    let ADMIN_PASSWORD = '';
-
-    function login() {
-      const pw = document.getElementById('pw-input').value;
-      if (!pw) return;
-      // Verify against the logs API (requires admin password)
-      fetch('/api/logs/summary', { headers: { 'x-admin-password': pw } })
-        .then(res => {
-          if (res.status === 401) {
-            document.getElementById('auth-error').style.display = 'block';
-            return;
-          }
-          ADMIN_PASSWORD = pw;
-          document.getElementById('auth-gate').style.display    = 'none';
-          document.getElementById('admin-content').style.display = 'block';
-          initAdmin();
-        })
-        .catch(() => { document.getElementById('auth-error').style.display = 'block'; });
-    }
-
-    document.getElementById('pw-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') login();
-    });
+    initAdmin();
 
     function initAdmin() {
       // Load scenario
@@ -245,7 +197,6 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            password: ADMIN_PASSWORD,
             briefing: document.getElementById('briefing').value,
             task:     document.getElementById('task').value,
           }),
@@ -317,7 +268,6 @@
       const fd = new FormData();
       fd.append('module', file);
       fd.append('name', name);
-      fd.append('password', ADMIN_PASSWORD);
       try {
         const res  = await fetch('/api/tutor/knowledge/upload', { method: 'POST', body: fd });
         const data = await res.json();
@@ -337,8 +287,6 @@
       try {
         const res  = await fetch(`/api/tutor/knowledge/${id}`, {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: ADMIN_PASSWORD }),
         });
         const data = await res.json();
         if (res.ok) loadModules();

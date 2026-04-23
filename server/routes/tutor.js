@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
 import { convertDocxToMarkdown, slugify } from '../lib/docxToMarkdown.js';
+import { requireAdmin } from '../middleware/auth.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const KNOWLEDGE_DIR = resolve(__dirname, '../data/knowledge');
@@ -51,7 +52,7 @@ tutorRouter.get('/modules', (_req, res) => {
 });
 
 // POST /api/tutor/knowledge/upload
-tutorRouter.post('/knowledge/upload', (req, res, next) => {
+tutorRouter.post('/knowledge/upload', requireAdmin, (req, res, next) => {
   upload.single('module')(req, res, (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
@@ -67,14 +68,6 @@ tutorRouter.post('/knowledge/upload', (req, res, next) => {
 
   if (!file) return res.status(400).json({ error: 'No file uploaded.' });
   if (!name) return res.status(400).json({ error: 'Module display name is required.' });
-
-  if (!process.env.ADMIN_PASSWORD) {
-    return res.status(503).json({ error: 'ADMIN_PASSWORD not configured.' });
-  }
-  const password = req.body.password;
-  if (!password || password !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Incorrect password.' });
-  }
 
   const id = slugify(name);
   if (!id) return res.status(400).json({ error: 'Display name produced an empty id.' });
@@ -97,15 +90,7 @@ tutorRouter.post('/knowledge/upload', (req, res, next) => {
 });
 
 // DELETE /api/tutor/knowledge/:id
-tutorRouter.delete('/knowledge/:id', (req, res) => {
-  if (!process.env.ADMIN_PASSWORD) {
-    return res.status(503).json({ error: 'ADMIN_PASSWORD not configured.' });
-  }
-  const { password } = req.body || {};
-  if (!password || password !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Incorrect password.' });
-  }
-
+tutorRouter.delete('/knowledge/:id', requireAdmin, (req, res) => {
   let mdPath;
   try {
     mdPath = safeKnowledgePath(req.params.id);

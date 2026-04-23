@@ -82,9 +82,15 @@ npm run convert-pdf    # converts the PEACE reference guide to markdown (run onc
 npm start
 ```
 
-Required environment variables: `CLAUDE_API_KEY`, `ELEVENLABS_API_KEY`, `OPENAI_API_KEY`, `LEGISLATION_API_KEY`.
+Required environment variables: `CLAUDE_API_KEY`, `ELEVENLABS_API_KEY`, `OPENAI_API_KEY`, `LEGISLATION_API_KEY`, `DATABASE_URL`, `SESSION_SECRET`.
 
 Backward-compatible aliases still accepted in code: `ANTHROPIC_API_KEY` and `Legislation_API_KEY`.
+
+To create the first admin user after setup:
+
+```bash
+node scripts/create-admin.js <username> "<Display Name>" <password>
+```
 
 ### Running tests
 
@@ -93,6 +99,15 @@ npm test
 ```
 
 Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingLabel`, `buildMarkdownReport`). No external dependencies required (ffmpeg not needed).
+
+## Recent Updates (2026-04-23)
+
+- **User authentication** — full site gated behind a login page. Session-based auth via `express-session` + PostgreSQL session store (`connect-pg-simple`). Passwords hashed with bcrypt (cost 12). No self-registration — Tim manages all accounts from the Admin page.
+- **Admin user management** — new Users card on `/admin`: add users (username, display name, password, role), reset any password, delete accounts. Role field controls access (`Admin` can reach `/admin`; all others cannot).
+- **Nav avatar & user section** — initials avatar in the top-right of every page. Clicking it opens the hamburger drawer, which shows display name, role, username, and a Sign out button. Non-admin users don't see the Admin link.
+- **Token usage tracking** — every Claude API call (DDP Tutor, PEACE Critique, Proofreader, L3 Reviewer) logs user, tool, model, token counts, and computed cost to a `usage_log` PostgreSQL table.
+- **Admin Usage & Cost card** — new card on `/admin` with 4 stat pills (total cost, tokens, active users, sessions), per-user summary cards (click to filter), and a paginated session log with period filter (week / month / all time).
+- **My Usage page** (`/my-usage/`) — each user can see their own token/cost breakdown: 3 pills, per-tool cost bar chart, and session history table. Linked from the hamburger drawer.
 
 ## Recent Updates (2026-04-22)
 
@@ -152,7 +167,7 @@ git push heroku main
 - [x] Post-interview PEACE critique — student clicks "Get Critique" after ending call via widget
 - [x] Full results screen — score ring, phase bars, TEDS/leading/closed pills, key facts, strengths, improvements
 - [x] Scenario text loaded from `server/data/scenarios/catherine.md` — editable without code changes
-- [x] Admin UI at `/admin` — edit scenario briefing and task via browser, password-protected
+- [x] Admin UI at `/admin` — edit scenario briefing and task via browser, session-auth protected
 - [x] `GET /api/scenario` and `POST /api/admin/scenario` endpoints
 - [x] Get Critique button enabled after 30s or on widget call-start event (whichever comes first)
 - [x] `/api/latest-conversation` used to resolve conversationId after widget call ends
@@ -252,6 +267,20 @@ git push heroku main
 - [x] Unit tests for `ratingLabel` and `buildMarkdownReport` (10 cases)
 - [ ] Section 4 (Planning & Preparation) AI assessment derived from planning notes
 - [ ] Multi-transcript batch assessment
+
+### Auth & Usage Tracking
+- [x] Full site login gate — unauthenticated users redirected to `/login/`
+- [x] Session-based auth (`express-session` + `connect-pg-simple` PostgreSQL store)
+- [x] bcrypt password hashing (cost 12) — admin sets all passwords, no self-registration
+- [x] `requireAuth` and `requireAdmin` middleware — role-based access control
+- [x] Admin user management (add / reset password / delete) via Users card on `/admin`
+- [x] Initials avatar in nav bar; name + role + Sign out in hamburger drawer
+- [x] Token usage logging to `usage_log` table after every Claude API call
+- [x] Per-model pricing table (Sonnet, Haiku, Opus) with USD cost calculation
+- [x] Admin Usage & Cost card — pills, per-user cards, paginated log, period filter
+- [x] My Usage page (`/my-usage/`) — user-scoped cost/token dashboard with bar chart
+- [ ] Email notification when monthly cost exceeds a threshold
+- [ ] Per-tool access control (restrict specific tools to specific roles)
 
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)

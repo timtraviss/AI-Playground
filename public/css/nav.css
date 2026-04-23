@@ -136,3 +136,71 @@
 
 /* ── Page body offset so content doesn't hide under nav ── */
 body { padding-top: var(--nav-height); }
+
+/* ── Auth: avatar in nav bar ── */
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(232,201,106,0.15);
+  border: 1px solid rgba(232,201,106,0.35);
+  color: var(--nav-accent, #e8c96a);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Inter', system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+  user-select: none;
+}
+.nav-avatar:hover { border-color: var(--nav-accent, #e8c96a); }
+
+/* ── Auth: user section in drawer ── */
+.nav-user-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--nav-border, rgba(255,255,255,0.08));
+}
+.nav-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(232,201,106,0.15);
+  border: 1px solid rgba(232,201,106,0.3);
+  color: var(--nav-accent, #e8c96a);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Inter', system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nav-user-meta { flex: 1; min-width: 0; }
+.nav-user-name { font-size: 13px; font-weight: 600; color: var(--nav-text, #e2e8f0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-user-role { font-size: 11px; color: var(--nav-muted, #64748b); }
+.nav-signout-btn {
+  background: none;
+  border: 1px solid var(--nav-border, rgba(255,255,255,0.08));
+  border-radius: 5px;
+  color: var(--nav-muted, #64748b);
+  font-size: 11px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.nav-signout-btn:hover { border-color: #ef4444; color: #fca5a5; }
+
+/* light mode nav-avatar and user section */
+body.light .nav-avatar { background: rgba(160,120,0,0.1); border-color: rgba(160,120,0,0.3); color: var(--gold, #a07800); }
+body.light .nav-user-avatar { background: rgba(160,120,0,0.1); border-color: rgba(160,120,0,0.25); color: var(--gold, #a07800); }
+body.light .nav-signout-btn { border-color: rgba(0,0,0,0.1); }
+body.light .nav-signout-btn:hover { border-color: #ef4444; color: #dc2626; }

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — Traviss.org</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="/shared/theme.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; background: var(--bg, #0d1117); color: var(--text, #e2e8f0); font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    body { display: flex; min-height: 100vh; }
+
+    .login-wrap { display: flex; width: 100%; min-height: 100vh; }
+
+    .login-form-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 48px;
+      max-width: 480px;
+    }
+
+    .login-logo { font-family: 'Fugaz One', cursive; font-size: 32px; color: var(--gold, #e8c96a); letter-spacing: 0.02em; margin-bottom: 6px; }
+    .login-tagline { font-size: 14px; color: var(--text-muted, #64748b); margin-bottom: 40px; }
+
+    .login-error {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #fca5a5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .login-error.show { display: block; }
+
+    .login-field { margin-bottom: 16px; }
+    .login-label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted, #64748b); margin-bottom: 6px; }
+    .login-input {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 15px;
+      color: var(--text, #e2e8f0);
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .login-input:focus { border-color: var(--gold, #e8c96a); }
+
+    .login-btn {
+      width: 100%;
+      background: var(--gold, #e8c96a);
+      color: #0d1117;
+      border: none;
+      border-radius: 8px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+    .login-btn:hover { opacity: 0.9; }
+    .login-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .login-icons-side {
+      width: 280px;
+      background: rgba(255,255,255,0.015);
+      border-left: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 40px;
+    }
+
+    .icon-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .icon-cell {
+      width: 56px; height: 56px;
+      border-radius: 12px;
+      background: rgba(232,201,106,0.07);
+      border: 1px solid rgba(232,201,106,0.14);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .icon-label { font-size: 11px; color: var(--text-muted, #64748b); text-align: center; letter-spacing: 0.04em; }
+
+    @media (max-width: 640px) {
+      .login-icons-side { display: none; }
+      .login-form-side { max-width: 100%; padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-form-side">
+      <div class="login-logo">Traviss.org</div>
+      <div class="login-tagline">Sign in to continue</div>
+
+      <div class="login-error" id="err"></div>
+
+      <div class="login-field">
+        <label class="login-label" for="username">Username</label>
+        <input class="login-input" type="text" id="username" autocomplete="username"
+               autocapitalize="none" autocorrect="off" spellcheck="false" />
+      </div>
+      <div class="login-field">
+        <label class="login-label" for="password">Password</label>
+        <input class="login-input" type="password" id="password" autocomplete="current-password" />
+      </div>
+      <button class="login-btn" id="login-btn">Sign in</button>
+    </div>
+
+    <div class="login-icons-side">
+      <div class="icon-grid">
+        <div class="icon-cell">🎤</div>
+        <div class="icon-cell">📄</div>
+        <div class="icon-cell">🎙️</div>
+        <div class="icon-cell">✍️</div>
+        <div class="icon-cell">🔍</div>
+        <div class="icon-cell">📊</div>
+      </div>
+      <div class="icon-label">AI Playground for NZ Police</div>
+    </div>
+  </div>
+
+  <script src="/shared/theme.js"></script>
+  <script>
+    const btn = document.getElementById('login-btn');
+    const errEl = document.getElementById('err');
+    const next = new URLSearchParams(location.search).get('next') || '/';
+
+    function showErr(msg) { errEl.textContent = msg; errEl.classList.add('show'); }
+
+    async function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      if (!username || !password) { showErr('Enter your username and password.'); return; }
+      btn.disabled = true; btn.textContent = 'Signing in…'; errEl.classList.remove('show');
+      try {
+        const r = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const d = await r.json();
+        if (r.ok) {
+          window.location.href = next.startsWith('/') ? next : '/';
+        } else {
+          showErr(d.error || 'Login failed.');
+          btn.disabled = false; btn.textContent = 'Sign in';
+        }
+      } catch {
+        showErr('Network error — please try again.');
+        btn.disabled = false; btn.textContent = 'Sign in';
+      }
+    }
+
+    btn.addEventListener('click', login);
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  </script>
+</body>
+</html>

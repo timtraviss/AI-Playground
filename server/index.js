@@ -53,8 +53,8 @@ app.use(session({
 }));
 
 // Login page and auth API — served BEFORE the auth gate
-app.get('/login', (_req, res) => res.redirect('/login/'));
-app.use('/login', express.static(resolve(projectRoot, 'public', 'login')));
+app.get(/^\/login$/, (_req, res) => res.redirect('/login/'));
+app.get(/^\/login\/$/, (_req, res) => res.sendFile(resolve(projectRoot, 'public', 'login', 'index.html')));
 app.use('/api/auth', authRouter);
 
 // Auth gate — everything below requires a valid session

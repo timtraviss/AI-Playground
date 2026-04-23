@@ -1,12 +1,12 @@
 # Traviss.org — AI Demo Projects
 
-A Node.js/Express web app hosted at [Traviss.org](https://traviss.org) that showcases tools built for New Zealand policing and law contexts.
+A Node.js/Express web app hosted at [Traviss.org](https://traviss.org) that showcases AI-powered tools for investigative interviewing, legislative review, and training content.
 
 ## Projects
 
 ### P.E.A.C.E. Interview Tutor (`/interview/`)
 
-Practice investigative interviewing against an AI witness powered by ElevenLabs voice synthesis. After the session, Claude (Sonnet 4.6) evaluates the full transcript against the NZ Police PEACE model and returns a structured critique covering:
+Practice investigative interviewing against an AI witness powered by ElevenLabs voice synthesis. After the session, Claude (Sonnet 4.6) evaluates the full transcript against the PEACE model and returns a structured critique covering:
 
 - Overall score (0–100) with band: Distinction / Merit / Pass / Not Yet
 - Phase scores for Engage & Explain, Account, and Closure
@@ -31,7 +31,7 @@ Conversion runs server-side using ffmpeg binaries bundled via `ffmpeg-static` �
 
 ### Podcast Legislation Reviewer (`/podcast-reviewer/`)
 
-Upload a NZ Police DDP podcast audio file (MP3, M4A, WAV — up to 200 MB). The app:
+Upload a DDP podcast audio file (MP3, M4A, WAV — up to 200 MB). The app:
 
 1. Transcribes the audio via OpenAI Whisper
 2. Uses Claude to extract every legislative claim made in the podcast
@@ -42,7 +42,7 @@ A companion Claude Code skill (`podcast-reviewer.skill`) lets you trigger the sa
 
 ### Module Proofreader (`/proofreader/`)
 
-Upload a NZ Police Detective Development Programme (DDP) learning module (DOCX), plus an optional previously-approved reference module. The app:
+Upload a Detective Development Programme (DDP) learning module (DOCX), plus an optional previously-approved reference module. The app:
 
 1. Extracts plain text from both DOCX files via mammoth
 2. Sends the text to Claude Sonnet 4.6 with the full DDP style ruleset (NZ English, structure, legislation, learning objectives, formatting)
@@ -54,7 +54,7 @@ A companion Claude Code skill (`proofreader.skill`) is available for terminal-ba
 
 ### L3 Interview Reviewer (`/l3-reviewer/`)
 
-Upload a Word (.docx) transcript of a NZ Police Level 3 investigative interview. The app:
+Upload a Word (.docx) transcript of a Level 3 investigative interview. The app:
 
 1. Guides the assessor through a 3-step wizard capturing admin fields (Sections 1–3), planning notes (Section 4), and self-reflection (Section 9) from the paper moderation form
 2. Extracts the transcript via mammoth
@@ -111,7 +111,7 @@ Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingL
 
 ## Recent Updates (2026-04-22)
 
-- **New: DDP AI Tutor** (`/tutor/`) — chat interface for NZ Police DDP module content. Supports text and voice modes; renders markdown in chat bubbles; TTS proxy for voice responses. Admin knowledge base management (upload/delete DOCX modules, auto-versioned filenames). Conversational colleague tone powered by Claude Sonnet 4.6 with per-module context injection.
+- **New: DDP AI Tutor** (`/tutor/`) — chat interface for DDP module content. Supports text and voice modes; renders markdown in chat bubbles; TTS proxy for voice responses. Admin knowledge base management (upload/delete DOCX modules, auto-versioned filenames). Conversational colleague tone powered by Claude Sonnet 4.6 with per-module context injection.
 - **Site-wide light mode** — toggle persisted to `localStorage` with null-guard safety. All pages (home, interview, tutor, admin, proofreader, l3-reviewer, podcast-converter, podcast-reviewer) fully themed via shared CSS variables and `theme.js`. All hardcoded colours replaced with tokens.
 - **Light mode scroll bug fix** — landing page cards below the viewport no longer stay dark in light mode. Fixed two root causes: `body { height: 100% }` changed to `min-height: 100%` (body now paints its background across the full content height, not just the viewport), and `html:has(body.light)` override added to `theme.css` (CSS custom properties don't travel upward from child to parent, so `html` was always falling back to the dark hardcoded colour).
 

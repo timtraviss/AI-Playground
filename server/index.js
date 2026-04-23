@@ -137,6 +137,12 @@ app.get('/tutor/', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'tutor', 'index.html'));
 });
 
+// My Usage page
+app.get('/my-usage', (req, res) => res.redirect('/my-usage/'));
+app.get('/my-usage/', (req, res) => {
+  res.sendFile(resolve(projectRoot, 'public', 'my-usage', 'index.html'));
+});
+
 // Landing page fallback
 app.get('*', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'index.html'));

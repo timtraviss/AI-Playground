@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Usage — Traviss.org</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Inter:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="/css/nav.css" />
+  <link rel="stylesheet" href="/shared/theme.css" />
+  <style>
+    html, body { min-height: 100%; margin: 0; background: var(--bg, #0d1117); color: var(--text, #e2e8f0); font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    .page { max-width: 860px; margin: 0 auto; padding: 40px 24px 60px; }
+    h1 { font-family: 'Fugaz One', cursive; font-size: 28px; color: var(--gold, #e8c96a); margin: 0 0 4px; font-weight: 400; }
+    .subtitle { font-size: 14px; color: var(--text-muted, #64748b); margin: 0 0 32px; }
+    .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .card-title { font-size: 15px; font-weight: 600; margin: 0; }
+    .pills { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+    .pill { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px; text-align: center; }
+    .pill-val { font-size: 20px; font-weight: 700; color: var(--gold, #e8c96a); }
+    .pill-label { font-size: 11px; color: var(--text-muted, #64748b); margin-top: 2px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .bar-label { width: 110px; font-size: 12px; color: var(--text-muted, #64748b); }
+    .bar-track { flex: 1; background: rgba(255,255,255,0.06); border-radius: 4px; height: 7px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--gold, #e8c96a); border-radius: 4px; }
+    .bar-cost { width: 50px; text-align: right; font-size: 12px; color: var(--text-muted, #94a3b8); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted, #64748b); border-bottom: 1px solid rgba(255,255,255,0.08); }
+    td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    tr:last-child td { border-bottom: none; }
+    .period-sel { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: var(--text, #e2e8f0); border-radius: 6px; padding: 4px 8px; font-size: 12px; font-family: inherit; }
+    .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
+    .page-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted, #64748b); border-radius: 5px; padding: 4px 10px; cursor: pointer; font-size: 12px; font-family: inherit; }
+    .page-btn.active { border-color: var(--gold, #e8c96a); color: var(--gold, #e8c96a); }
+    .empty { text-align: center; color: var(--text-muted, #64748b); padding: 32px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <nav class="site-nav" id="site-nav">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-drawer" id="nav-drawer">
+      <div class="nav-logo"><a href="/">Traviss.org</a></div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/tutor/">DDP Tutor</a></li>
+        <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+        <li><a href="/podcast-reviewer/">Podcast Reviewer</a></li>
+        <li><a href="/podcast-converter/">Podcast Converter</a></li>
+        <li><a href="/proofreader/">Module Proofreader</a></li>
+        <li><a href="/l3-reviewer/">L3 Interview Reviewer</a></li>
+        <li><a href="/my-usage/" class="active">My Usage</a></li>
+        <li style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.08);padding-top:12px"><a href="/admin">Admin</a></li>
+      </ul>
+    </div>
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </nav>
+
+  <div class="page">
+    <h1>My Usage</h1>
+    <p class="subtitle">Your AI token usage and estimated cost</p>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Overview</span>
+        <select class="period-sel" id="period">
+          <option value="month">This month</option>
+          <option value="week">This week</option>
+          <option value="all">All time</option>
+        </select>
+      </div>
+      <div class="pills">
+        <div class="pill"><div class="pill-val" id="p-cost">—</div><div class="pill-label">Total cost</div></div>
+        <div class="pill"><div class="pill-val" id="p-tokens">—</div><div class="pill-label">Tokens used</div></div>
+        <div class="pill"><div class="pill-val" id="p-sessions">—</div><div class="pill-label">Sessions</div></div>
+      </div>
+      <div id="by-tool"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Session History</span></div>
+      <table>
+        <thead><tr><th>Tool</th><th>Model</th><th>Date</th><th>Tokens</th><th>Cost</th></tr></thead>
+        <tbody id="log-body"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+      </table>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+
+  <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark">☀️</button>
+  <script src="/js/nav.js" defer></script>
+  <script src="/shared/theme.js"></script>
+  <script>
+    let page = 1;
+    const fmtCost = v => '$' + Number(v).toFixed(4);
+    const fmtTok = v => { const n = Number(v); return n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n); };
+    const fmtTime = iso => { if (!iso) return ''; const d = new Date(iso); return d.toLocaleDateString('en-NZ') + ' ' + d.toLocaleTimeString('en-NZ', {hour:'2-digit',minute:'2-digit'}); };
+
+    async function load() {
+      const period = document.getElementById('period').value;
+      const r = await fetch(`/api/usage/me?period=${period}&page=${page}`);
+      const d = await r.json();
+
+      document.getElementById('p-cost').textContent = fmtCost(d.summary.total_cost);
+      document.getElementById('p-tokens').textContent = fmtTok(d.summary.total_tokens);
+      document.getElementById('p-sessions').textContent = d.summary.sessions;
+
+      const maxCost = Math.max(...d.byTool.map(t => t.cost), 0.0001);
+      document.getElementById('by-tool').innerHTML = d.byTool.map(t => `
+        <div class="bar-row">
+          <div class="bar-label">${t.tool}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(t.cost/maxCost*100)}%"></div></div>
+          <div class="bar-cost">${fmtCost(t.cost)}</div>
+        </div>
+      `).join('') || '<p class="empty" style="margin:0">No usage data yet.</p>';
+
+      document.getElementById('log-body').innerHTML = d.log.map(row => `
+        <tr>
+          <td>${row.tool}</td>
+          <td><span style="font-size:11px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px">${row.model}</span></td>
+          <td style="font-size:12px;color:var(--text-muted,#64748b)">${fmtTime(row.ts)}</td>
+          <td style="font-size:12px;color:var(--text-muted,#64748b)">${row.input_tokens}/${row.output_tokens}/${row.cache_read_tokens}</td>
+          <td style="color:var(--gold,#e8c96a)">${fmtCost(row.cost_usd)}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" class="empty">No sessions yet.</td></tr>';
+
+      const pages = Math.ceil(d.total / d.limit);
+      document.getElementById('pagination').innerHTML = Array.from({length: Math.min(pages, 10)}, (_,i) =>
+        `<button class="page-btn${i+1===page?' active':''}" onclick="goPage(${i+1})">${i+1}</button>`
+      ).join('');
+    }
+
+    function goPage(p) { page = p; load(); }
+    document.getElementById('period').addEventListener('change', () => { page = 1; load(); });
+    load();
+  </script>
+</body>
+</html>

@@ -157,9 +157,11 @@ ${witness.keyFacts.factList.map(f => `      { "fact": "${f.replace(/"/g, '\\"')}
   // Strip markdown code fences if Claude wrapped the JSON
   const jsonStr = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
 
+  let parsed;
   try {
-    return JSON.parse(jsonStr);
+    parsed = JSON.parse(jsonStr);
   } catch (err) {
     throw new Error(`Claude returned invalid JSON: ${err.message}\n\nRaw response:\n${content.substring(0, 500)}`);
   }
+  return { critique: parsed, usage: response.usage };
 }

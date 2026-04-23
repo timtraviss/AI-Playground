@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { fetchConversationTranscript, formatTranscriptForCritique } from '../lib/elevenlabs.js';
 import { generateCritique } from '../lib/claude.js';
 import { loadWitness } from './witness.js';
+import { logUsage } from '../lib/usageLogger.js';
 
 const router = Router();
 
@@ -34,7 +35,8 @@ router.post('/', async (req, res) => {
     const transcript = conversationData.transcript || conversationData.conversation?.transcript || [];
     const formattedTranscript = formatTranscriptForCritique(transcript, witness.persona.name);
 
-    const critique = await generateCritique(formattedTranscript, witness);
+    const { critique, usage } = await generateCritique(formattedTranscript, witness);
+    logUsage({ userId: req.user?.id, tool: 'peace-critique', usage, model: 'claude-sonnet-4-6' }).catch(() => {});
 
     res.json({
       ...critique,

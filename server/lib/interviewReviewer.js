@@ -244,5 +244,5 @@ export async function reviewInterview(transcriptText, formData, onProgress) {
     throw new Error('Claude response missing required assessment sections (verdict, section5, section6, section7, or section8)');
   }
 
-  return result;
+  return { ...result, usage: message.usage };
 }

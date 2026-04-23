@@ -6,6 +6,7 @@ import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
 import { convertDocxToMarkdown, slugify } from '../lib/docxToMarkdown.js';
 import { requireAdmin } from '../middleware/auth.js';
+import { logUsage } from '../lib/usageLogger.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const KNOWLEDGE_DIR = resolve(__dirname, '../data/knowledge');
@@ -182,6 +183,9 @@ tutorRouter.post('/chat', async (req, res) => {
         res.write(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`);
       }
     }
+
+    const finalMsg = await stream.finalMessage();
+    logUsage({ userId: req.user?.id, tool: 'ddp-tutor', usage: finalMsg.usage, model: 'claude-sonnet-4-6' }).catch(() => {});
 
     res.write('data: [DONE]\n\n');
     res.end();

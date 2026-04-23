@@ -6,6 +6,7 @@ import mammoth from 'mammoth';
 import { reviewModule } from '../lib/moduleReviewer.js';
 import { annotateDocx } from '../lib/docxAnnotator.js';
 import { verifyLegislationIssues } from '../lib/legislationVerifier.js';
+import { logUsage } from '../lib/usageLogger.js';
 
 const UPLOAD_DIR = '/tmp/proofreader_uploads';
 const OUTPUT_DIR = '/tmp/proofreader_output';
@@ -89,7 +90,7 @@ proofreaderRouter.post('/upload', (req, res, next) => {
     cleanupTimer: null,
   });
 
-  runPipeline(jobId, moduleFile, referenceFile).catch(err => {
+  runPipeline(jobId, moduleFile, referenceFile, req.user?.id).catch(err => {
     console.error('[proofreader] pipeline error:', err);
     pushEvent(jobId, { step: 'error', message: err.message });
     finishJob(jobId, null, err.message);
@@ -146,7 +147,7 @@ proofreaderRouter.get('/download/:jobId', (req, res) => {
 });
 
 // ── Pipeline ───────────────────────────────────────────────────────────────
-async function runPipeline(jobId, moduleFile, referenceFile) {
+async function runPipeline(jobId, moduleFile, referenceFile, userId) {
   const job = jobs.get(jobId);
 
   try {
@@ -179,6 +180,7 @@ async function runPipeline(jobId, moduleFile, referenceFile) {
           pushEvent(jobId, { step: 'reviewing_connected', message: 'Claude is generating your review…' });
         }
       });
+      logUsage({ userId, tool: 'proofreader', usage: review.usage, model: 'claude-sonnet-4-6' }).catch(() => {});
     } catch (err) {
       console.error('[proofreader] Claude API error:', err);
       throw err;

@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 import mammoth from 'mammoth';
 import { reviewInterview } from '../lib/interviewReviewer.js';
 import { buildMarkdownReport, buildDocxBuffer } from '../lib/l3ReportGenerator.js';
+import { logUsage } from '../lib/usageLogger.js';
 
 const UPLOAD_DIR = '/tmp/l3_uploads';
 mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -118,7 +119,7 @@ l3ReviewerRouter.post('/upload', (req, res, next) => {
     cleanupTimer: null,
   });
 
-  runPipeline(jobId, transcriptFile, formData).catch(err => {
+  runPipeline(jobId, transcriptFile, formData, req.user?.id).catch(err => {
     console.error('[l3Reviewer] pipeline error:', err);
     pushEvent(jobId, { step: 'error', message: err.message });
     finishJob(jobId, null, err.message);
@@ -181,7 +182,7 @@ l3ReviewerRouter.get('/download/:jobId/md', (req, res) => {
 });
 
 // ── Pipeline ───────────────────────────────────────────────────────────────
-async function runPipeline(jobId, transcriptFile, formData) {
+async function runPipeline(jobId, transcriptFile, formData, userId) {
   const job = jobs.get(jobId);
 
   try {
@@ -214,6 +215,7 @@ async function runPipeline(jobId, transcriptFile, formData) {
           pushEvent(jobId, { step: 'reviewing_connected', message: 'Claude is generating the assessment…' });
         }
       });
+      logUsage({ userId, tool: 'l3-reviewer', usage: review.usage, model: 'claude-sonnet-4-6' }).catch(() => {});
     } catch (err) {
       console.error('[l3Reviewer] Claude API error:', err);
       throw err;

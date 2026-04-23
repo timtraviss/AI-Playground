@@ -242,5 +242,5 @@ export async function reviewModule(moduleText, referenceText, onProgress) {
     throw new Error('Claude response missing issues array');
   }
 
-  return result;
+  return { ...result, usage: finalMsg.usage };
 }

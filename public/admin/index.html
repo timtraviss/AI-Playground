@@ -119,6 +119,27 @@
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 48px; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .card-title { font-size: 16px; font-weight: 600; margin: 0; }
+    .usage-pills { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+    .usage-pill { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); border-radius: 8px; padding: 14px; text-align: center; }
+    .usage-pill-val { font-size: 20px; font-weight: 700; color: var(--gold, #e8c96a); }
+    .usage-pill-label { font-size: 11px; color: var(--text-muted, #64748b); margin-top: 2px; }
+    .tab-row { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border, #21262d); padding-bottom: 8px; }
+    .tab-btn { background: none; border: none; color: var(--text-muted, #64748b); font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+    .tab-btn.active { background: rgba(232,201,106,0.1); color: var(--gold, #e8c96a); }
+    .user-cards { display: flex; flex-direction: column; gap: 8px; }
+    .user-usage-card { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color 0.15s; }
+    .user-usage-card:hover { border-color: rgba(232,201,106,0.3); }
+    .user-usage-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: #818cf8; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .user-usage-meta { flex: 1; }
+    .user-usage-name { font-size: 13px; font-weight: 600; }
+    .user-usage-sub { font-size: 11px; color: var(--text-muted, #64748b); }
+    .user-usage-cost { text-align: right; }
+    .user-usage-cost-val { font-size: 15px; font-weight: 700; color: var(--gold, #e8c96a); }
+    .user-usage-cost-tokens { font-size: 11px; color: var(--text-muted, #64748b); }
+    .form-select-sm { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); color: var(--text, #e2e8f0); border-radius: 6px; padding: 4px 8px; font-size: 12px; font-family: inherit; }
+    .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
+    .page-btn { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); color: var(--text-muted, #64748b); border-radius: 5px; padding: 4px 10px; cursor: pointer; font-size: 12px; font-family: inherit; }
+    .page-btn.active { border-color: var(--gold, #e8c96a); color: var(--gold, #e8c96a); }
 
   </style>
 </head>
@@ -215,6 +236,53 @@
             </tbody>
           </table>
         </div>
+      </div>
+
+      <!-- ── Usage card ──────────────────────────────────────── -->
+      <div class="section">
+        <section class="card" id="usage-card">
+          <div class="card-header">
+            <h2 class="card-title">Usage & Cost</h2>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="form-select-sm" id="usage-period">
+                <option value="month">This month</option>
+                <option value="week">This week</option>
+                <option value="all">All time</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Summary pills -->
+          <div class="usage-pills" id="usage-pills">
+            <div class="usage-pill"><div class="usage-pill-val" id="up-cost">—</div><div class="usage-pill-label">Total cost</div></div>
+            <div class="usage-pill"><div class="usage-pill-val" id="up-tokens">—</div><div class="usage-pill-label">Tokens</div></div>
+            <div class="usage-pill"><div class="usage-pill-val" id="up-users">—</div><div class="usage-pill-label">Active users</div></div>
+            <div class="usage-pill"><div class="usage-pill-val" id="up-sessions">—</div><div class="usage-pill-label">Sessions</div></div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="tab-row">
+            <button class="tab-btn active" data-tab="summary">Summary</button>
+            <button class="tab-btn" data-tab="log">Session Log</button>
+          </div>
+
+          <!-- Summary tab -->
+          <div id="usage-tab-summary">
+            <div class="user-cards" id="usage-by-user"></div>
+          </div>
+
+          <!-- Log tab -->
+          <div id="usage-tab-log" style="display:none">
+            <table class="users-table" id="usage-log-table">
+              <thead><tr>
+                <th>User</th><th>Tool</th><th>Model</th><th>Time</th>
+                <th>Tokens (in/out/cache)</th><th>Cost</th>
+              </tr></thead>
+              <tbody id="usage-log-tbody"><tr><td colspan="6" class="table-loading">Loading…</td></tr></tbody>
+            </table>
+            <div class="pagination" id="usage-pagination"></div>
+          </div>
+        </section>
       </div>
 
       <!-- Add User modal -->
@@ -500,6 +568,95 @@
     }
 
     loadUsers();
+
+    // ── Usage card ────────────────────────────────────────────────────
+    let usagePage = 1;
+    let activeUserId = null;
+
+    function fmtCost(v) { return '$' + Number(v).toFixed(4); }
+    function fmtTokens(v) {
+      const n = Number(v);
+      return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+    }
+    function fmtTime(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-NZ') + ' ' + d.toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function loadUsage() {
+      const period = document.getElementById('usage-period').value;
+      const params = new URLSearchParams({ period, page: usagePage });
+      if (activeUserId) params.set('userId', activeUserId);
+      try {
+        const r = await fetch('/api/usage/admin?' + params);
+        const d = await r.json();
+
+        // Pills
+        document.getElementById('up-cost').textContent = fmtCost(d.summary.total_cost);
+        document.getElementById('up-tokens').textContent = fmtTokens(d.summary.total_tokens);
+        document.getElementById('up-users').textContent = d.summary.active_users;
+        document.getElementById('up-sessions').textContent = d.summary.sessions;
+
+        // By-user cards
+        const byUserEl = document.getElementById('usage-by-user');
+        byUserEl.innerHTML = d.byUser.map(u => `
+          <div class="user-usage-card" onclick="filterByUser(${u.id})">
+            <div class="user-usage-avatar">${(u.display_name||u.username)[0].toUpperCase()}</div>
+            <div class="user-usage-meta">
+              <div class="user-usage-name">${u.display_name}</div>
+              <div class="user-usage-sub">${u.sessions} sessions · ${u.top_tool || 'various'}</div>
+            </div>
+            <div class="user-usage-cost">
+              <div class="user-usage-cost-val">${fmtCost(u.cost)}</div>
+              <div class="user-usage-cost-tokens">${fmtTokens(u.tokens)} tokens</div>
+            </div>
+          </div>
+        `).join('') || '<p style="color:var(--text-muted,#64748b);text-align:center;padding:24px">No usage data yet.</p>';
+
+        // Log table
+        const tbody = document.getElementById('usage-log-tbody');
+        tbody.innerHTML = d.log.map(row => `
+          <tr>
+            <td>${row.username || '—'}</td>
+            <td>${row.tool}</td>
+            <td><span style="font-size:11px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px">${row.model}</span></td>
+            <td style="font-size:12px;color:var(--text-muted,#64748b)">${fmtTime(row.ts)}</td>
+            <td style="font-size:12px;color:var(--text-muted,#64748b)">${row.input_tokens} / ${row.output_tokens} / ${row.cache_read_tokens}</td>
+            <td style="color:var(--gold,#e8c96a)">${fmtCost(row.cost_usd)}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="6" class="table-loading">No sessions.</td></tr>';
+
+        // Pagination
+        const pages = Math.ceil(d.total / d.limit);
+        const pagEl = document.getElementById('usage-pagination');
+        pagEl.innerHTML = Array.from({ length: Math.min(pages, 10) }, (_, i) =>
+          `<button class="page-btn${i+1 === usagePage ? ' active' : ''}" onclick="goPage(${i+1})">${i+1}</button>`
+        ).join('');
+      } catch (err) {
+        console.error('Usage load error', err);
+      }
+    }
+
+    function filterByUser(userId) {
+      activeUserId = activeUserId === userId ? null : userId;
+      usagePage = 1;
+      switchTab('log');
+      loadUsage();
+    }
+
+    function goPage(p) { usagePage = p; loadUsage(); }
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+      document.getElementById('usage-tab-summary').style.display = name === 'summary' ? '' : 'none';
+      document.getElementById('usage-tab-log').style.display = name === 'log' ? '' : 'none';
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+    document.getElementById('usage-period').addEventListener('change', () => { usagePage = 1; loadUsage(); });
+
+    loadUsage();
   </script>
 </body>
 </html>

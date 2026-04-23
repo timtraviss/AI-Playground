@@ -11,6 +11,7 @@ import connectPgSimple from 'connect-pg-simple';
 import { authRouter } from './routes/auth.js';
 import { requireAuth, requireAdmin } from './middleware/auth.js';
 import { usersRouter } from './routes/users.js';
+import { usageRouter } from './routes/usage.js';
 
 dotenv.config();
 
@@ -65,6 +66,7 @@ app.use(requireAuth);
 app.use(express.static(resolve(projectRoot, 'public')));
 
 app.use('/api/admin/users', requireAdmin, usersRouter);
+app.use('/api/usage', usageRouter);
 app.use('/api/config', configRouter);
 app.use('/api/transcript', transcriptRouter);
 app.use('/api/witness', witnessRouter);

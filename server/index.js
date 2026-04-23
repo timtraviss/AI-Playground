@@ -9,7 +9,8 @@ import { initDb, getPool } from './lib/db.js';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
 import { authRouter } from './routes/auth.js';
-import { requireAuth } from './middleware/auth.js';
+import { requireAuth, requireAdmin } from './middleware/auth.js';
+import { usersRouter } from './routes/users.js';
 
 dotenv.config();
 
@@ -63,6 +64,7 @@ app.use(requireAuth);
 // Protected static files
 app.use(express.static(resolve(projectRoot, 'public')));
 
+app.use('/api/admin/users', requireAdmin, usersRouter);
 app.use('/api/config', configRouter);
 app.use('/api/transcript', transcriptRouter);
 app.use('/api/witness', witnessRouter);

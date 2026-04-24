@@ -13,5 +13,25 @@
     "id": "fraud_v8",
     "name": "Fraud v8",
     "updatedAt": "2026-04-20T21:37:11.801Z"
+  },
+  {
+    "id": "robbery_blackmail_v5",
+    "name": "Robbery & Blackmail v5",
+    "updatedAt": "2026-04-24T04:19:47.851Z"
+  },
+  {
+    "id": "associations_v9",
+    "name": "Associations v9",
+    "updatedAt": "2026-04-24T04:20:12.482Z"
+  },
+  {
+    "id": "serious_assaults_firearms_v11",
+    "name": "Serious Assaults & Firearms v11",
+    "updatedAt": "2026-04-24T04:20:37.328Z"
+  },
+  {
+    "id": "kidnapping_and_trafficking_v14",
+    "name": "Kidnapping and Trafficking v14",
+    "updatedAt": "2026-04-24T04:22:23.015Z"
   }
 ]

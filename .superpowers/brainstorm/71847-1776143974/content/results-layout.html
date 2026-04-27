@@ -1,0 +1,114 @@
+<h2>Results Screen Layout</h2>
+<p class="subtitle">How should the L3 review be displayed after the AI assessment completes?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Score-first Layout <span style="font-size:0.75rem;opacity:0.6;font-weight:normal;margin-left:0.5rem;">recommended</span></h3>
+      <p>Mirrors the Interview Tutor critique screen. Verdict and section scores at the top, detailed breakdowns below.</p>
+      <div class="mockup" style="margin-top:0.75rem;">
+        <div class="mockup-header">Results Preview</div>
+        <div class="mockup-body" style="font-size:0.8rem;">
+
+          <!-- Verdict banner -->
+          <div style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);border-radius:8px;padding:0.75rem 1rem;text-align:center;margin-bottom:1rem;">
+            <div style="font-size:0.7rem;letter-spacing:0.1em;opacity:0.7;text-transform:uppercase;">Overall Outcome</div>
+            <div style="font-size:1.4rem;font-weight:700;color:#22c55e;">COMPETENT</div>
+          </div>
+
+          <!-- Section score bars -->
+          <div style="margin-bottom:1rem;">
+            <div style="font-size:0.7rem;letter-spacing:0.08em;opacity:0.6;text-transform:uppercase;margin-bottom:0.5rem;">Section Ratings</div>
+            <div style="display:grid;gap:0.4rem;">
+              <div style="display:flex;align-items:center;gap:0.75rem;">
+                <span style="width:130px;font-size:0.75rem;opacity:0.8;">Engage &amp; Explain</span>
+                <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:4px;height:8px;"><div style="width:80%;background:#6366f1;border-radius:4px;height:8px;"></div></div>
+                <span style="font-size:0.75rem;font-weight:600;">4/5</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:0.75rem;">
+                <span style="width:130px;font-size:0.75rem;opacity:0.8;">Account</span>
+                <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:4px;height:8px;"><div style="width:60%;background:#6366f1;border-radius:4px;height:8px;"></div></div>
+                <span style="font-size:0.75rem;font-weight:600;">3/5</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:0.75rem;">
+                <span style="width:130px;font-size:0.75rem;opacity:0.8;">Questioning</span>
+                <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:4px;height:8px;"><div style="width:100%;background:#6366f1;border-radius:4px;height:8px;"></div></div>
+                <span style="font-size:0.75rem;font-weight:600;">5/5</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:0.75rem;">
+                <span style="width:130px;font-size:0.75rem;opacity:0.8;">Closure</span>
+                <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:4px;height:8px;"><div style="width:60%;background:#6366f1;border-radius:4px;height:8px;"></div></div>
+                <span style="font-size:0.75rem;font-weight:600;">3/5</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Strengths + Learning -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem;">
+            <div style="background:rgba(34,197,94,0.08);border-radius:6px;padding:0.5rem 0.75rem;">
+              <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:#22c55e;margin-bottom:0.3rem;">Strengths</div>
+              <ul style="margin:0;padding-left:1rem;font-size:0.72rem;opacity:0.85;"><li>Strong rapport building</li><li>Effective free recall</li></ul>
+            </div>
+            <div style="background:rgba(251,191,36,0.08);border-radius:6px;padding:0.5rem 0.75rem;">
+              <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:#fbbf24;margin-bottom:0.3rem;">Learning Points</div>
+              <ul style="margin:0;padding-left:1rem;font-size:0.72rem;opacity:0.85;"><li>Reduce closed questions</li><li>Use change of senses</li></ul>
+            </div>
+          </div>
+
+          <!-- Section detail (collapsed) -->
+          <div style="font-size:0.72rem;opacity:0.5;text-align:center;">▼ Detailed section breakdowns below ▼</div>
+
+          <!-- Download buttons -->
+          <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+            <button class="mock-button" style="flex:1;font-size:0.72rem;">Download Word</button>
+            <button class="mock-button" style="flex:1;font-size:0.72rem;">Download Markdown</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Document-style Layout</h3>
+      <p>Output looks like the moderation form itself — section by section, top to bottom, no score visualisation. Clean and formal.</p>
+      <div class="mockup" style="margin-top:0.75rem;">
+        <div class="mockup-header">Results Preview</div>
+        <div class="mockup-body" style="font-size:0.8rem;">
+
+          <div style="border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:0.5rem;margin-bottom:0.75rem;">
+            <div style="font-size:0.7rem;opacity:0.5;text-transform:uppercase;letter-spacing:0.08em;">L3 Interview Assessment</div>
+            <div style="font-weight:600;margin:0.2rem 0;">Catherine Smith — 14 Apr 2026</div>
+            <div style="font-size:0.75rem;opacity:0.7;">Assessed by: Det. J. Traviss · File: 2026-1234</div>
+          </div>
+
+          <div style="margin-bottom:0.75rem;">
+            <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;opacity:0.5;margin-bottom:0.4rem;">Section 5 — Engage &amp; Explain</div>
+            <div style="display:grid;gap:0.3rem;font-size:0.75rem;">
+              <div style="display:flex;justify-content:space-between;"><span>State time/date</span><span style="color:#22c55e;">Yes</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Introduce self</span><span style="color:#22c55e;">Yes</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Transfer control</span><span style="color:#ef4444;">No</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Use context reinstatement</span><span style="color:#22c55e;">Yes</span></div>
+            </div>
+            <div style="margin-top:0.4rem;font-size:0.72rem;opacity:0.6;">Rating: 4/5 — Good</div>
+          </div>
+
+          <div style="font-size:0.72rem;opacity:0.35;text-align:center;">… Section 6, 7, 8 continue below …</div>
+
+          <div style="margin-top:0.75rem;background:rgba(255,255,255,0.05);border-radius:6px;padding:0.5rem 0.75rem;text-align:center;">
+            <div style="font-weight:700;font-size:1rem;">COMPETENT</div>
+          </div>
+
+          <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+            <button class="mock-button" style="flex:1;font-size:0.72rem;">Download Word</button>
+            <button class="mock-button" style="flex:1;font-size:0.72rem;">Download Markdown</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

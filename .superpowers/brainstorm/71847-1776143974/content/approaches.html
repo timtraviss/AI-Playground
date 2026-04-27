@@ -1,0 +1,48 @@
+<h2>L3 Reviewer — Page Flow Approaches</h2>
+<p class="subtitle">Three ways to structure the input and output experience. Which feels right?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Step-by-step Wizard <span style="font-size:0.75rem;opacity:0.6;font-weight:normal;margin-left:0.5rem;">recommended</span></h3>
+      <p>A multi-step form guides the assessor through each section in order:</p>
+      <ol style="margin: 0.5rem 0 0 1.2rem; padding: 0; font-size: 0.875rem; line-height: 1.8;">
+        <li>Admin fields (Sections 1–3) + transcript upload</li>
+        <li>Planning &amp; Preparation (Section 4)</li>
+        <li>Self-reflection (Section 9)</li>
+        <li>Submit → Results screen with download buttons</li>
+      </ol>
+      <div class="pros-cons" style="margin-top:0.75rem;">
+        <div class="pros"><h4>Pros</h4><ul><li>Not overwhelming</li><li>Clear progress</li><li>Mirrors the paper form</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More clicks to get to results</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Single Scrolling Page</h3>
+      <p>All inputs on one long page — admin fields, text areas, transcript upload — then a "Review" button at the bottom. Results replace the form.</p>
+      <div class="pros-cons" style="margin-top:0.75rem;">
+        <div class="pros"><h4>Pros</h4><ul><li>Everything visible at once</li><li>Familiar form layout</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Long page can feel daunting</li><li>Easy to miss fields</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Upload-first, Context-second</h3>
+      <p>Transcript upload is the hero action. Admin fields and text inputs are collapsed in an optional "Add context" accordion — assessor can skip them and just get the AI review.</p>
+      <div class="pros-cons" style="margin-top:0.75rem;">
+        <div class="pros"><h4>Pros</h4><ul><li>Fastest path to results</li><li>Context is optional/non-blocking</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Users may skip important context</li><li>Report has gaps if fields left blank</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>

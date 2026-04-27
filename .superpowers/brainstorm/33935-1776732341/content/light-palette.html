@@ -1,0 +1,109 @@
+<h2>What should light mode look like?</h2>
+<p class="subtitle">Each option keeps the gold accent. Pick the tone that feels right.</p>
+
+<div class="cards">
+
+  <!-- Option A: Clean white -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#ffffff;padding:16px 20px;font-family:system-ui,sans-serif;border-radius:8px;border:1px solid #e2e8f0;">
+      <div style="max-width:700px;margin:0 auto;">
+        <!-- header strip -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #e2e8f0;margin-bottom:14px;">
+          <span style="color:#b8960a;font-size:13px;font-weight:700;">Arson &amp; Intentional Damage</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div style="display:flex;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
+              <span style="padding:4px 10px;font-size:11px;background:#d4a500;color:#fff;font-weight:700;">✏️ Text</span>
+              <span style="padding:4px 10px;font-size:11px;color:#64748b;">🎤 Voice</span>
+            </div>
+            <span style="padding:4px 10px;font-size:11px;color:#64748b;border:1px solid #e2e8f0;border-radius:6px;">New Session</span>
+          </div>
+        </div>
+        <!-- assistant message -->
+        <div style="color:#1e293b;font-size:13px;line-height:1.7;margin-bottom:14px;">
+          <p style="margin:0 0 6px;">The <strong style="color:#b8960a;">mens rea</strong> for arson requires proof of either intention or recklessness — the defendant either meant to damage the property, or was aware of the risk and consciously disregarded it.</p>
+          <p style="margin:0;color:#64748b;font-size:12px;">How would you prove intention in a case where the defendant denies it?</p>
+          <span style="color:#94a3b8;font-size:11px;cursor:pointer;margin-top:4px;display:inline-block;">🔊 Replay</span>
+        </div>
+        <!-- user bubble -->
+        <div style="display:flex;justify-content:flex-end;">
+          <div style="background:#d4a500;color:#fff;border-radius:18px 18px 4px 18px;padding:8px 14px;font-size:13px;max-width:75%;font-weight:500;">You'd look at circumstantial evidence — accelerants, multiple seats of fire.</div>
+        </div>
+        <!-- floating toggle -->
+        <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+          <div style="width:28px;height:28px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;">🌙</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Clean white</h3>
+      <p>Pure white background, slate text, gold darkened slightly for contrast. Crisp and modern.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Warm paper -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#faf7f2;padding:16px 20px;font-family:system-ui,sans-serif;border-radius:8px;border:1px solid #e8e0d0;">
+      <div style="max-width:700px;margin:0 auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #e8e0d0;margin-bottom:14px;">
+          <span style="color:#a07800;font-size:13px;font-weight:700;">Arson &amp; Intentional Damage</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div style="display:flex;background:#f0ebe0;border:1px solid #e8e0d0;border-radius:8px;overflow:hidden;">
+              <span style="padding:4px 10px;font-size:11px;background:#c49a00;color:#fff;font-weight:700;">✏️ Text</span>
+              <span style="padding:4px 10px;font-size:11px;color:#78716c;">🎤 Voice</span>
+            </div>
+            <span style="padding:4px 10px;font-size:11px;color:#78716c;border:1px solid #e8e0d0;border-radius:6px;">New Session</span>
+          </div>
+        </div>
+        <div style="color:#292524;font-size:13px;line-height:1.7;margin-bottom:14px;">
+          <p style="margin:0 0 6px;">The <strong style="color:#a07800;">mens rea</strong> for arson requires proof of either intention or recklessness — the defendant either meant to damage the property, or was aware of the risk and consciously disregarded it.</p>
+          <p style="margin:0;color:#78716c;font-size:12px;">How would you prove intention in a case where the defendant denies it?</p>
+          <span style="color:#a8a29e;font-size:11px;cursor:pointer;margin-top:4px;display:inline-block;">🔊 Replay</span>
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <div style="background:#c49a00;color:#fff;border-radius:18px 18px 4px 18px;padding:8px 14px;font-size:13px;max-width:75%;font-weight:500;">You'd look at circumstantial evidence — accelerants, multiple seats of fire.</div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+          <div style="width:28px;height:28px;background:#f0ebe0;border:1px solid #e8e0d0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;">🌙</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Warm paper</h3>
+      <p>Cream/parchment background, warm brown text. Easier on the eyes for long reading sessions.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Cool grey -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f1f5f9;padding:16px 20px;font-family:system-ui,sans-serif;border-radius:8px;border:1px solid #cbd5e1;">
+      <div style="max-width:700px;margin:0 auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #cbd5e1;margin-bottom:14px;">
+          <span style="color:#a07800;font-size:13px;font-weight:700;">Arson &amp; Intentional Damage</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div style="display:flex;background:#e2e8f0;border:1px solid #cbd5e1;border-radius:8px;overflow:hidden;">
+              <span style="padding:4px 10px;font-size:11px;background:#c49a00;color:#fff;font-weight:700;">✏️ Text</span>
+              <span style="padding:4px 10px;font-size:11px;color:#64748b;">🎤 Voice</span>
+            </div>
+            <span style="padding:4px 10px;font-size:11px;color:#64748b;border:1px solid #cbd5e1;border-radius:6px;">New Session</span>
+          </div>
+        </div>
+        <div style="color:#0f172a;font-size:13px;line-height:1.7;margin-bottom:14px;">
+          <p style="margin:0 0 6px;">The <strong style="color:#a07800;">mens rea</strong> for arson requires proof of either intention or recklessness — the defendant either meant to damage the property, or was aware of the risk and consciously disregarded it.</p>
+          <p style="margin:0;color:#64748b;font-size:12px;">How would you prove intention in a case where the defendant denies it?</p>
+          <span style="color:#94a3b8;font-size:11px;cursor:pointer;margin-top:4px;display:inline-block;">🔊 Replay</span>
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <div style="background:#c49a00;color:#fff;border-radius:18px 18px 4px 18px;padding:8px 14px;font-size:13px;max-width:75%;font-weight:500;">You'd look at circumstantial evidence — accelerants, multiple seats of fire.</div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+          <div style="width:28px;height:28px;background:#e2e8f0;border:1px solid #cbd5e1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;">🌙</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Cool grey</h3>
+      <p>Slate grey background, near-black text. More neutral and professional, less glare than pure white.</p>
+    </div>
+  </div>
+
+</div>

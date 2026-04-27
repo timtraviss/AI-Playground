@@ -6,142 +6,7 @@
   <title>Admin — Traviss.org</title>
   <link rel="stylesheet" href="/css/nav.css" />
   <link rel="stylesheet" href="/shared/theme.css" />
-  <style>
-    :root {
-      --bg:           #0d1117;
-      --surface:      #161b22;
-      --border:       #21262d;
-      --text:         #e2e8f0;
-      --text-muted:   #64748b;
-      --gold:         #e8c96a;
-      --gold-on-dark: #0d1117;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Inter, system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 80px 24px 80px;
-    }
-    .container { width: 100%; max-width: 600px; }
-    h1 { font-size: 22px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
-    .subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 40px; }
-    .section { margin-bottom: 48px; }
-    .section-title {
-      font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--text-muted);
-      border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 24px;
-    }
-    .field { margin-bottom: 20px; }
-    label {
-      display: block; font-size: 12px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      color: var(--text-muted); margin-bottom: 8px;
-    }
-    textarea, input[type="text"] {
-      width: 100%; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--text); font-family: inherit;
-      font-size: 14px; line-height: 1.6; padding: 12px 14px;
-      resize: vertical; transition: border-color 0.15s;
-    }
-    textarea:focus, input:focus { outline: none; border-color: var(--gold); }
-    input[type="text"] { resize: none; }
-    .btn {
-      width: 100%; background: var(--gold); color: var(--gold-on-dark);
-      border: none; border-radius: 8px; font-size: 15px;
-      font-weight: 700; padding: 14px; cursor: pointer;
-      transition: opacity 0.15s; margin-top: 8px;
-    }
-    .btn:hover { opacity: 0.88; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-danger {
-      background: transparent; color: #f87171;
-      border: 1px solid rgba(248,113,113,0.3);
-      width: auto; padding: 6px 12px; font-size: 13px; font-weight: 600;
-      border-radius: 6px; cursor: pointer; margin-top: 0;
-    }
-    .btn-danger:hover { background: rgba(248,113,113,0.1); }
-    .msg {
-      margin-top: 16px; font-size: 14px; padding: 12px 14px;
-      border-radius: 8px; display: none;
-    }
-    .msg.success { display: block; background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
-    .msg.error   { display: block; background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
-    .modules-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-    .modules-table th {
-      font-size: 11px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.08em; color: var(--text-muted); text-align: left;
-      padding: 8px 12px; border-bottom: 1px solid var(--border);
-    }
-    .modules-table td {
-      padding: 12px; font-size: 14px; border-bottom: 1px solid var(--surface);
-      vertical-align: middle;
-    }
-    .modules-table td:last-child { text-align: right; }
-    .empty-state { color: var(--text-muted); font-size: 14px; padding: 16px 0; }
-    .file-label {
-      display: block; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; padding: 11px 14px; font-size: 14px;
-      color: var(--text-muted); cursor: pointer; transition: border-color 0.15s;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .file-label:hover { border-color: var(--gold); }
-    input[type="file"] { display: none; }
-    .users-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .users-table th { text-align: left; padding: 8px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted, #64748b); border-bottom: 1px solid var(--border, #21262d); }
-    .users-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
-    .users-table tr:last-child td { border-bottom: none; }
-    .role-pill { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.06em; }
-    .role-pill.admin { background: rgba(232,201,106,0.12); border: 1px solid rgba(232,201,106,0.25); color: var(--gold, #e8c96a); }
-    .role-pill.other { background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.2); color: var(--text-muted, #94a3b8); }
-    .btn-row { display: flex; gap: 8px; }
-    .table-loading { text-align: center; color: var(--text-muted, #64748b); padding: 24px; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-    .modal { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); border-radius: 12px; padding: 28px; width: 100%; max-width: 400px; }
-    .modal h3 { margin: 0 0 16px; font-size: 16px; }
-    .modal-subtitle { margin: -8px 0 16px; color: var(--text-muted, #64748b); font-size: 13px; }
-    .form-label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted, #64748b); margin-bottom: 12px; }
-    .form-input { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px 10px; font-size: 13px; color: var(--text, #e2e8f0); font-family: inherit; outline: none; }
-    .form-input:focus { border-color: var(--gold, #e8c96a); }
-    .modal-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; border-radius: 6px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
-    .btn-primary { background: var(--gold); color: var(--gold-on-dark); border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
-    .btn-primary:hover { opacity: 0.88; }
-    .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text); border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: border-color 0.15s; }
-    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-    .btn-sm { padding: 4px 10px; font-size: 11px; }
-    .btn-danger { color: #ef4444; border-color: rgba(239,68,68,0.3); }
-    .btn-danger:hover { background: rgba(239,68,68,0.1); }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 48px; }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .card-title { font-size: 16px; font-weight: 600; margin: 0; }
-    .usage-pills { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
-    .usage-pill { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); border-radius: 8px; padding: 14px; text-align: center; }
-    .usage-pill-val { font-size: 20px; font-weight: 700; color: var(--gold, #e8c96a); }
-    .usage-pill-label { font-size: 11px; color: var(--text-muted, #64748b); margin-top: 2px; }
-    .tab-row { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border, #21262d); padding-bottom: 8px; }
-    .tab-btn { background: none; border: none; color: var(--text-muted, #64748b); font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: inherit; }
-    .tab-btn.active { background: rgba(232,201,106,0.1); color: var(--gold, #e8c96a); }
-    .user-cards { display: flex; flex-direction: column; gap: 8px; }
-    .user-usage-card { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color 0.15s; }
-    .user-usage-card:hover { border-color: rgba(232,201,106,0.3); }
-    .user-usage-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: #818cf8; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .user-usage-meta { flex: 1; }
-    .user-usage-name { font-size: 13px; font-weight: 600; }
-    .user-usage-sub { font-size: 11px; color: var(--text-muted, #64748b); }
-    .user-usage-cost { text-align: right; }
-    .user-usage-cost-val { font-size: 15px; font-weight: 700; color: var(--gold, #e8c96a); }
-    .user-usage-cost-tokens { font-size: 11px; color: var(--text-muted, #64748b); }
-    .form-select-sm { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); color: var(--text, #e2e8f0); border-radius: 6px; padding: 4px 8px; font-size: 12px; font-family: inherit; }
-    .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
-    .page-btn { background: var(--surface, #161b22); border: 1px solid var(--border, #21262d); color: var(--text-muted, #64748b); border-radius: 5px; padding: 4px 10px; cursor: pointer; font-size: 12px; font-family: inherit; }
-    .page-btn.active { border-color: var(--gold, #e8c96a); color: var(--gold, #e8c96a); }
-
-  </style>
+  <link rel="stylesheet" href="/admin/admin.css" />
 </head>
 <body>
 
@@ -170,54 +35,63 @@
 
     <!-- Admin content -->
     <div id="admin-content">
-      <h1>Admin</h1>
-      <p class="subtitle">Server-side configuration for all tools. &nbsp;·&nbsp; <a href="/admin/logs" style="color:var(--gold);text-decoration:none;">View Access Logs →</a></p>
+      <header style="margin-bottom: 48px;">
+        <h1>Admin</h1>
+        <p class="subtitle">Server-side configuration for all tools. &nbsp;·&nbsp; <a href="/admin/logs" style="color:var(--gold);text-decoration:none;">View Access Logs →</a></p>
+      </header>
 
       <!-- ── Scenario Editor ───────────────────────────── -->
-      <div class="section">
+      <section class="section">
         <div class="section-title">P.E.A.C.E. Scenario Editor</div>
-        <div class="field">
-          <label for="briefing">Scenario Briefing</label>
-          <textarea id="briefing" rows="4" placeholder="Loading…"></textarea>
+        <div class="card">
+          <div class="field">
+            <label for="briefing">Scenario Briefing</label>
+            <textarea id="briefing" rows="6" placeholder="Loading…"></textarea>
+          </div>
+          <div class="field">
+            <label for="task">Your Task</label>
+            <textarea id="task" rows="4" placeholder="Loading…"></textarea>
+          </div>
+          <button class="btn" id="btn-save-scenario">Save Scenario</button>
+          <div class="msg" id="msg-scenario"></div>
         </div>
-        <div class="field">
-          <label for="task">Your Task</label>
-          <textarea id="task" rows="4" placeholder="Loading…"></textarea>
-        </div>
-        <button class="btn" id="btn-save-scenario">Save Scenario</button>
-        <div class="msg" id="msg-scenario"></div>
-      </div>
+      </section>
 
       <!-- ── Knowledge Base ─────────────────────────────── -->
-      <div class="section">
+      <section class="section">
         <div class="section-title">DDP Tutor — Knowledge Base</div>
-        <div class="field">
-          <label for="module-name">Module Display Name</label>
-          <input type="text" id="module-name" placeholder="e.g. Arson &amp; Intentional Damage" />
-        </div>
-        <div class="field">
-          <label>Module File (.docx)</label>
-          <label class="file-label" id="file-label" for="module-file">Choose file…</label>
-          <input type="file" id="module-file" accept=".docx" />
-        </div>
-        <button class="btn" id="btn-upload">Convert &amp; Save Module</button>
-        <div class="msg" id="msg-upload"></div>
+        <div class="card">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: flex-end; margin-bottom: 24px;">
+            <div class="field" style="margin-bottom: 0;">
+              <label for="module-name">Module Display Name</label>
+              <input type="text" id="module-name" placeholder="e.g. Arson &amp; Intentional Damage" />
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <label>Module File (.docx)</label>
+              <label class="file-label" id="file-label" for="module-file">Choose file…</label>
+              <input type="file" id="module-file" accept=".docx" />
+            </div>
+          </div>
+          <button class="btn" id="btn-upload">Convert &amp; Save Module</button>
+          <div class="msg" id="msg-upload"></div>
 
-        <table class="modules-table" id="modules-table" style="margin-top:32px">
-          <thead>
-            <tr><th>Module</th><th>Last Updated</th><th></th></tr>
-          </thead>
-          <tbody id="modules-body">
-            <tr><td colspan="3" class="empty-state">Loading…</td></tr>
-          </tbody>
-        </table>
-      </div>
+          <table class="modules-table" id="modules-table" style="margin-top:40px">
+            <thead>
+              <tr><th>Module</th><th>Last Updated</th><th>Action</th></tr>
+            </thead>
+            <tbody id="modules-body">
+              <tr><td colspan="3" class="table-loading">Loading modules…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       <!-- ── Users card ─────────────────────────────────────── -->
-      <div class="section">
+      <section class="section">
+        <div class="section-title">User Management</div>
         <div class="card" id="users-card">
           <div class="card-header">
-            <h2 class="card-title">Users</h2>
+            <h2 class="card-title">Active Users</h2>
             <button class="btn-primary" id="add-user-btn">+ Add User</button>
           </div>
 
@@ -228,21 +102,22 @@
                 <th>Display Name</th>
                 <th>Role</th>
                 <th>Last Login</th>
-                <th></th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="users-tbody">
-              <tr><td colspan="5" class="table-loading">Loading…</td></tr>
+              <tr><td colspan="5" class="table-loading">Loading users…</td></tr>
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
       <!-- ── Usage card ──────────────────────────────────────── -->
-      <div class="section">
-        <section class="card" id="usage-card">
+      <section class="section">
+        <div class="section-title">Usage & Performance</div>
+        <div class="card" id="usage-card">
           <div class="card-header">
-            <h2 class="card-title">Usage & Cost</h2>
+            <h2 class="card-title">Costs & Activity</h2>
             <div style="display:flex;gap:8px;align-items:center">
               <select class="form-select-sm" id="usage-period">
                 <option value="month">This month</option>
@@ -262,8 +137,8 @@
 
           <!-- Tabs -->
           <div class="tab-row">
-            <button class="tab-btn active" data-tab="summary">Summary</button>
-            <button class="tab-btn" data-tab="log">Session Log</button>
+            <button class="tab-btn active" data-tab="summary">By User</button>
+            <button class="tab-btn" data-tab="log">Detailed Log</button>
           </div>
 
           <!-- Summary tab -->
@@ -273,30 +148,32 @@
 
           <!-- Log tab -->
           <div id="usage-tab-log" style="display:none">
-            <table class="users-table" id="usage-log-table">
-              <thead><tr>
-                <th>User</th><th>Tool</th><th>Model</th><th>Time</th>
-                <th>Tokens (in/out/cache)</th><th>Cost</th>
-              </tr></thead>
-              <tbody id="usage-log-tbody"><tr><td colspan="6" class="table-loading">Loading…</td></tr></tbody>
-            </table>
+            <div style="overflow-x: auto;">
+              <table class="users-table" id="usage-log-table">
+                <thead><tr>
+                  <th>User</th><th>Tool</th><th>Model</th><th>Time</th>
+                  <th>Tokens (I/O/C)</th><th>Cost</th>
+                </tr></thead>
+                <tbody id="usage-log-tbody"><tr><td colspan="6" class="table-loading">Loading logs…</td></tr></tbody>
+              </table>
+            </div>
             <div class="pagination" id="usage-pagination"></div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       <!-- Add User modal -->
       <div class="modal-overlay" id="add-user-modal" style="display:none">
         <div class="modal">
-          <h3>Add User</h3>
-          <label class="form-label">Username<input class="form-input" type="text" id="new-username" autocapitalize="none" /></label>
-          <label class="form-label">Display Name<input class="form-input" type="text" id="new-display-name" /></label>
+          <h3>Add New User</h3>
+          <label class="form-label">Username<input class="form-input" type="text" id="new-username" autocapitalize="none" placeholder="j.doe" /></label>
+          <label class="form-label">Display Name<input class="form-input" type="text" id="new-display-name" placeholder="John Doe" /></label>
           <label class="form-label">Password<input class="form-input" type="password" id="new-password" /></label>
           <label class="form-label">Role<input class="form-input" type="text" id="new-role" placeholder="Trainee" /></label>
           <div class="modal-error" id="add-user-error" style="display:none"></div>
           <div class="modal-actions">
             <button class="btn-ghost" id="add-user-cancel">Cancel</button>
-            <button class="btn-primary" id="add-user-submit">Add User</button>
+            <button class="btn-primary" id="add-user-submit">Create User</button>
           </div>
         </div>
       </div>
@@ -310,7 +187,7 @@
           <div class="modal-error" id="reset-pw-error" style="display:none"></div>
           <div class="modal-actions">
             <button class="btn-ghost" id="reset-pw-cancel">Cancel</button>
-            <button class="btn-primary" id="reset-pw-submit">Reset</button>
+            <button class="btn-primary" id="reset-pw-submit">Reset Password</button>
           </div>
         </div>
       </div>
@@ -321,342 +198,6 @@
   <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark">☀️</button>
   <script src="/shared/theme.js"></script>
   <script src="/js/nav.js" defer></script>
-  <script>
-    initAdmin();
-
-    function initAdmin() {
-      // Load scenario
-      fetch('/api/admin/scenario')
-        .then(r => r.json())
-        .then(d => {
-          document.getElementById('briefing').value = d.briefing || '';
-          document.getElementById('task').value     = d.task || '';
-        })
-        .catch(() => { document.getElementById('briefing').placeholder = 'Failed to load.'; });
-
-      loadModules();
-    }
-
-    // ── Scenario editor ────────────────────────────────
-    document.getElementById('btn-save-scenario').addEventListener('click', async () => {
-      const btn = document.getElementById('btn-save-scenario');
-      const msg = document.getElementById('msg-scenario');
-      showMsg(msg, '', '');
-      btn.disabled = true; btn.textContent = 'Saving…';
-      try {
-        const res = await fetch('/api/admin/scenario', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            briefing: document.getElementById('briefing').value,
-            task:     document.getElementById('task').value,
-          }),
-        });
-        const data = await res.json();
-        if (res.ok) showMsg(msg, 'Saved successfully.', 'success');
-        else showMsg(msg, data.error || 'Save failed.', 'error');
-      } catch { showMsg(msg, 'Network error.', 'error'); }
-      finally { btn.disabled = false; btn.textContent = 'Save Scenario'; }
-    });
-
-    // ── Knowledge Base ─────────────────────────────────
-    document.getElementById('module-file').addEventListener('change', () => {
-      const file = document.getElementById('module-file').files[0];
-      document.getElementById('file-label').textContent = file?.name || 'Choose file…';
-      if (file) {
-        const match = file.name.match(/[_-]v(\d+)/i);
-        if (match) {
-          const name = document.getElementById('module-name').value.trim();
-          if (name && !/ v\d+$/i.test(name))
-            document.getElementById('module-name').value = `${name} v${match[1]}`;
-        }
-      }
-    });
-
-    async function loadModules() {
-      const body = document.getElementById('modules-body');
-      try {
-        const modules = await fetch('/api/tutor/modules').then(r => r.json());
-        body.replaceChildren();
-        if (!modules.length) {
-          const tr = document.createElement('tr');
-          const td = document.createElement('td');
-          td.colSpan = 3; td.className = 'empty-state';
-          td.textContent = 'No modules uploaded yet.';
-          tr.appendChild(td); body.appendChild(tr);
-          return;
-        }
-        for (const m of modules) {
-          const tr = document.createElement('tr');
-          tr.dataset.id = m.id;
-          const tdName = document.createElement('td');
-          tdName.textContent = m.name;
-          const tdDate = document.createElement('td');
-          tdDate.style.cssText = 'color:var(--text-muted);font-size:13px';
-          tdDate.textContent = new Date(m.updatedAt).toLocaleDateString('en-NZ');
-          const tdAction = document.createElement('td');
-          const btn = document.createElement('button');
-          btn.className = 'btn-danger'; btn.textContent = 'Delete';
-          btn.addEventListener('click', () => deleteModule(m.id, m.name));
-          tdAction.appendChild(btn);
-          tr.append(tdName, tdDate, tdAction);
-          body.appendChild(tr);
-        }
-      } catch {
-        body.innerHTML = '<tr><td colspan="3" class="empty-state">Failed to load modules.</td></tr>';
-      }
-    }
-
-    document.getElementById('btn-upload').addEventListener('click', async () => {
-      const name     = document.getElementById('module-name').value.trim();
-      const file     = document.getElementById('module-file').files[0];
-      const msg      = document.getElementById('msg-upload');
-      const btn      = document.getElementById('btn-upload');
-      if (!name) return showMsg(msg, 'Module display name is required.', 'error');
-      if (!file) return showMsg(msg, 'Please select a .docx file.', 'error');
-      showMsg(msg, '', '');
-      btn.disabled = true; btn.textContent = 'Converting…';
-      const fd = new FormData();
-      fd.append('module', file);
-      fd.append('name', name);
-      try {
-        const res  = await fetch('/api/tutor/knowledge/upload', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (res.ok) {
-          showMsg(msg, `"${name}" saved successfully.`, 'success');
-          document.getElementById('module-name').value = '';
-          document.getElementById('module-file').value = '';
-          document.getElementById('file-label').textContent = 'Choose file…';
-          loadModules();
-        } else showMsg(msg, data.error || 'Upload failed.', 'error');
-      } catch { showMsg(msg, 'Network error.', 'error'); }
-      finally { btn.disabled = false; btn.textContent = 'Convert & Save Module'; }
-    });
-
-    async function deleteModule(id, name) {
-      if (!confirm(`Delete "${name}"?`)) return;
-      try {
-        const res  = await fetch(`/api/tutor/knowledge/${id}`, {
-          method: 'DELETE',
-        });
-        const data = await res.json();
-        if (res.ok) loadModules();
-        else alert(data.error || 'Delete failed.');
-      } catch { alert('Network error.'); }
-    }
-
-    function showMsg(el, text, type) {
-      el.textContent = text;
-      el.className = type ? `msg ${type}` : 'msg';
-    }
-
-    // ── Users card ────────────────────────────────────────────────────
-    let resetTargetId = null;
-
-    function relativeTime(iso) {
-      if (!iso) return 'Never';
-      const diff = Date.now() - new Date(iso).getTime();
-      const mins = Math.floor(diff / 60000);
-      if (mins < 2) return 'Just now';
-      if (mins < 60) return `${mins}m ago`;
-      const hrs = Math.floor(mins / 60);
-      if (hrs < 24) return `${hrs}h ago`;
-      const days = Math.floor(hrs / 24);
-      if (days < 7) return `${days}d ago`;
-      return new Date(iso).toLocaleDateString('en-NZ');
-    }
-
-    async function loadUsers() {
-      try {
-        const r = await fetch('/api/admin/users');
-        const users = await r.json();
-        const tbody = document.getElementById('users-tbody');
-        if (!users.length) {
-          tbody.innerHTML = '<tr><td colspan="5" class="table-loading">No users yet.</td></tr>';
-          return;
-        }
-        tbody.innerHTML = users.map(u => `
-          <tr data-id="${u.id}">
-            <td>${u.username}</td>
-            <td>${u.display_name}</td>
-            <td><span class="role-pill ${u.role === 'Admin' ? 'admin' : 'other'}">${u.role}</span></td>
-            <td>${relativeTime(u.last_login)}</td>
-            <td>
-              <div class="btn-row">
-                <button class="btn-ghost btn-sm" onclick="openResetPw(${u.id}, '${u.display_name.replace(/'/g, "\\'")}')">Reset pw</button>
-                <button class="btn-ghost btn-sm btn-danger" onclick="deleteUser(${u.id}, '${u.username}')">Delete</button>
-              </div>
-            </td>
-          </tr>
-        `).join('');
-      } catch (err) {
-        document.getElementById('users-tbody').innerHTML =
-          `<tr><td colspan="5" class="table-loading">Error loading users: ${err.message}</td></tr>`;
-      }
-    }
-
-    document.getElementById('add-user-btn').addEventListener('click', () => {
-      document.getElementById('add-user-modal').style.display = 'flex';
-      document.getElementById('add-user-error').style.display = 'none';
-      ['new-username','new-display-name','new-password','new-role'].forEach(id => {
-        document.getElementById(id).value = '';
-      });
-    });
-
-    document.getElementById('add-user-cancel').addEventListener('click', () => {
-      document.getElementById('add-user-modal').style.display = 'none';
-    });
-
-    document.getElementById('add-user-submit').addEventListener('click', async () => {
-      const username = document.getElementById('new-username').value.trim();
-      const displayName = document.getElementById('new-display-name').value.trim();
-      const password = document.getElementById('new-password').value;
-      const role = document.getElementById('new-role').value.trim() || 'Trainee';
-      const errEl = document.getElementById('add-user-error');
-      errEl.style.display = 'none';
-
-      const r = await fetch('/api/admin/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, displayName, password, role }),
-      });
-      const d = await r.json();
-      if (r.ok) {
-        document.getElementById('add-user-modal').style.display = 'none';
-        loadUsers();
-      } else {
-        errEl.textContent = d.error;
-        errEl.style.display = 'block';
-      }
-    });
-
-    function openResetPw(userId, displayName) {
-      resetTargetId = userId;
-      document.getElementById('reset-pw-name').textContent = `Resetting password for ${displayName}`;
-      document.getElementById('reset-pw-input').value = '';
-      document.getElementById('reset-pw-error').style.display = 'none';
-      document.getElementById('reset-pw-modal').style.display = 'flex';
-    }
-
-    document.getElementById('reset-pw-cancel').addEventListener('click', () => {
-      document.getElementById('reset-pw-modal').style.display = 'none';
-    });
-
-    document.getElementById('reset-pw-submit').addEventListener('click', async () => {
-      const password = document.getElementById('reset-pw-input').value;
-      const errEl = document.getElementById('reset-pw-error');
-      const r = await fetch(`/api/admin/users/${resetTargetId}/password`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-      });
-      const d = await r.json();
-      if (r.ok) {
-        document.getElementById('reset-pw-modal').style.display = 'none';
-      } else {
-        errEl.textContent = d.error;
-        errEl.style.display = 'block';
-      }
-    });
-
-    async function deleteUser(userId, username) {
-      if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
-      const r = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
-      const d = await r.json();
-      if (r.ok) loadUsers();
-      else alert(d.error);
-    }
-
-    loadUsers();
-
-    // ── Usage card ────────────────────────────────────────────────────
-    let usagePage = 1;
-    let activeUserId = null;
-
-    function fmtCost(v) { return '$' + Number(v).toFixed(4); }
-    function fmtTokens(v) {
-      const n = Number(v);
-      return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
-    }
-    function fmtTime(iso) {
-      if (!iso) return '';
-      const d = new Date(iso);
-      return d.toLocaleDateString('en-NZ') + ' ' + d.toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit' });
-    }
-
-    async function loadUsage() {
-      const period = document.getElementById('usage-period').value;
-      const params = new URLSearchParams({ period, page: usagePage });
-      if (activeUserId) params.set('userId', activeUserId);
-      try {
-        const r = await fetch('/api/usage/admin?' + params);
-        const d = await r.json();
-
-        // Pills
-        document.getElementById('up-cost').textContent = fmtCost(d.summary.total_cost);
-        document.getElementById('up-tokens').textContent = fmtTokens(d.summary.total_tokens);
-        document.getElementById('up-users').textContent = d.summary.active_users;
-        document.getElementById('up-sessions').textContent = d.summary.sessions;
-
-        // By-user cards
-        const byUserEl = document.getElementById('usage-by-user');
-        byUserEl.innerHTML = d.byUser.map(u => `
-          <div class="user-usage-card" onclick="filterByUser(${u.id})">
-            <div class="user-usage-avatar">${(u.display_name||u.username)[0].toUpperCase()}</div>
-            <div class="user-usage-meta">
-              <div class="user-usage-name">${u.display_name}</div>
-              <div class="user-usage-sub">${u.sessions} sessions · ${u.top_tool || 'various'}</div>
-            </div>
-            <div class="user-usage-cost">
-              <div class="user-usage-cost-val">${fmtCost(u.cost)}</div>
-              <div class="user-usage-cost-tokens">${fmtTokens(u.tokens)} tokens</div>
-            </div>
-          </div>
-        `).join('') || '<p style="color:var(--text-muted,#64748b);text-align:center;padding:24px">No usage data yet.</p>';
-
-        // Log table
-        const tbody = document.getElementById('usage-log-tbody');
-        tbody.innerHTML = d.log.map(row => `
-          <tr>
-            <td>${row.username || '—'}</td>
-            <td>${row.tool}</td>
-            <td><span style="font-size:11px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px">${row.model}</span></td>
-            <td style="font-size:12px;color:var(--text-muted,#64748b)">${fmtTime(row.ts)}</td>
-            <td style="font-size:12px;color:var(--text-muted,#64748b)">${row.input_tokens} / ${row.output_tokens} / ${row.cache_read_tokens}</td>
-            <td style="color:var(--gold,#e8c96a)">${fmtCost(row.cost_usd)}</td>
-          </tr>
-        `).join('') || '<tr><td colspan="6" class="table-loading">No sessions.</td></tr>';
-
-        // Pagination
-        const pages = Math.ceil(d.total / d.limit);
-        const pagEl = document.getElementById('usage-pagination');
-        pagEl.innerHTML = Array.from({ length: Math.min(pages, 10) }, (_, i) =>
-          `<button class="page-btn${i+1 === usagePage ? ' active' : ''}" onclick="goPage(${i+1})">${i+1}</button>`
-        ).join('');
-      } catch (err) {
-        console.error('Usage load error', err);
-      }
-    }
-
-    function filterByUser(userId) {
-      activeUserId = activeUserId === userId ? null : userId;
-      usagePage = 1;
-      switchTab('log');
-      loadUsage();
-    }
-
-    function goPage(p) { usagePage = p; loadUsage(); }
-
-    function switchTab(name) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-      document.getElementById('usage-tab-summary').style.display = name === 'summary' ? '' : 'none';
-      document.getElementById('usage-tab-log').style.display = name === 'log' ? '' : 'none';
-    }
-
-    document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
-    document.getElementById('usage-period').addEventListener('change', () => { usagePage = 1; loadUsage(); });
-
-    loadUsage();
-  </script>
+  <script src="/admin/admin.js" defer></script>
 </body>
 </html>

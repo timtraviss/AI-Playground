@@ -1,0 +1,97 @@
+<h2>Admin — User Management</h2>
+<p class="subtitle">How should the user management panel look in the existing /admin page?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0d1117;border-radius:8px;padding:16px;font-family:system-ui;font-size:11px">
+        <div style="color:#e8c96a;font-weight:700;font-size:13px;margin-bottom:12px">👥 Users</div>
+        <!-- Add user row -->
+        <div style="background:#161b22;border:1px solid #21262d;border-radius:6px;padding:10px;margin-bottom:10px">
+          <div style="color:#94a3b8;margin-bottom:8px;font-size:10px;text-transform:uppercase;letter-spacing:0.08em">Add New User</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <div style="flex:1;background:#0d1117;border:1px solid #21262d;border-radius:4px;padding:5px 7px;color:#64748b">Username</div>
+            <div style="flex:1;background:#0d1117;border:1px solid #21262d;border-radius:4px;padding:5px 7px;color:#64748b">Display name</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <div style="flex:1;background:#0d1117;border:1px solid #21262d;border-radius:4px;padding:5px 7px;color:#64748b">Password</div>
+            <div style="flex:1;background:#0d1117;border:1px solid #21262d;border-radius:4px;padding:5px 7px;color:#64748b">Role / Group</div>
+            <div style="background:#e8c96a;color:#0d1117;border-radius:4px;padding:5px 10px;font-weight:700;white-space:nowrap">Add</div>
+          </div>
+        </div>
+        <!-- User list -->
+        <div style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">3 Users</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="background:#161b22;border:1px solid #21262d;border-radius:5px;padding:7px 10px;display:flex;align-items:center;gap:8px">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(232,201,106,0.15);border:1px solid rgba(232,201,106,0.3);display:flex;align-items:center;justify-content:center;color:#e8c96a;font-size:10px;font-weight:700">T</div>
+            <div style="flex:1"><div style="color:#e2e8f0;font-weight:600">timtraviss</div><div style="color:#64748b;font-size:10px">Tim Traviss · Admin</div></div>
+            <div style="color:#64748b;font-size:10px">Reset pw</div>
+            <div style="color:#ef4444;font-size:10px">Delete</div>
+          </div>
+          <div style="background:#161b22;border:1px solid #21262d;border-radius:5px;padding:7px 10px;display:flex;align-items:center;gap:8px">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(100,116,139,0.15);border:1px solid rgba(100,116,139,0.3);display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:10px;font-weight:700">S</div>
+            <div style="flex:1"><div style="color:#e2e8f0;font-weight:600">sarah.j</div><div style="color:#64748b;font-size:10px">Sarah Jones · Trainee</div></div>
+            <div style="color:#64748b;font-size:10px">Reset pw</div>
+            <div style="color:#ef4444;font-size:10px">Delete</div>
+          </div>
+          <div style="background:#161b22;border:1px solid #21262d;border-radius:5px;padding:7px 10px;display:flex;align-items:center;gap:8px">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(100,116,139,0.15);border:1px solid rgba(100,116,139,0.3);display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:10px;font-weight:700">M</div>
+            <div style="flex:1"><div style="color:#e2e8f0;font-weight:600">m.chen</div><div style="color:#64748b;font-size:10px">Mike Chen · Trainee</div></div>
+            <div style="color:#64748b;font-size:10px">Reset pw</div>
+            <div style="color:#ef4444;font-size:10px">Delete</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Inline add form + list</h3>
+      <p>Add form always visible above the user list. Fast for adding users one at a time. No modal needed.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0d1117;border-radius:8px;padding:16px;font-family:system-ui;font-size:11px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="color:#e8c96a;font-weight:700;font-size:13px">👥 Users</div>
+          <div style="background:#e8c96a;color:#0d1117;border-radius:4px;padding:4px 10px;font-weight:700;font-size:10px">+ Add User</div>
+        </div>
+        <!-- Table -->
+        <div style="background:#161b22;border:1px solid #21262d;border-radius:6px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1fr 1fr 80px 80px 60px;padding:6px 10px;border-bottom:1px solid #21262d;color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:0.06em">
+            <div>Username</div><div>Display Name</div><div>Role</div><div>Last Login</div><div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 80px 80px 60px;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center">
+            <div style="color:#e2e8f0;font-weight:600">timtraviss</div>
+            <div style="color:#94a3b8">Tim Traviss</div>
+            <div><span style="background:rgba(232,201,106,0.1);border:1px solid rgba(232,201,106,0.2);color:#e8c96a;padding:2px 6px;border-radius:100px;font-size:9px">Admin</span></div>
+            <div style="color:#64748b">Today</div>
+            <div style="color:#64748b">⋯</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 80px 80px 60px;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center">
+            <div style="color:#e2e8f0;font-weight:600">sarah.j</div>
+            <div style="color:#94a3b8">Sarah Jones</div>
+            <div><span style="background:rgba(100,116,139,0.1);border:1px solid rgba(100,116,139,0.2);color:#94a3b8;padding:2px 6px;border-radius:100px;font-size:9px">Trainee</span></div>
+            <div style="color:#64748b">2d ago</div>
+            <div style="color:#64748b">⋯</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 80px 80px 60px;padding:7px 10px;align-items:center">
+            <div style="color:#e2e8f0;font-weight:600">m.chen</div>
+            <div style="color:#94a3b8">Mike Chen</div>
+            <div><span style="background:rgba(100,116,139,0.1);border:1px solid rgba(100,116,139,0.2);color:#94a3b8;padding:2px 6px;border-radius:100px;font-size:9px">Trainee</span></div>
+            <div style="color:#64748b">5d ago</div>
+            <div style="color:#64748b">⋯</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Table with modal add</h3>
+      <p>"+ Add User" button opens a modal form. Table shows last login — useful for spotting inactive accounts. Actions (reset pw, delete) in a ⋯ menu per row.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">Click a card, then reply in the terminal.</p>

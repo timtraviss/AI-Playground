@@ -1,0 +1,73 @@
+<h2>Where should the light/dark toggle live?</h2>
+<p class="subtitle">Pick where users switch between dark and light mode.</p>
+
+<div class="cards">
+
+  <!-- Option A: Chat header -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117;padding:14px 18px;font-family:system-ui,sans-serif;border-radius:8px;">
+      <div style="max-width:700px;margin:0 auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="color:#e8c96a;font-size:13px;font-weight:600;">Arson &amp; Intentional Damage</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="display:flex;background:#161b22;border:1px solid #21262d;border-radius:8px;overflow:hidden;">
+              <span style="padding:5px 12px;font-size:12px;color:#0d1117;background:#e8c96a;font-weight:700;">✏️ Text</span>
+              <span style="padding:5px 12px;font-size:12px;color:#64748b;">🎤 Voice</span>
+            </div>
+            <div style="display:flex;background:#161b22;border:1px solid #21262d;border-radius:8px;overflow:hidden;">
+              <span style="padding:5px 12px;font-size:12px;color:#64748b;">🌙</span>
+              <span style="padding:5px 12px;font-size:12px;color:#0d1117;background:#e8c96a;font-weight:700;">☀️</span>
+            </div>
+            <span style="padding:5px 12px;font-size:12px;color:#94a3b8;border:1px solid #21262d;border-radius:8px;">New Session</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Chat header</h3>
+      <p>Toggle sits in the header bar alongside the Text/Voice pill. Always visible during a session. Consistent placement.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Setup screen -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117;padding:14px 18px;font-family:system-ui,sans-serif;border-radius:8px;">
+      <div style="max-width:400px;margin:0 auto;text-align:center;">
+        <div style="font-size:22px;font-weight:900;color:#e8c96a;letter-spacing:-0.5px;margin-bottom:4px;">DDP Tutor</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:20px;">Select a module to begin</div>
+        <div style="background:#161b22;border:1px solid #21262d;border-radius:10px;padding:10px 14px;font-size:13px;color:#64748b;margin-bottom:12px;">Choose a module…</div>
+        <div style="background:#e8c96a;color:#0d1117;border-radius:8px;padding:10px;font-size:13px;font-weight:700;margin-bottom:16px;">Start Session</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <span style="font-size:11px;color:#64748b;">Dark</span>
+          <div style="width:36px;height:20px;background:#21262d;border-radius:10px;position:relative;display:flex;align-items:center;padding:2px;">
+            <div style="width:16px;height:16px;background:#94a3b8;border-radius:50%;margin-left:auto;"></div>
+          </div>
+          <span style="font-size:11px;color:#e8c96a;font-weight:600;">Light</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Setup screen</h3>
+      <p>Toggle on the module selection screen before starting. Set it once, applies to the session. Cleaner chat header.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Floating corner -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117;padding:14px 18px;font-family:system-ui,sans-serif;border-radius:8px;position:relative;min-height:100px;">
+      <div style="max-width:700px;margin:0 auto;">
+        <div style="color:#e2e8f0;font-size:13px;line-height:1.7;">
+          <p style="margin:0 0 8px;">The <strong style="color:#e8c96a;">mens rea</strong> for arson requires proof of intention or recklessness...</p>
+          <p style="margin:0;color:#64748b;font-size:12px;">Can you explain what recklessness means here?</p>
+        </div>
+      </div>
+      <!-- floating button -->
+      <div style="position:absolute;bottom:14px;right:18px;width:32px;height:32px;background:#161b22;border:1px solid #21262d;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">☀️</div>
+    </div>
+    <div class="card-body">
+      <h3>C — Floating corner button</h3>
+      <p>Small icon button fixed to the bottom-right corner. Always accessible, doesn't affect the header layout. Subtle.</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,84 @@
+<h2>Header &amp; Input — full width or constrained?</h2>
+<p class="subtitle">The messages will be centred at 700px. Should the header bar and input box match that width, or stretch edge-to-edge?</p>
+
+<div class="split">
+
+  <!-- Option A: full width header + input -->
+  <div class="mockup">
+    <div class="mockup-header">A — Full-width header &amp; input</div>
+    <div class="mockup-body" style="background:#0d1117;padding:0;font-family:system-ui,sans-serif;border-radius:0 0 8px 8px;overflow:hidden;">
+      <!-- full width header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #21262d;background:#0d1117;">
+        <span style="color:#e8c96a;font-size:12px;font-weight:700;">Arson &amp; Intentional Damage</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="color:#64748b;font-size:11px;background:#161b22;border:1px solid #21262d;padding:3px 8px;border-radius:5px;">✏️ Text</span>
+          <span style="color:#64748b;font-size:11px;background:#161b22;border:1px solid #21262d;padding:3px 8px;border-radius:5px;">🎤 Voice</span>
+          <span style="color:#64748b;font-size:11px;background:#161b22;border:1px solid #21262d;padding:3px 8px;border-radius:5px;">New Session</span>
+        </div>
+      </div>
+      <!-- centred messages -->
+      <div style="max-width:700px;margin:0 auto;padding:16px 20px;">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+          <div style="background:#e8c96a;color:#0d1117;padding:8px 13px;border-radius:18px 18px 4px 18px;font-size:12px;">What are the elements of arson?</div>
+        </div>
+        <div style="color:#e2e8f0;font-size:12px;line-height:1.7;margin-bottom:12px;">
+          <p style="margin:0 0 6px;">Arson is under <strong style="color:#e8c96a;">s267 Crimes Act 1961</strong>. Three elements:</p>
+          <ul style="margin:0;padding-left:16px;">
+            <li>Intentionally or recklessly set fire to property</li>
+            <li>Property was a building or structure</li>
+            <li>Act caused damage</li>
+          </ul>
+        </div>
+      </div>
+      <!-- full width input -->
+      <div style="padding:12px 20px;border-top:1px solid #21262d;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="flex:1;background:#161b22;border:1px solid #21262d;border-radius:10px;padding:8px 12px;color:#64748b;font-size:11px;">Ask a question…</div>
+          <div style="background:#e8c96a;border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:#0d1117;font-size:12px;">➤</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B: all constrained to 700px -->
+  <div class="mockup" data-choice="b" onclick="toggleSelect(this)" style="cursor:pointer;">
+    <div class="mockup-header">B — Everything constrained to 700px ★</div>
+    <div class="mockup-body" style="background:#0d1117;padding:0;font-family:system-ui,sans-serif;border-radius:0 0 8px 8px;overflow:hidden;">
+      <!-- full width strip but content constrained -->
+      <div style="border-bottom:1px solid #21262d;background:#0d1117;padding:12px 20px;">
+        <div style="max-width:700px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#e8c96a;font-size:12px;font-weight:700;">Arson &amp; Intentional Damage</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="color:#64748b;font-size:11px;background:#161b22;border:1px solid #21262d;padding:3px 8px;border-radius:5px;">✏️ Text</span>
+            <span style="color:#64748b;font-size:11px;background:#161b22;border:1px solid #21262d;padding:3px 8px;border-radius:5px;">🎤 Voice</span>
+            <span style="color:#64748b;font-size:11px;background:#161b22;border:1px solid #21262d;padding:3px 8px;border-radius:5px;">New Session</span>
+          </div>
+        </div>
+      </div>
+      <!-- centred messages -->
+      <div style="max-width:700px;margin:0 auto;padding:16px 20px;">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+          <div style="background:#e8c96a;color:#0d1117;padding:8px 13px;border-radius:18px 18px 4px 18px;font-size:12px;">What are the elements of arson?</div>
+        </div>
+        <div style="color:#e2e8f0;font-size:12px;line-height:1.7;margin-bottom:12px;">
+          <p style="margin:0 0 6px;">Arson is under <strong style="color:#e8c96a;">s267 Crimes Act 1961</strong>. Three elements:</p>
+          <ul style="margin:0;padding-left:16px;">
+            <li>Intentionally or recklessly set fire to property</li>
+            <li>Property was a building or structure</li>
+            <li>Act caused damage</li>
+          </ul>
+        </div>
+      </div>
+      <!-- constrained input -->
+      <div style="border-top:1px solid #21262d;padding:12px 20px;">
+        <div style="max-width:700px;margin:0 auto;display:flex;gap:8px;align-items:center;">
+          <div style="flex:1;background:#161b22;border:1px solid #21262d;border-radius:10px;padding:8px 12px;color:#64748b;font-size:11px;">Ask a question…</div>
+          <div style="background:#e8c96a;border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:#0d1117;font-size:12px;">➤</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:24px;">Click your preference above, or just tell me in the terminal.</p>

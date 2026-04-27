@@ -100,6 +100,16 @@ npm test
 
 Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingLabel`, `buildMarkdownReport`). No external dependencies required (ffmpeg not needed).
 
+## Recent Updates (2026-04-28)
+
+- **Design polish — per-tool accent system** — each tool now has a distinct semantic colour token (`--learn` sky, `--verify` green, `--review` purple, `--audio` cyan, `--assess` orange, `--brand` gold). Landing page cards show a coloured left-stripe, tinted gradient, and accent-tinted hover shadow in both light and dark modes.
+- **New `--assess` token** — L3 Reviewer uses `--assess` (#fb923c orange) instead of `--warn`, so warning states on that page have a clear semantic home and can't collide with the tool brand colour.
+- **`--gold-on-dark` derived automatically** — removed 5 hand-tuned near-black hex values across tool pages; all now use `color-mix(in srgb, var(--tool-accent) 10%, #000)`.
+- **`prefers-reduced-motion` support** — pulse animations, shimmer bars, waveforms, and card transitions respect the OS reduced-motion preference across all pages.
+- **Accessibility improvements** — form inputs on L3 Reviewer gain a branded focus ring; tutor mode-button labels hide on screens ≤420 px; nav drawer uses `inert` + `aria-hidden` + focus-return on close.
+- **Light-mode card gradient restored** — landing cards in light mode now render the same diagonal accent gradient as dark mode (previously flattened to plain white).
+- **Basic Legal Concepts v16 module** added to DDP Tutor knowledge base.
+
 ## Recent Updates (2026-04-23)
 
 - **User authentication** — full site gated behind a login page. Session-based auth via `express-session` + PostgreSQL session store (`connect-pg-simple`). Passwords hashed with bcrypt (cost 12). No self-registration — Tim manages all accounts from the Admin page.
@@ -229,6 +239,9 @@ git push heroku main
 - [x] Input validation in `promptBuilder` — descriptive errors on missing witness fields
 - [x] Landing page light mode scroll bug fix — `min-height` on body + `html:has(body.light)` override in `theme.css`
 - [x] Stored XSS fix in tutor module dropdown — replaced `innerHTML` string interpolation with `replaceChildren` + `textContent` (DOM API); module names can no longer inject script via admin upload
+- [x] Per-tool semantic colour tokens (`--learn`, `--verify`, `--review`, `--audio`, `--assess`, `--brand`) — each tool has a distinct accent; `--gold-on-dark` auto-derived via `color-mix()`
+- [x] `prefers-reduced-motion` guards on all animated UI (pulse dots, shimmer, waveform, card transitions, score rings)
+- [x] Accessibility: `inert` + `aria-hidden` on nav drawer, `aria-pressed` on toggle buttons, branded focus rings on form inputs and nav controls
 
 ### Module Proofreader
 - [x] DOCX upload (module + optional reference) with 50 MB limit

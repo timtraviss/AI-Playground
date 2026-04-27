@@ -275,6 +275,9 @@ git push heroku main
 - [x] `requireAuth` and `requireAdmin` middleware — role-based access control
 - [x] Admin user management (add / reset password / delete) via Users card on `/admin`
 - [x] Initials avatar in nav bar; name + role + Sign out in hamburger drawer
+- [x] Wordmark ("Traviss.org") injected into nav bar on all pages via `nav.js`
+- [x] Theme toggle moved from floating button to nav bar (SVG sun/moon icon, all pages)
+- [x] "NZ Police" references removed from all public-facing landing page card descriptions
 - [x] Token usage logging to `usage_log` table after every Claude API call
 - [x] Per-model pricing table (Sonnet, Haiku, Opus) with USD cost calculation
 - [x] Admin Usage & Cost card — pills, per-user cards, paginated log, period filter

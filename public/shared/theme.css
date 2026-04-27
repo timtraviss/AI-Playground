@@ -76,29 +76,9 @@ body.light .transcript-panel {
   background: rgba(250, 247, 242, 0.95);
 }
 
-/* ─── Theme toggle button ─────────────────────────────────────────────── */
+/* ─── Theme toggle button (legacy floating — replaced by nav bar button) ── */
 .theme-toggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 36px;
-  height: 36px;
-  background: var(--surface, #161b22);
-  border: 1px solid var(--border, #21262d);
-  border-radius: 50%;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 998;
-  transition: border-color 0.15s;
-  line-height: 1;
-  padding: 0;
-  color: inherit;
-}
-.theme-toggle:hover {
-  border-color: var(--gold, #e8c96a);
+  display: none;
 }
 
 /* ─── l3-reviewer light mode: white-rgba → dark-rgba ─────────────────── */

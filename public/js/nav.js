@@ -7,11 +7,18 @@
 
   if (!hamburger || !drawer || !overlay) return;
 
+  hamburger.setAttribute('aria-expanded', 'false');
+  hamburger.setAttribute('aria-controls', drawer.id || 'nav-drawer');
+  drawer.setAttribute('aria-hidden', 'true');
+  drawer.inert = true;
+
   function open() {
     drawer.classList.add('open');
     overlay.classList.add('visible');
     hamburger.classList.add('open');
     hamburger.setAttribute('aria-expanded', 'true');
+    drawer.setAttribute('aria-hidden', 'false');
+    drawer.inert = false;
   }
 
   function close() {
@@ -19,6 +26,9 @@
     overlay.classList.remove('visible');
     hamburger.classList.remove('open');
     hamburger.setAttribute('aria-expanded', 'false');
+    drawer.setAttribute('aria-hidden', 'true');
+    drawer.inert = true;
+    hamburger.focus({ preventScroll: true });
   }
 
   function toggle() {

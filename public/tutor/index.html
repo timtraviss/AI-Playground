@@ -12,18 +12,26 @@
   <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <style>
     :root {
-      --bg:               #0d1117;
-      --surface:          #161b22;
-      --border:           #21262d;
-      --text:             #e2e8f0;
-      --text-muted:       #64748b;
-      --gold:             #e8c96a;
-      --gold-on-dark:     #0d1117;
-      --user-bubble-bg:   #e8c96a;
-      --user-bubble-text: #0d1117;
+      --bg:               #0b0f14;
+      --surface:          #141a21;
+      --surface-2:        #1b232d;
+      --border:           #2a3441;
+      --text:             #edf2f7;
+      --text-muted:       #6f7b8a;
+      --text-sub:         #a8b3c2;
+      --brand:            #d6b75f;
+      --learn:            #38bdf8;
+      --tool-accent:      var(--learn);
+      --gold:             var(--tool-accent);
+      --gold-on-dark:     color-mix(in srgb, var(--tool-accent) 10%, #000);
+      --user-bubble-bg:   var(--tool-accent);
+      --user-bubble-text: color-mix(in srgb, var(--tool-accent) 10%, #000);
     }
     html, body {
-      background: var(--bg); color: var(--text);
+      background:
+        radial-gradient(circle at 22% 8%, color-mix(in srgb, var(--tool-accent) 12%, transparent), transparent 28%),
+        var(--bg);
+      color: var(--text);
       font-family: system-ui, -apple-system, 'Inter', sans-serif;
       font-size: 15px; line-height: 1.6; margin: 0;
     }
@@ -39,7 +47,7 @@
     .tag {
       font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
       text-transform: uppercase; color: var(--gold);
-      background: rgba(232,201,106,0.1); border: 1px solid rgba(232,201,106,0.2);
+      background: color-mix(in srgb, var(--tool-accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--tool-accent) 24%, transparent);
       padding: 4px 10px; border-radius: 100px; display: inline-block; margin-bottom: 24px;
     }
     .title {
@@ -88,10 +96,17 @@
       border-radius: 8px; overflow: hidden;
     }
     .mode-btn {
+      display: flex; align-items: center; gap: 6px;
       padding: 6px 14px; font-size: 13px; font-weight: 500;
       background: none; border: none; color: var(--text-muted);
       cursor: pointer; transition: all 0.15s;
     }
+    .icon {
+      width: 16px; height: 16px;
+      flex-shrink: 0;
+      stroke: currentColor;
+    }
+    .icon-sm { width: 14px; height: 14px; }
     .mode-btn.active { background: var(--user-bubble-bg); color: var(--user-bubble-text); font-weight: 700; }
     .mode-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-new {
@@ -137,12 +152,13 @@
       background: var(--surface); border-radius: 4px; padding: 2px 5px; font-size: 13px;
     }
     .replay-btn {
+      align-items: center; gap: 5px;
       background: none; border: none; color: var(--text-muted);
       cursor: pointer; padding: 0; font-size: 12px;
       margin-top: 6px; display: none;
     }
     .replay-btn:hover { color: var(--gold); }
-    .replay-btn.visible { display: inline-block; }
+    .replay-btn.visible { display: inline-flex; }
 
     .chat-footer {
       padding: 16px 24px; border-top: 1px solid var(--border); flex-shrink: 0;
@@ -159,7 +175,7 @@
     .btn-send {
       background: var(--user-bubble-bg); color: var(--user-bubble-text); border: none;
       border-radius: 12px; width: 48px; height: 48px;
-      font-size: 20px; cursor: pointer; flex-shrink: 0;
+      cursor: pointer; flex-shrink: 0;
       transition: opacity 0.15s; display: flex; align-items: center; justify-content: center;
     }
     .btn-send:hover { opacity: 0.88; }
@@ -167,7 +183,7 @@
     .mic-btn {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 12px; width: 48px; height: 48px;
-      font-size: 20px; cursor: pointer; flex-shrink: 0;
+      cursor: pointer; flex-shrink: 0;
       display: none; align-items: center; justify-content: center;
       transition: all 0.15s; color: var(--text-muted);
     }
@@ -211,6 +227,14 @@
     @keyframes wave {
       0%, 100% { height: 6px; }
       50% { height: 22px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .waveform-bar { animation: none !important; }
+    }
+
+    @media (max-width: 420px) {
+      .mode-btn span { display: none; }
     }
   </style>
   <link rel="stylesheet" href="/shared/theme.css" />
@@ -260,8 +284,21 @@
         <span class="chat-module-name" id="chat-module-name"></span>
         <div class="chat-actions">
           <div class="mode-toggle" id="mode-toggle">
-            <button class="mode-btn active" id="btn-text-mode" title="Text mode">✏️ Text</button>
-            <button class="mode-btn" id="btn-voice-mode" title="Voice mode">🎤 Voice</button>
+            <button class="mode-btn active" id="btn-text-mode" title="Text mode" aria-pressed="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
+              <span>Text</span>
+            </button>
+            <button class="mode-btn" id="btn-voice-mode" title="Voice mode" aria-pressed="false">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <path d="M12 19v3" />
+              </svg>
+              <span>Voice</span>
+            </button>
           </div>
           <button class="btn-new" id="btn-new-session">New Session</button>
         </div>
@@ -276,8 +313,19 @@
       <div class="chat-inner">
         <div class="input-row">
           <textarea id="user-input" rows="1" placeholder="Ask a question about this module…"></textarea>
-          <button class="btn-send" id="btn-send" title="Send">➤</button>
-          <button class="mic-btn" id="mic-btn" title="Tap to speak">🎤</button>
+          <button class="btn-send" id="btn-send" title="Send" aria-label="Send message">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m22 2-7 20-4-9-9-4Z" />
+              <path d="M22 2 11 13" />
+            </svg>
+          </button>
+          <button class="mic-btn" id="mic-btn" title="Tap to speak" aria-label="Start voice input" aria-pressed="false">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              <path d="M12 19v3" />
+            </svg>
+          </button>
           <div class="voice-placeholder" id="voice-placeholder">
             <div class="waveform">
               <div class="waveform-bar"></div>
@@ -369,12 +417,16 @@
       voiceMode = false;
       btnTextMode.classList.add('active');
       btnVoiceMode.classList.remove('active');
+      btnTextMode.setAttribute('aria-pressed', 'true');
+      btnVoiceMode.setAttribute('aria-pressed', 'false');
       userInput.style.display = '';
       btnSend.style.display = '';
       if (SpeechRecognition) micBtn.style.display = 'none';
       voicePlaceholder.classList.remove('visible', 'listening');
       if (recognition && micBtn.classList.contains('listening')) recognition.stop();
       micBtn.classList.remove('listening');
+      micBtn.setAttribute('aria-pressed', 'false');
+      micBtn.setAttribute('aria-label', 'Start voice input');
     });
 
     // ── Auto-resize textarea ─────────────────────────────
@@ -493,7 +545,15 @@
         const replay = document.createElement('button');
         replay.className = 'replay-btn';
         replay.title = 'Replay audio';
-        replay.textContent = '🔊 Replay';
+        replay.setAttribute('aria-label', 'Replay audio');
+        replay.innerHTML = `
+          <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4Z" />
+            <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+            <path d="M19 5a9 9 0 0 1 0 14" />
+          </svg>
+          <span>Replay</span>
+        `;
         replay.addEventListener('click', () => {
           const idx = parseInt(replay.dataset.index, 10);
           if (audioCache.has(idx)) {
@@ -546,12 +606,16 @@
       recognition.onresult = (e) => {
         const transcript = e.results[0][0].transcript;
         micBtn.classList.remove('listening');
+        micBtn.setAttribute('aria-pressed', 'false');
+        micBtn.setAttribute('aria-label', 'Start voice input');
         voicePlaceholder.classList.remove('listening');
         sendMessage(transcript);
       };
 
       recognition.onerror = (e) => {
         micBtn.classList.remove('listening');
+        micBtn.setAttribute('aria-pressed', 'false');
+        micBtn.setAttribute('aria-label', 'Start voice input');
         voicePlaceholder.classList.remove('listening');
         const msg = e.error === 'not-allowed'
           ? 'Microphone access denied. Allow microphone permission in your browser settings.'
@@ -563,6 +627,8 @@
       };
       recognition.onend = () => {
         micBtn.classList.remove('listening');
+        micBtn.setAttribute('aria-pressed', 'false');
+        micBtn.setAttribute('aria-label', 'Start voice input');
         voicePlaceholder.classList.remove('listening');
       };
 
@@ -571,11 +637,15 @@
         if (micBtn.classList.contains('listening')) {
           recognition.stop();
           micBtn.classList.remove('listening');
+          micBtn.setAttribute('aria-pressed', 'false');
+          micBtn.setAttribute('aria-label', 'Start voice input');
           voicePlaceholder.classList.remove('listening');
         } else {
           voiceUnsupported.style.display = 'none';
           try { recognition.start(); } catch(e) { /* already starting */ }
           micBtn.classList.add('listening');
+          micBtn.setAttribute('aria-pressed', 'true');
+          micBtn.setAttribute('aria-label', 'Stop voice input');
           voicePlaceholder.classList.add('listening');
         }
       });
@@ -590,6 +660,8 @@
       voiceMode = false;
       btnTextMode.classList.add('active');
       btnVoiceMode.classList.remove('active');
+      btnTextMode.setAttribute('aria-pressed', 'true');
+      btnVoiceMode.setAttribute('aria-pressed', 'false');
       userInput.style.display = '';
       btnSend.style.display = '';
       if (SpeechRecognition) micBtn.style.display = 'none';
@@ -606,6 +678,8 @@
       voiceMode = true;
       btnVoiceMode.classList.add('active');
       btnTextMode.classList.remove('active');
+      btnVoiceMode.setAttribute('aria-pressed', 'true');
+      btnTextMode.setAttribute('aria-pressed', 'false');
       userInput.style.display = 'none';
       btnSend.style.display = 'none';
       micBtn.style.display = 'flex';

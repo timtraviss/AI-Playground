@@ -5,7 +5,10 @@
 html, body {
   min-height: 100%;
   margin: 0;
-  background: var(--bg, #0d1117);
+  background:
+    radial-gradient(circle at 18% 10%, color-mix(in srgb, var(--learn, #38bdf8) 13%, transparent), transparent 30%),
+    radial-gradient(circle at 84% 18%, color-mix(in srgb, var(--brand, #d6b75f) 9%, transparent), transparent 28%),
+    var(--bg, #0b0f14);
   color: var(--text, #e2e8f0);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -20,7 +23,7 @@ html, body {
 }
 
 .landing-content {
-  max-width: 860px;
+  max-width: 980px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -34,7 +37,7 @@ html, body {
   font-family: 'Fugaz One', cursive;
   font-size: clamp(26px, 6vw, 48px);
   font-weight: 400;
-  color: var(--gold, #e8c96a);
+  color: var(--brand, var(--gold, #d6b75f));
   letter-spacing: 0.02em;
   margin: 0 0 16px;
   line-height: 1;
@@ -43,7 +46,7 @@ html, body {
 /* ── Tagline ── */
 .landing-tagline {
   font-size: 16px;
-  color: var(--text-muted, #64748b);
+  color: var(--text-sub, #a8b3c2);
   letter-spacing: 0.04em;
   margin: 0;
   font-weight: 400;
@@ -66,34 +69,60 @@ html, body {
 }
 
 .project-card {
+  --card-accent: var(--brand, #d6b75f);
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
   gap: 10px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--card-accent) 10%, transparent), transparent 38%),
+    rgba(255,255,255,0.035);
+  border: 1px solid color-mix(in srgb, var(--card-accent) 22%, rgba(255,255,255,0.08));
+  border-radius: 8px;
   padding: 28px;
   text-decoration: none;
-  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--card-accent);
 }
 .project-card:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(232,201,106,0.3);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--card-accent) 15%, transparent), transparent 42%),
+    rgba(255,255,255,0.055);
+  border-color: color-mix(in srgb, var(--card-accent) 45%, rgba(255,255,255,0.12));
+  box-shadow: 0 18px 45px color-mix(in srgb, var(--card-accent) 22%, rgba(0,0,0,0.2));
   transform: translateY(-2px);
 }
+.project-card:focus-visible {
+  outline: 2px solid var(--card-accent);
+  outline-offset: 3px;
+}
+
+.project-card.tool-learn { --card-accent: var(--learn, #38bdf8); }
+.project-card.tool-interview { --card-accent: var(--brand, #d6b75f); }
+.project-card.tool-verify { --card-accent: var(--verify, #22c55e); }
+.project-card.tool-audio { --card-accent: var(--audio, #22d3ee); }
+.project-card.tool-review { --card-accent: var(--review, #a78bfa); }
+.project-card.tool-assess { --card-accent: var(--assess, #fb923c); }
 
 .project-tag {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold, #e8c96a);
-  background: rgba(232,201,106,0.1);
-  border: 1px solid rgba(232,201,106,0.2);
+  color: var(--card-accent);
+  background: color-mix(in srgb, var(--card-accent) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--card-accent) 28%, transparent);
   padding: 4px 10px;
-  border-radius: 100px;
+  border-radius: 999px;
 }
 
 .project-title {
@@ -107,7 +136,7 @@ html, body {
 
 .project-desc {
   font-size: 14px;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-sub, #a8b3c2);
   line-height: 1.65;
   margin: 0;
 }
@@ -115,7 +144,7 @@ html, body {
 .project-cta {
   font-size: 13px;
   font-weight: 600;
-  color: var(--gold, #e8c96a);
+  color: var(--card-accent);
   margin-top: 4px;
 }
 
@@ -123,4 +152,8 @@ html, body {
   .landing { padding: 40px 16px; }
   .landing-projects { grid-template-columns: 1fr; }
   .project-card { padding: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card { transition: none !important; }
 }

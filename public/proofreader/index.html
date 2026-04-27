@@ -10,19 +10,25 @@
   <link rel="stylesheet" href="/css/nav.css" />
   <style>
     :root {
-      --bg:           #0d1117;
-      --surface:      #161b22;
-      --border:       #21262d;
-      --text:         #e2e8f0;
-      --text-muted:   #64748b;
-      --text-sub:     #94a3b8;
-      --gold:         #e8c96a;
-      --gold-on-dark: #0d1117;
+      --bg:           #0b0f14;
+      --surface:      #141a21;
+      --surface-2:    #1b232d;
+      --border:       #2a3441;
+      --text:         #edf2f7;
+      --text-muted:   #6f7b8a;
+      --text-sub:     #a8b3c2;
+      --brand:        #d6b75f;
+      --review:       #a78bfa;
+      --tool-accent:  var(--review);
+      --gold:         var(--tool-accent);
+      --gold-on-dark: color-mix(in srgb, var(--tool-accent) 10%, #000);
     }
 
     /* ── Base ── */
     html, body {
-      background: var(--bg);
+      background:
+        radial-gradient(circle at 76% 8%, color-mix(in srgb, var(--tool-accent) 12%, transparent), transparent 28%),
+        var(--bg);
       color: var(--text);
       font-family: system-ui, -apple-system, 'Inter', sans-serif;
       font-size: 15px;
@@ -55,8 +61,8 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--gold);
-      background: rgba(232,201,106,0.1);
-      border: 1px solid rgba(232,201,106,0.2);
+      background: color-mix(in srgb, var(--tool-accent) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--tool-accent) 24%, transparent);
       padding: 4px 10px;
       border-radius: 100px;
       margin-bottom: 24px;
@@ -103,8 +109,8 @@
       cursor: pointer;
       transition: border-color 0.2s;
     }
-    .file-field:hover { border-color: rgba(232,201,106,0.4); }
-    .file-field.has-file { border-color: rgba(232,201,106,0.5); }
+    .file-field:hover { border-color: color-mix(in srgb, var(--tool-accent) 42%, transparent); }
+    .file-field.has-file { border-color: color-mix(in srgb, var(--tool-accent) 52%, transparent); }
     .file-field-label {
       font-size: 11px;
       font-weight: 600;
@@ -246,7 +252,7 @@
     /* Step states */
     .step-item[data-state="active"] .step-dot {
       border-color: var(--gold);
-      background: rgba(232,201,106,0.15);
+      background: color-mix(in srgb, var(--tool-accent) 15%, transparent);
       animation: pulse-dot 1.4s ease-in-out infinite;
     }
     .step-item[data-state="active"] .step-name { color: var(--gold); }
@@ -274,8 +280,8 @@
     .step-item[data-state="error"] .step-name { color: #ef4444; }
 
     @keyframes pulse-dot {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(232,201,106,0.4); }
-      50%       { box-shadow: 0 0 0 6px rgba(232,201,106,0); }
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tool-accent) 40%, transparent); }
+      50%       { box-shadow: 0 0 0 6px color-mix(in srgb, var(--tool-accent) 0%, transparent); }
     }
 
     /* ── Error panel ── */
@@ -397,6 +403,11 @@
       gap: 8px;
     }
     .btn-download:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .step-item[data-state="active"] .step-dot { animation: none !important; }
+      .btn-download { transition: none !important; }
+    }
   </style>
   <link rel="stylesheet" href="/shared/theme.css" />
 </head>
@@ -412,6 +423,7 @@
       <ul class="nav-links">
         <li><a href="/">Home</a></li>
         <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+        <li><a href="/tutor/">DDP Tutor</a></li>
         <li><a href="/podcast-reviewer/">Podcast Reviewer</a></li>
         <li><a href="/podcast-converter/">Podcast Converter</a></li>
         <li><a href="/proofreader/" class="active">Module Proofreader</a></li>

@@ -10,22 +10,28 @@
   <link rel="stylesheet" href="/css/nav.css" />
   <style>
     :root {
-      --bg:           #0d1117;
-      --surface:      #161b22;
-      --surface-mid:  #1e293b;
-      --border:       #21262d;
-      --border-mid:   #334155;
-      --text:         #e2e8f0;
-      --text-muted:   #64748b;
-      --text-sub:     #94a3b8;
+      --bg:           #0b0f14;
+      --surface:      #141a21;
+      --surface-mid:  #1b232d;
+      --border:       #2a3441;
+      --border-mid:   #384554;
+      --text:         #edf2f7;
+      --text-muted:   #6f7b8a;
+      --text-sub:     #a8b3c2;
       --text-dim:     #475569;
-      --gold:         #e8c96a;
-      --gold-on-dark: #0d1117;
+      --brand:        #d6b75f;
+      --warn:         #f59e0b;
+      --assess:       #fb923c;
+      --tool-accent:  var(--assess);
+      --gold:         var(--tool-accent);
+      --gold-on-dark: color-mix(in srgb, var(--tool-accent) 10%, #000);
     }
 
     /* ── Base ── */
     html, body {
-      background: var(--bg);
+      background:
+        radial-gradient(circle at 76% 10%, color-mix(in srgb, var(--tool-accent) 11%, transparent), transparent 28%),
+        var(--bg);
       color: var(--text);
       font-family: system-ui, -apple-system, 'Inter', sans-serif;
       font-size: 15px;
@@ -68,8 +74,8 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--gold);
-      background: rgba(232,201,106,0.1);
-      border: 1px solid rgba(232,201,106,0.2);
+      background: color-mix(in srgb, var(--tool-accent) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--tool-accent) 24%, transparent);
       padding: 4px 10px;
       border-radius: 100px;
       margin-bottom: 24px;
@@ -102,8 +108,8 @@
 
     /* ── Privacy disclaimer ── */
     .privacy-box {
-      background: rgba(232,201,106,0.05);
-      border: 1px solid rgba(232,201,106,0.15);
+      background: color-mix(in srgb, var(--tool-accent) 7%, transparent);
+      border: 1px solid color-mix(in srgb, var(--tool-accent) 18%, transparent);
       border-radius: 10px;
       padding: 14px 18px;
       font-size: 13px;
@@ -199,7 +205,9 @@
     .form-input:focus,
     .form-select:focus,
     .form-textarea:focus {
-      border-color: rgba(232,201,106,0.5);
+      border-color: color-mix(in srgb, var(--tool-accent) 52%, transparent);
+      outline: 2px solid color-mix(in srgb, var(--tool-accent) 28%, transparent);
+      outline-offset: 0;
     }
     .form-select {
       appearance: none;
@@ -230,12 +238,12 @@
       transition: all 0.15s;
     }
     .toggle-btn:hover {
-      border-color: rgba(232,201,106,0.3);
+      border-color: color-mix(in srgb, var(--tool-accent) 34%, transparent);
       color: var(--text-sub);
     }
     .toggle-btn.selected {
       border-color: var(--gold);
-      background: rgba(232,201,106,0.1);
+      background: color-mix(in srgb, var(--tool-accent) 12%, transparent);
       color: var(--gold);
     }
 
@@ -257,12 +265,12 @@
       user-select: none;
     }
     .chip:hover {
-      border-color: rgba(232,201,106,0.3);
+      border-color: color-mix(in srgb, var(--tool-accent) 34%, transparent);
       color: var(--text-sub);
     }
     .chip.selected {
       border-color: var(--gold);
-      background: rgba(232,201,106,0.1);
+      background: color-mix(in srgb, var(--tool-accent) 12%, transparent);
       color: var(--gold);
     }
 
@@ -277,8 +285,8 @@
       width: 100%;
       box-sizing: border-box;
     }
-    .file-field:hover { border-color: rgba(232,201,106,0.4); }
-    .file-field.has-file { border-color: rgba(232,201,106,0.5); }
+    .file-field:hover { border-color: color-mix(in srgb, var(--tool-accent) 42%, transparent); }
+    .file-field.has-file { border-color: color-mix(in srgb, var(--tool-accent) 52%, transparent); }
     .file-field-label {
       font-size: 11px;
       font-weight: 600;
@@ -429,7 +437,7 @@
     /* Step icon states */
     .step-item[data-state="active"] .step-icon {
       border-color: var(--gold);
-      background: rgba(232,201,106,0.1);
+      background: color-mix(in srgb, var(--tool-accent) 12%, transparent);
       color: var(--gold);
     }
     .step-item[data-state="active"] .step-name { color: var(--gold); }
@@ -641,8 +649,8 @@
       font-weight: 600;
       padding: 2px 9px;
       border-radius: 100px;
-      background: rgba(232,201,106,0.1);
-      border: 1px solid rgba(232,201,106,0.2);
+      background: color-mix(in srgb, var(--tool-accent) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--tool-accent) 24%, transparent);
       color: var(--gold);
     }
     .section-chevron {
@@ -710,6 +718,15 @@
       margin-top: 8px;
     }
     .btn-new-review:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .step-item[data-state="active"] .step-dot { animation: none !important; }
+      .rating-bar-fill { transition: none !important; }
+    }
+
+    @media (max-width: 420px) {
+      .mode-btn span { display: none; }
+    }
   </style>
   <link rel="stylesheet" href="/shared/theme.css" />
 </head>
@@ -725,6 +742,7 @@
       <ul class="nav-links">
         <li><a href="/">Home</a></li>
         <li><a href="/interview/">P.E.A.C.E. Interview Tutor</a></li>
+        <li><a href="/tutor/">DDP Tutor</a></li>
         <li><a href="/podcast-reviewer/">Podcast Reviewer</a></li>
         <li><a href="/podcast-converter/">Podcast Converter</a></li>
         <li><a href="/proofreader/">Module Proofreader</a></li>

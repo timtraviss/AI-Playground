@@ -2,17 +2,29 @@
    DESIGN TOKENS
 ─────────────────────────────────────────────── */
 :root {
-  --bg: #0d1117;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-card-hover: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
-  --text: #e2e8f0;
-  --text-muted: #64748b;
-  --text-sub: #94a3b8;
-  --accent: #e8c96a;
-  --accent-dim: rgba(232, 201, 106, 0.15);
-  --accent-border: rgba(232, 201, 106, 0.3);
+  --bg: #0b0f14;
+  --surface: #141a21;
+  --surface-2: #1b232d;
+  --border: #2a3441;
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --bg-card: rgba(255, 255, 255, 0.045);
+  --bg-card-hover: rgba(255, 255, 255, 0.075);
+  --text: #edf2f7;
+  --text-muted: #6f7b8a;
+  --text-sub: #a8b3c2;
+  --brand: #d6b75f;
+  --gold: var(--brand);
+  --learn: #38bdf8;
+  --verify: #22c55e;
+  --review: #a78bfa;
+  --audio: #22d3ee;
+  --warn: #f59e0b;
+  --assess: #fb923c;
+  --danger: #ef4444;
+  --tool-accent: var(--brand);
+  --accent: var(--tool-accent);
+  --accent-dim: color-mix(in srgb, var(--tool-accent) 15%, transparent);
+  --accent-border: color-mix(in srgb, var(--tool-accent) 30%, transparent);
   --green: #4ade80;
   --green-dim: rgba(74, 222, 128, 0.12);
   --amber: #fb923c;
@@ -887,4 +899,16 @@ elevenlabs-convai {
   .score-circle { margin: 0 auto; }
   .intro-container { padding: 40px 16px 32px; }
   .critique-container { padding: 0 16px 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot.live,
+  .status-dot.connecting,
+  .spinner,
+  .waveform.active .waveform-bar,
+  .witness-avatar-lg.speaking { animation: none !important; }
+  .screen { transition: none !important; }
+  .score-ring-fill,
+  .phase-bar-fill,
+  .facts-progress-bar { transition: none !important; }
 }

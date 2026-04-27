@@ -277,16 +277,24 @@
     /* ── File upload field ── */
     .file-field {
       background: var(--bg);
-      border: 1.5px solid rgba(255,255,255,0.1);
+      border: 1.5px dashed rgba(255,255,255,0.14);
       border-radius: 10px;
       padding: 14px 16px;
       cursor: pointer;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, background 0.2s;
       width: 100%;
       box-sizing: border-box;
     }
     .file-field:hover { border-color: color-mix(in srgb, var(--tool-accent) 42%, transparent); }
-    .file-field.has-file { border-color: color-mix(in srgb, var(--tool-accent) 52%, transparent); }
+    .file-field.has-file {
+      border-style: solid;
+      border-color: color-mix(in srgb, var(--tool-accent) 52%, transparent);
+    }
+    .file-field.drag-over {
+      border-style: dashed;
+      border-color: color-mix(in srgb, var(--tool-accent) 60%, transparent);
+      background: color-mix(in srgb, var(--tool-accent) 7%, var(--bg));
+    }
     .file-field-label {
       font-size: 11px;
       font-weight: 600;
@@ -912,7 +920,7 @@
           <div class="file-field" id="transcript-field" onclick="document.getElementById('transcript-input').click()">
             <div class="file-field-label">Interview Transcript (.docx) — required</div>
             <div class="file-field-row">
-              <span class="file-field-name" id="transcript-name">No file selected</span>
+              <span class="file-field-name" id="transcript-name">Drag &amp; drop or browse</span>
               <button class="file-field-btn" type="button" onclick="event.stopPropagation(); document.getElementById('transcript-input').click()">Browse</button>
             </div>
             <input type="file" name="transcript" id="transcript-input" accept=".docx" hidden required />
@@ -1279,10 +1287,28 @@
         transcriptName.classList.add('selected');
         transcriptField.classList.add('has-file');
       } else {
-        transcriptName.textContent = 'No file selected';
+        transcriptName.textContent = 'Drag & drop or browse';
         transcriptName.classList.remove('selected');
         transcriptField.classList.remove('has-file');
       }
+    });
+
+    transcriptField.addEventListener('dragover', e => {
+      e.preventDefault();
+      transcriptField.classList.add('drag-over');
+    });
+    transcriptField.addEventListener('dragleave', e => {
+      if (!transcriptField.contains(e.relatedTarget)) transcriptField.classList.remove('drag-over');
+    });
+    transcriptField.addEventListener('drop', e => {
+      e.preventDefault();
+      transcriptField.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      transcriptInput.files = dt.files;
+      transcriptInput.dispatchEvent(new Event('change'));
     });
 
     // ── collectInputs ──────────────────────────────────────────────────────

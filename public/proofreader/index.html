@@ -102,15 +102,23 @@
     }
     .file-field {
       background: var(--surface);
-      border: 1.5px solid rgba(255,255,255,0.1);
+      border: 1.5px dashed rgba(255,255,255,0.14);
       border-radius: 12px;
       padding: 16px 20px;
       text-align: left;
       cursor: pointer;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, background 0.2s;
     }
     .file-field:hover { border-color: color-mix(in srgb, var(--tool-accent) 42%, transparent); }
-    .file-field.has-file { border-color: color-mix(in srgb, var(--tool-accent) 52%, transparent); }
+    .file-field.has-file {
+      border-style: solid;
+      border-color: color-mix(in srgb, var(--tool-accent) 52%, transparent);
+    }
+    .file-field.drag-over {
+      border-style: dashed;
+      border-color: color-mix(in srgb, var(--tool-accent) 60%, transparent);
+      background: color-mix(in srgb, var(--tool-accent) 7%, var(--surface));
+    }
     .file-field-label {
       font-size: 11px;
       font-weight: 600;
@@ -446,7 +454,7 @@
         <div class="file-field" id="field-module" onclick="document.getElementById('input-module').click()">
           <div class="file-field-label">Learning module (.docx) — required</div>
           <div class="file-field-row">
-            <span class="file-field-name" id="name-module">No file selected</span>
+            <span class="file-field-name" id="name-module">Drag &amp; drop or browse</span>
             <button class="file-field-btn" type="button" onclick="event.stopPropagation(); document.getElementById('input-module').click()">Browse</button>
           </div>
           <input type="file" id="input-module" accept=".docx" hidden />
@@ -456,7 +464,7 @@
         <div class="file-field" id="field-reference" onclick="document.getElementById('input-reference').click()">
           <div class="file-field-label">Reference module (.docx) — optional</div>
           <div class="file-field-row">
-            <span class="file-field-name" id="name-reference">No file selected</span>
+            <span class="file-field-name" id="name-reference">Drag &amp; drop or browse</span>
             <button class="file-field-btn" type="button" onclick="event.stopPropagation(); document.getElementById('input-reference').click()">Browse</button>
           </div>
           <input type="file" id="input-reference" accept=".docx" hidden />
@@ -613,7 +621,7 @@
         nameModule.classList.add('selected');
         fieldModule.classList.add('has-file');
       } else {
-        nameModule.textContent = 'No file selected';
+        nameModule.textContent = 'Drag & drop or browse';
         nameModule.classList.remove('selected');
         fieldModule.classList.remove('has-file');
       }
@@ -627,11 +635,34 @@
         nameReference.classList.add('selected');
         fieldReference.classList.add('has-file');
       } else {
-        nameReference.textContent = 'No file selected';
+        nameReference.textContent = 'Drag & drop or browse';
         nameReference.classList.remove('selected');
         fieldReference.classList.remove('has-file');
       }
     });
+
+    // ── Drag-and-drop support ──────────────────────────────────────────────
+    function setupDrop(fieldEl, inputEl) {
+      fieldEl.addEventListener('dragover', e => {
+        e.preventDefault();
+        fieldEl.classList.add('drag-over');
+      });
+      fieldEl.addEventListener('dragleave', e => {
+        if (!fieldEl.contains(e.relatedTarget)) fieldEl.classList.remove('drag-over');
+      });
+      fieldEl.addEventListener('drop', e => {
+        e.preventDefault();
+        fieldEl.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        inputEl.files = dt.files;
+        inputEl.dispatchEvent(new Event('change'));
+      });
+    }
+    setupDrop(fieldModule, inputModule);
+    setupDrop(fieldReference, inputReference);
 
     // ── Show/hide screens ──────────────────────────────────────────────────
     function showScreen(name) {

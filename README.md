@@ -109,6 +109,7 @@ Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingL
 - **Accessibility improvements** — form inputs on L3 Reviewer gain a branded focus ring; tutor mode-button labels hide on screens ≤420 px; nav drawer uses `inert` + `aria-hidden` + focus-return on close.
 - **Light-mode card gradient restored** — landing cards in light mode now render the same diagonal accent gradient as dark mode (previously flattened to plain white).
 - **Basic Legal Concepts v16 module** added to DDP Tutor knowledge base.
+- **Consistent drag-and-drop on all file inputs** — Proofreader (module + reference DOCX) and L3 Reviewer (transcript DOCX) now match the podcast pages: dashed idle border, accent-tinted highlight on dragover, solid border when a file is selected. Browse button still works as before.
 
 ## Recent Updates (2026-04-23)
 
@@ -244,7 +245,7 @@ git push heroku main
 - [x] Accessibility: `inert` + `aria-hidden` on nav drawer, `aria-pressed` on toggle buttons, branded focus rings on form inputs and nav controls
 
 ### Module Proofreader
-- [x] DOCX upload (module + optional reference) with 50 MB limit
+- [x] DOCX upload (module + optional reference) with 50 MB limit — drag-and-drop or browse
 - [x] Plain text extraction via mammoth
 - [x] Claude Sonnet 4.6 review against full DDP style ruleset (8 categories: STRUCTURE, GRAMMAR, LANGUAGE, CONSISTENCY, CONTENT, FORMATTING, LEARNING_OBJ, LEGISLATION)
 - [x] Expanded system prompt — full NZ English rules (punctuation, Te Reo, plain language, dates/times/numbers), complete heading style spec, terminology consistency table with case law citation format, tense/voice rules; richer issue and suggestion output (no character caps)
@@ -267,7 +268,7 @@ git push heroku main
 
 ### L3 Interview Reviewer
 - [x] 3-step wizard capturing admin fields, planning notes, and self-reflection (Sections 1–4, 9)
-- [x] DOCX transcript upload and extraction via mammoth
+- [x] DOCX transcript upload and extraction via mammoth — drag-and-drop or browse
 - [x] Claude assessment against full Level 3 moderation form (Sections 5–8: Engage & Explain, Account, Questioning, Closure)
 - [x] Law enforcement system prompt framing — prevents content filter refusals on sensitive victim/witness transcripts
 - [x] Structured JSON output: per-item results (Yes/No/N/A, frequency), ratings 1–5, verdict, strengths, learning points, narrative summary

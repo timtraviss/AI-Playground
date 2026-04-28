@@ -1,11 +1,11 @@
 :root {
-  --bg:           #0d1117;
-  --surface:      #161b22;
-  --border:       #21262d;
-  --text:         #e2e8f0;
-  --text-muted:   #64748b;
-  --gold:         #e8c96a;
-  --gold-on-dark: #0d1117;
+  --bg:           #0D1420;
+  --surface:      #1E2A44;
+  --border:       #2E3D5E;
+  --text:         #F5E8D0;
+  --text-muted:   #9A8E7A;
+  --gold:         #E8743C;
+  --gold-on-dark: #1E2A44;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

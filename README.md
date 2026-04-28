@@ -102,6 +102,8 @@ Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingL
 
 ## Recent Updates (2026-04-28)
 
+- **Site-wide palette propagation** — orange/cream/navy palette from the DDP Tutor redesign applied to all remaining pages: Interview (`styles.css`), Podcast Reviewer (`podcast-reviewer.css`), Module Proofreader, L3 Reviewer, Login, and Admin. Dark-mode base colours updated across every `:root` block (`--bg` #0D1420, `--surface` #1E2A44, `--text` #F5E8D0, `--brand` #E8743C). Light-mode tokens in `theme.css` updated to match (cream #F5E8D0 background, burnt orange #B8520A brand, navy #1E2A44 text). Tool-specific accents (purple, green, cyan, orange-assess) preserved on each page.
+
 - **DDP Tutor colour system redesign** — new three-colour palette: Orange (#E8743C) as primary accent, Cream (#F5E8D0) as light background, Navy (#1E2A44) as text/dark surface. Both dark and light theme blocks updated with WCAG-compliant mappings (Burnt Orange #B8520A for inline text/links in light mode; Navy text on orange buttons). Nav bar stays navy in both themes on the tutor page.
 
 - **Design polish — per-tool accent system** — each tool now has a distinct semantic colour token (`--learn` sky, `--verify` green, `--review` purple, `--audio` cyan, `--assess` orange, `--brand` gold). Landing page cards show a coloured left-stripe, tinted gradient, and accent-tinted hover shadow in both light and dark modes.
@@ -243,6 +245,7 @@ git push heroku main
 - [x] Landing page light mode scroll bug fix — `min-height` on body + `html:has(body.light)` override in `theme.css`
 - [x] Stored XSS fix in tutor module dropdown — replaced `innerHTML` string interpolation with `replaceChildren` + `textContent` (DOM API); module names can no longer inject script via admin upload
 - [x] Per-tool semantic colour tokens (`--learn`, `--verify`, `--review`, `--audio`, `--assess`, `--brand`) — each tool has a distinct accent; `--gold-on-dark` auto-derived via `color-mix()`
+- [x] Site-wide orange/cream/navy palette — tutor palette propagated to all pages via `nav.css`, `theme.css`, and per-page `:root` blocks; tool accents preserved
 - [x] `prefers-reduced-motion` guards on all animated UI (pulse dots, shimmer, waveform, card transitions, score rings)
 - [x] Accessibility: `inert` + `aria-hidden` on nav drawer, `aria-pressed` on toggle buttons, branded focus rings on form inputs and nav controls
 

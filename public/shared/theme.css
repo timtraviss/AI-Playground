@@ -4,16 +4,16 @@
 
 body.light {
   /* ── Core palette (used by inline-style pages: tutor, admin, proofreader, l3-reviewer) */
-  --bg:               #f7f4ee;
+  --bg:               #F5E8D0;
   --surface:          #ffffff;
-  --surface-2:        #f0ebe3;
-  --border:           #ded6c8;
-  --text:             #27231f;
-  --text-muted:       #81776b;
-  --text-sub:         #575047;
-  --gold:             #9a7400;
+  --surface-2:        #EDE0C4;
+  --border:           #D4C4A0;
+  --text:             #1E2A44;
+  --text-muted:       #4A5878;
+  --text-sub:         #2E3D5E;
+  --gold:             #B8520A;
   --gold-on-dark:     #ffffff;
-  --brand:            #9a7400;
+  --brand:            #B8520A;
   --learn:            #0369a1;
   --verify:           #15803d;
   --review:           #6d28d9;
@@ -33,10 +33,10 @@ body.light {
   --accent-border:    color-mix(in srgb, var(--tool-accent) 30%, transparent);
 
   /* ── nav variables */
-  --nav-bg:           #f7f4ee;
+  --nav-bg:           #F5E8D0;
   --nav-accent:       var(--brand);
-  --nav-text:         #27231f;
-  --nav-muted:        #81776b;
+  --nav-text:         #1E2A44;
+  --nav-muted:        #4A5878;
   --nav-border:       rgba(0,0,0,0.1);
 
   /* ── l3-reviewer extra vars */
@@ -47,7 +47,7 @@ body.light {
 
 /* Nav hardcoded backgrounds that aren't variables */
 body.light .site-nav {
-  background: rgba(247, 244, 238, 0.92);
+  background: rgba(245, 232, 208, 0.92);
 }
 body.light .nav-drawer {
   background: #ffffff;
@@ -56,12 +56,12 @@ body.light .nav-links li a:hover {
   background: rgba(0,0,0,0.04);
 }
 body.light .nav-links li a.active {
-  background: rgba(160,120,0,0.08);
+  background: rgba(232, 116, 60, 0.08);
 }
 
 /* html element background — can't inherit --bg from body, so set explicitly */
 html:has(body.light) {
-  background: #f7f4ee;
+  background: #F5E8D0;
 }
 
 /* Landing page light overrides */

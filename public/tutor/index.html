@@ -147,7 +147,7 @@
     .message.assistant .bubble {
       padding: 0; background: none; border: none; border-radius: 0;
     }
-    .message.assistant .bubble .typing-indicator { padding: 8px 0; }
+    .message.assistant .bubble .blob-loader { margin: 8px 0; }
     .message.assistant .bubble p { margin: 0 0 10px; }
     .message.assistant .bubble p:last-child { margin-bottom: 0; }
     .message.assistant .bubble ul, .message.assistant .bubble ol { margin: 0 0 10px; padding-left: 20px; }
@@ -201,16 +201,16 @@
     .mic-btn.visible { display: flex; }
     .mic-btn.listening { background: rgba(248,113,113,0.15); border-color: #f87171; color: #f87171; }
 
-    .typing-indicator { display: flex; gap: 4px; padding: 4px 0; }
-    .typing-dot {
-      width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%;
-      animation: bounce 1.2s infinite;
+    .blob-loader {
+      width: 22px; height: 22px;
+      background: var(--user-bubble-bg);
+      animation: blob 2.4s ease-in-out infinite;
     }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-6px); }
+    @keyframes blob {
+      0%,100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: scale(1); }
+      25%      { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: scale(1.08); }
+      50%      { border-radius: 50% 60% 40% 60% / 30% 70% 60% 40%; transform: scale(0.95); }
+      75%      { border-radius: 70% 30% 60% 40% / 40% 50% 60% 50%; transform: scale(1.04); }
     }
     .voice-unsupported {
       font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 8px; display: none;
@@ -242,6 +242,7 @@
 
     @media (prefers-reduced-motion: reduce) {
       .waveform-bar { animation: none !important; }
+      .blob-loader  { animation: none !important; border-radius: 50%; }
     }
 
     @media (max-width: 420px) {
@@ -641,11 +642,7 @@
       wrapper.className = 'message assistant';
       wrapper.innerHTML = `
         <div class="bubble">
-          <div class="typing-indicator">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-          </div>
+          <div class="blob-loader"></div>
         </div>`;
       chatInner.appendChild(wrapper);
       chatMessages.scrollTop = chatMessages.scrollHeight;

@@ -102,6 +102,8 @@ Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingL
 
 ## Recent Updates (2026-04-28)
 
+- **DDP Tutor colour system redesign** — new three-colour palette: Orange (#E8743C) as primary accent, Cream (#F5E8D0) as light background, Navy (#1E2A44) as text/dark surface. Both dark and light theme blocks updated with WCAG-compliant mappings (Burnt Orange #B8520A for inline text/links in light mode; Navy text on orange buttons). Nav bar stays navy in both themes on the tutor page.
+
 - **Design polish — per-tool accent system** — each tool now has a distinct semantic colour token (`--learn` sky, `--verify` green, `--review` purple, `--audio` cyan, `--assess` orange, `--brand` gold). Landing page cards show a coloured left-stripe, tinted gradient, and accent-tinted hover shadow in both light and dark modes.
 - **New `--assess` token** — L3 Reviewer uses `--assess` (#fb923c orange) instead of `--warn`, so warning states on that page have a clear semantic home and can't collide with the tool brand colour.
 - **`--gold-on-dark` derived automatically** — removed 5 hand-tuned near-black hex values across tool pages; all now use `color-mix(in srgb, var(--tool-accent) 10%, #000)`.

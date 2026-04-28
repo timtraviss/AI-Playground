@@ -12,20 +12,31 @@
   <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <style>
     :root {
-      --bg:               #0b0f14;
-      --surface:          #141a21;
-      --surface-2:        #1b232d;
-      --border:           #2a3441;
-      --text:             #edf2f7;
-      --text-muted:       #6f7b8a;
-      --text-sub:         #a8b3c2;
-      --brand:            #d6b75f;
-      --learn:            #38bdf8;
+      --bg:               #0D1420;
+      --surface:          #1E2A44;
+      --surface-2:        #243352;
+      --border:           #2E3D5E;
+      --text:             #F5E8D0;
+      --text-muted:       #9A8E7A;
+      --text-sub:         #D4C4A0;
+      --brand:            #E8743C;
+      --learn:            #E8743C;
       --tool-accent:      var(--learn);
-      --gold:             var(--tool-accent);
-      --gold-on-dark:     color-mix(in srgb, var(--tool-accent) 10%, #000);
-      --user-bubble-bg:   var(--tool-accent);
-      --user-bubble-text: color-mix(in srgb, var(--tool-accent) 10%, #000);
+      --gold:             #E8743C;
+      --gold-on-dark:     color-mix(in srgb, #E8743C 10%, #000);
+      --user-bubble-bg:   #E8743C;
+      --user-bubble-text: #1E2A44;
+      --nav-bg:           #141D2E;
+      --nav-accent:       #E8743C;
+      --nav-text:         #F5E8D0;
+      --nav-muted:        #9A8E7A;
+      --nav-border:       rgba(245, 232, 208, 0.1);
+      --verify:           #22C55E;
+      --review:           #A78BFA;
+      --audio:            #22D3EE;
+      --warn:             #F59E0B;
+      --assess:           #E8743C;
+      --danger:           #EF4444;
     }
     html, body {
       background:
@@ -238,6 +249,60 @@
     }
   </style>
   <link rel="stylesheet" href="/shared/theme.css" />
+  <style>
+    /* ── DDP Tutor: light-theme overrides (after theme.css so these win) ── */
+    body.light {
+      --bg:               #F5E8D0;
+      --surface:          #FFFFFF;
+      --surface-2:        #EDE0C4;
+      --surface-mid:      #E8D9B8;
+      --border:           #D4C4A0;
+      --border-strong:    rgba(30, 42, 68, 0.2);
+      --text:             #1E2A44;
+      --text-sub:         #2E3D5E;
+      --text-muted:       #4A5878;
+      --brand:            #B8520A;
+      --gold:             #B8520A;
+      --gold-on-dark:     #FFFFFF;
+      --learn:            #1E2A44;
+      --user-bubble-bg:   #E8743C;
+      --user-bubble-text: #1E2A44;
+      --nav-bg:           #1E2A44;
+      --nav-accent:       #E8743C;
+      --nav-text:         #F5E8D0;
+      --nav-muted:        rgba(245, 232, 208, 0.65);
+      --nav-border:       rgba(245, 232, 208, 0.15);
+      --bg-card:          rgba(30, 42, 68, 0.05);
+      --bg-card-hover:    rgba(30, 42, 68, 0.09);
+      --accent:           #E8743C;
+      --accent-dim:       color-mix(in srgb, #E8743C 12%, transparent);
+      --accent-border:    color-mix(in srgb, #E8743C 30%, transparent);
+      --verify:           #15803D;
+      --review:           #6D28D9;
+      --audio:            #0E7490;
+      --warn:             #B45309;
+      --assess:           #B8520A;
+      --danger:           #B91C1C;
+    }
+
+    /* Page background for light mode */
+    html:has(body.light) { background: #F5E8D0; }
+
+    /* Nav stays navy in light mode on this page */
+    body.light .site-nav { background: rgba(30, 42, 68, 0.95); }
+    body.light .nav-drawer { background: linear-gradient(180deg, #243352 0%, #1E2A44 100%); }
+    body.light .nav-links li a:hover { background: rgba(255, 255, 255, 0.04); }
+    body.light .nav-links li a.active { background: color-mix(in srgb, #E8743C 12%, transparent); }
+    body.light .hamburger:hover { background: rgba(255, 255, 255, 0.06); }
+    body.light .nav-wordmark { color: #E8743C; }
+    body.light .nav-theme-btn { color: #F5E8D0; }
+    body.light .nav-theme-btn:hover { background: rgba(255, 255, 255, 0.06); }
+    body.light .nav-avatar { background: color-mix(in srgb, #E8743C 15%, transparent); border-color: color-mix(in srgb, #E8743C 35%, transparent); color: #E8743C; }
+    body.light .nav-user-avatar { background: color-mix(in srgb, #E8743C 15%, transparent); border-color: color-mix(in srgb, #E8743C 30%, transparent); color: #E8743C; }
+    body.light .nav-user-name { color: #F5E8D0; }
+    body.light .nav-user-role { color: rgba(245, 232, 208, 0.65); }
+    body.light .nav-signout-btn { border-color: rgba(245, 232, 208, 0.2); color: rgba(245, 232, 208, 0.65); }
+  </style>
 </head>
 <body>
 

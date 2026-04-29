@@ -25,9 +25,10 @@ body.light {
   --user-bubble-text: #ffffff;
 
   /* ── styles.css variable names (interview page) */
-  --bg-card:          rgba(0,0,0,0.04);
-  --bg-card-hover:    rgba(0,0,0,0.07);
-  --border-strong:    rgba(0,0,0,0.18);
+  --interview:        #B8520A;
+  --border-strong:    rgba(0, 0, 0, 0.18);
+  --bg-card:          rgba(0, 0, 0, 0.04);
+  --bg-card-hover:    rgba(0, 0, 0, 0.07);
   --accent:           var(--tool-accent);
   --accent-dim:       color-mix(in srgb, var(--tool-accent) 12%, transparent);
   --accent-border:    color-mix(in srgb, var(--tool-accent) 30%, transparent);

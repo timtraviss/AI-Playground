@@ -63,7 +63,7 @@ html, body {
 }
 
 .pc-title {
-  font-family: 'Fugaz One', cursive;
+  font-family: 'Audiowide', cursive;
   font-size: clamp(32px, 8vw, 52px);
   font-weight: 400;
   color: var(--gold);
@@ -73,7 +73,7 @@ html, body {
 }
 
 .pc-subtitle {
-  font-family: 'Fugaz One', cursive;
+  font-family: 'Audiowide', cursive;
   font-size: 28px;
   font-weight: 400;
   color: var(--text);

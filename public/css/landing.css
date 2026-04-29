@@ -34,7 +34,7 @@ html, body {
 
 /* ── Title ── */
 .landing-title {
-  font-family: 'Fugaz One', cursive;
+  font-family: 'Audiowide', cursive;
   font-size: clamp(26px, 6vw, 48px);
   font-weight: 400;
   color: var(--brand, var(--gold, #d6b75f));
@@ -126,7 +126,7 @@ html, body {
 }
 
 .project-title {
-  font-family: 'Fugaz One', cursive;
+  font-family: 'Audiowide', cursive;
   font-size: 22px;
   font-weight: 400;
   color: var(--text, #e2e8f0);

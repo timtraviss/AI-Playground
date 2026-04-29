@@ -44,13 +44,17 @@
   // Close on Escape
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 
-  // ── Wordmark in nav bar ──
+  // ── Logo & Wordmark in nav bar ──
   if (nav) {
-    const wordmark = document.createElement('a');
-    wordmark.href = '/';
-    wordmark.className = 'nav-wordmark';
-    wordmark.textContent = 'Traviss.org';
-    hamburger.after(wordmark);
+    const brand = document.createElement('a');
+    brand.href = '/';
+    brand.className = 'nav-brand-group';
+    const isLight = document.body.classList.contains('light');
+    brand.innerHTML = `
+      <img src="${isLight ? '/assets/logomark-light.svg' : '/assets/logomark.svg'}" alt="" class="nav-logo-img">
+      <h1 class="nav-wordmark">Traviss<span>.org</span></h1>
+    `;
+    hamburger.after(brand);
   }
 
   // ── Theme toggle in nav bar (replaces floating button) ──
@@ -75,6 +79,8 @@
       document.body.classList.toggle('light', next === 'light');
       try { localStorage.setItem(THEME_KEY, next); } catch {}
       syncIcon();
+      const logoSrc = next === 'light' ? '/assets/logomark-light.svg' : '/assets/logomark.svg';
+      document.querySelectorAll('.nav-logo-img').forEach(img => { img.src = logoSrc; });
     });
   }
 })();
@@ -103,9 +109,22 @@
       nav.appendChild(avatar);
     }
 
-    // 2. User section in drawer (inserted after .nav-logo)
+    // 2. User section in drawer (inserted after header)
     const drawer = document.getElementById('nav-drawer');
     if (drawer) {
+      // Re-structure the header for the new logo
+      const logo = drawer.querySelector('.nav-logo');
+      if (logo) {
+        const isLight = document.body.classList.contains('light');
+        logo.className = 'nav-drawer-header';
+        logo.innerHTML = `
+          <a href="/" class="nav-drawer-logo">
+            <img src="${isLight ? '/assets/logomark-light.svg' : '/assets/logomark.svg'}" alt="" class="nav-logo-img">
+            <h1 class="nav-wordmark">Traviss<span>.org</span></h1>
+          </a>
+        `;
+      }
+
       const section = document.createElement('div');
       section.className = 'nav-user-section';
       section.innerHTML = `

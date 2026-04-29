@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<svg width="600" height="600" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;">
+  <rect width="600" height="600" fill="#E8743C"></rect>
+  
+  <g transform="translate(300,310)">
+    
+    <path d="M0,-110L0,-78" fill="none" stroke="#1E2A44" stroke-width="10"></path>
+    
+    <circle cx="0" cy="-124" r="18" fill="#F5E8D0" stroke="#1E2A44" stroke-width="7"></circle>
+    
+    <path d="M-100,-20C-100,-58 -67,-78 0,-78C67,-78 100,-58 100,-20L100,88C100,104 92,112 76,112L-76,112C-92,112 -100,104 -100,88Z" fill="#F5E8D0" stroke="#1E2A44" stroke-width="11" stroke-linejoin="round"></path>
+    
+    <circle cx="-32" cy="10" r="20" fill="#1E2A44"></circle>
+    
+    <circle cx="32" cy="10" r="20" fill="#1E2A44"></circle>
+    
+    <circle cx="-24" cy="3" r="6" fill="#F5E8D0"></circle>
+    <circle cx="40" cy="3" r="6" fill="#F5E8D0"></circle>
+    
+    <path d="M-30,60C-10,76 10,76 30,60" fill="none" stroke="#1E2A44" stroke-width="8" stroke-linecap="round"></path>
+    
+    <rect x="-118" y="14" width="18" height="28" rx="4" fill="#1E2A44"></rect>
+    
+    <rect x="100" y="14" width="18" height="28" rx="4" fill="#1E2A44"></rect>
+  </g>
+</svg>

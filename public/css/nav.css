@@ -3,7 +3,15 @@
    Used on all pages of Traviss.org
 ─────────────────────────────────────────────── */
 
-@import url('https://fonts.googleapis.com/css2?family=Fugaz+One&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
+@font-face {
+  font-family: 'Audiowide';
+  src: url('/fonts/Audiowide-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
   --bg: #0D1420;
@@ -30,6 +38,25 @@
   --nav-border: rgba(245, 232, 208, 0.1);
   --nav-drawer-width: 280px;
   --nav-height: 56px;
+  /* ── Design system additions */
+  --brand-light:   #B8520A;
+  --cream:         #F5E8D0;
+  --navy:          #1E2A44;
+  --interview:     #E8743C;
+  --border-strong: rgba(245, 232, 208, 0.18);
+  --bg-card:       rgba(245, 232, 208, 0.045);
+  --bg-card-hover: rgba(245, 232, 208, 0.075);
+  --green-dim:     rgba(74, 222, 128, 0.12);
+  --amber-dim:     rgba(251, 146, 60, 0.12);
+  --red-dim:       rgba(248, 113, 113, 0.12);
+  --radius-pill:   999px;
+  --shadow-sm:     0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-lg:     0 18px 45px rgba(0, 0, 0, 0.5);
+  --content-max:   980px;
+  --font-display:  'Audiowide', cursive;
+  --font-body:     'Inter', system-ui, sans-serif;
+  --font-serif:    'Crimson Pro', Georgia, serif;
+  --font-mono:     'JetBrains Mono', 'Fira Code', monospace;
 }
 
 /* ── Reset ── */
@@ -68,7 +95,7 @@
   transform: rotate(15deg) scale(1.1);
 }
 .nav-wordmark {
-  font-family: 'Fugaz One', cursive;
+  font-family: 'Audiowide', cursive;
   font-size: 18px;
   font-weight: 400;
   color: var(--nav-accent);

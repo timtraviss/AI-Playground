@@ -185,11 +185,13 @@ The DDP Tutor is the only page that keeps its nav navy in light mode (scoped `bo
 
 ### Nav bar
 `nav.js` runs on every page and dynamically injects:
-- `.nav-brand-group` (logo + Fugaz One wordmark) after the hamburger
+- `.nav-brand-group` (logomark + Audiowide wordmark) after the hamburger
 - `.nav-theme-btn` (sun/moon SVG) at the end of the nav bar
 - `.nav-avatar` (initials) + user section in the drawer (after `/api/auth/me` resolves)
 
-Fugaz One, Crimson Pro, and Inter are all loaded via the `@import` in `nav.css` — do not rely on individual page `<link>` tags for Fugaz One.
+Audiowide is served locally from `/fonts/Audiowide-Regular.ttf` via `@font-face` in `nav.css`. Crimson Pro and Inter are loaded via `@import`. Do not add individual page `<link>` tags for Audiowide.
+
+The logo asset swaps on theme toggle: `/assets/logomark.svg` (dark) ↔ `/assets/logomark-light.svg` (light). A favicon at `/assets/favicon.svg` is linked in every page `<head>`.
 
 ## Adding a new page
 

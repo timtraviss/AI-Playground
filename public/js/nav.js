@@ -135,7 +135,6 @@
         </div>
         <button class="nav-signout-btn" id="nav-signout">Sign out</button>
       `;
-      const logo = drawer.querySelector('.nav-logo');
       if (logo) logo.after(section); else drawer.prepend(section);
 
       document.getElementById('nav-signout').addEventListener('click', async () => {

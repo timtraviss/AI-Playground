@@ -1,12 +1,13 @@
 import { Router } from 'express';
-import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
-import { resolve, dirname, join } from 'path';
+import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync, renameSync } from 'fs';
+import { resolve, dirname, join, extname } from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
 import { convertDocxToMarkdown, slugify } from '../lib/docxToMarkdown.js';
 import { requireAdmin } from '../middleware/auth.js';
 import { logUsage } from '../lib/usageLogger.js';
+import { transcribe } from '../lib/whisper.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const KNOWLEDGE_DIR = resolve(__dirname, '../data/knowledge');
@@ -24,6 +25,8 @@ const upload = multer({
     cb(ok ? null : new Error('Only .docx files are supported'), ok);
   },
 });
+
+const audioUpload = multer({ dest: UPLOAD_DIR, limits: { fileSize: 10 * 1024 * 1024 } });
 
 function readModules() {
   try {
@@ -237,5 +240,31 @@ tutorRouter.post('/tts', async (req, res) => {
     res.send(Buffer.from(buf));
   } catch (err) {
     res.status(502).json({ error: 'TTS service unreachable.' });
+  }
+});
+
+// POST /api/tutor/transcribe
+tutorRouter.post('/transcribe', (req, res, next) => {
+  audioUpload.single('audio')(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    next();
+  });
+}, async (req, res) => {
+  const file = req.file;
+  if (!file) return res.status(400).json({ error: 'No audio uploaded.' });
+
+  // Whisper uses the file extension to set the MIME type — add it back.
+  const origExt = extname(file.originalname || '').toLowerCase() || '.webm';
+  const audioPath = file.path + origExt;
+  let cleaned = false;
+  try {
+    renameSync(file.path, audioPath);
+    cleaned = true;
+    const text = await transcribe(audioPath, 'whisper-1');
+    res.json({ text });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  } finally {
+    try { unlinkSync(cleaned ? audioPath : file.path); } catch {}
   }
 });

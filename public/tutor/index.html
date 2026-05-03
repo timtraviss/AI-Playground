@@ -420,7 +420,7 @@
     let messages          = [];
     let isStreaming       = false;
     let voiceMode         = false;
-    let recognition       = null;
+    let mediaRecorder     = null;
     let audioQueue        = [];
     let isPlayingAudio    = false;
     const audioCache      = new Map(); // messageIndex → objectURL
@@ -487,9 +487,9 @@
       btnVoiceMode.setAttribute('aria-pressed', 'false');
       userInput.style.display = '';
       btnSend.style.display = '';
-      if (SpeechRecognition) micBtn.style.display = 'none';
+      micBtn.style.display = 'none';
       voicePlaceholder.classList.remove('visible', 'listening');
-      if (recognition && micBtn.classList.contains('listening')) recognition.stop();
+      if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
       micBtn.classList.remove('listening');
       micBtn.setAttribute('aria-pressed', 'false');
       micBtn.setAttribute('aria-label', 'Start voice input');
@@ -655,70 +655,83 @@
       return bubble;
     }
 
-    // ── Voice mode ───────────────────────────────────────
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    // ── Voice mode (MediaRecorder → Whisper) ────────────
+    const voicePlaceholderText = voicePlaceholder.querySelector('.voice-placeholder-text');
+    let audioChunks = [];
 
-    if (SpeechRecognition) {
-      micBtn.classList.add('visible');
-      recognition = new SpeechRecognition();
-      recognition.lang = 'en-NZ';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      recognition.onresult = (e) => {
-        const transcript = e.results[0][0].transcript;
-        micBtn.classList.remove('listening');
-        micBtn.setAttribute('aria-pressed', 'false');
-        micBtn.setAttribute('aria-label', 'Start voice input');
-        voicePlaceholder.classList.remove('listening');
-        sendMessage(transcript);
-      };
-
-      recognition.onerror = (e) => {
-        micBtn.classList.remove('listening');
-        micBtn.setAttribute('aria-pressed', 'false');
-        micBtn.setAttribute('aria-label', 'Start voice input');
-        voicePlaceholder.classList.remove('listening');
-        const msg = e.error === 'not-allowed'
-          ? 'Microphone access denied. Allow microphone permission in your browser settings.'
-          : e.error === 'network'
-          ? 'Speech recognition requires an internet connection.'
-          : `Speech recognition error: ${e.error}. Try Chrome or Edge.`;
-        voiceUnsupported.textContent = msg;
-        voiceUnsupported.style.display = 'block';
-      };
-      recognition.onend = () => {
-        micBtn.classList.remove('listening');
-        micBtn.setAttribute('aria-pressed', 'false');
-        micBtn.setAttribute('aria-label', 'Start voice input');
-        voicePlaceholder.classList.remove('listening');
-      };
-
-      micBtn.addEventListener('click', () => {
-        if (isStreaming) return;
-        if (micBtn.classList.contains('listening')) {
-          recognition.stop();
-          micBtn.classList.remove('listening');
-          micBtn.setAttribute('aria-pressed', 'false');
-          micBtn.setAttribute('aria-label', 'Start voice input');
-          voicePlaceholder.classList.remove('listening');
-        } else {
-          voiceUnsupported.style.display = 'none';
-          try { recognition.start(); } catch(e) { /* already starting */ }
-          micBtn.classList.add('listening');
-          micBtn.setAttribute('aria-pressed', 'true');
-          micBtn.setAttribute('aria-label', 'Stop voice input');
-          voicePlaceholder.classList.add('listening');
-        }
-      });
-    } else {
-      // Voice mode toggle will be disabled but voice unsupported msg shown on click
+    function resetMicState() {
+      micBtn.classList.remove('listening');
+      micBtn.setAttribute('aria-pressed', 'false');
+      micBtn.setAttribute('aria-label', 'Start voice input');
+      voicePlaceholder.classList.remove('listening');
+      voicePlaceholderText.textContent = 'Tap the mic to speak';
     }
 
-    btnTextMode.addEventListener('click', () => {
-      if (recognition && micBtn.classList.contains('listening')) {
-        recognition.stop();
+    micBtn.classList.add('visible');
+
+    micBtn.addEventListener('click', async () => {
+      if (isStreaming) return;
+
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        return;
       }
+
+      voiceUnsupported.style.display = 'none';
+
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch {
+        voiceUnsupported.textContent = 'Microphone access denied. Allow microphone permission in your browser settings.';
+        voiceUnsupported.style.display = 'block';
+        return;
+      }
+
+      audioChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        resetMicState();
+        voicePlaceholderText.textContent = 'Transcribing…';
+
+        const mimeType = mediaRecorder.mimeType || 'audio/webm';
+        const ext = mimeType.includes('mp4') ? '.mp4' : '.webm';
+        const blob = new Blob(audioChunks, { type: mimeType });
+        const form = new FormData();
+        form.append('audio', blob, `voice${ext}`);
+
+        try {
+          const res = await fetch('/api/tutor/transcribe', { method: 'POST', body: form });
+          const data = await res.json();
+          if (data.text && data.text.trim()) {
+            sendMessage(data.text.trim());
+          } else if (data.error) {
+            voiceUnsupported.textContent = `Transcription error: ${data.error}`;
+            voiceUnsupported.style.display = 'block';
+          }
+        } catch {
+          voiceUnsupported.textContent = 'Transcription failed. Please try again.';
+          voiceUnsupported.style.display = 'block';
+        } finally {
+          voicePlaceholderText.textContent = 'Tap the mic to speak';
+        }
+      };
+
+      mediaRecorder.start();
+      micBtn.classList.add('listening');
+      micBtn.setAttribute('aria-pressed', 'true');
+      micBtn.setAttribute('aria-label', 'Stop voice input');
+      voicePlaceholder.classList.add('listening');
+    });
+
+    btnTextMode.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
       voiceMode = false;
       btnTextMode.classList.add('active');
       btnVoiceMode.classList.remove('active');
@@ -726,17 +739,12 @@
       btnVoiceMode.setAttribute('aria-pressed', 'false');
       userInput.style.display = '';
       btnSend.style.display = '';
-      if (SpeechRecognition) micBtn.style.display = 'none';
-      voicePlaceholder.classList.remove('visible');
-      voicePlaceholder.classList.remove('listening');
+      micBtn.style.display = 'none';
+      voicePlaceholder.classList.remove('visible', 'listening');
       voiceUnsupported.style.display = 'none';
     });
 
     btnVoiceMode.addEventListener('click', () => {
-      if (!SpeechRecognition) {
-        voiceUnsupported.style.display = 'block';
-        return;
-      }
       voiceMode = true;
       btnVoiceMode.classList.add('active');
       btnTextMode.classList.remove('active');

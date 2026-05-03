@@ -8,6 +8,7 @@ import { convertDocxToMarkdown, slugify } from '../lib/docxToMarkdown.js';
 import { requireAdmin } from '../middleware/auth.js';
 import { logUsage } from '../lib/usageLogger.js';
 import { transcribe } from '../lib/whisper.js';
+import { transcribeLocal } from '../lib/localWhisper.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const KNOWLEDGE_DIR = resolve(__dirname, '../data/knowledge');
@@ -260,7 +261,13 @@ tutorRouter.post('/transcribe', (req, res, next) => {
   try {
     renameSync(file.path, audioPath);
     cleaned = true;
-    const text = await transcribe(audioPath, 'whisper-1');
+    let text;
+    try {
+      text = await transcribeLocal(audioPath);
+    } catch (localErr) {
+      if (!process.env.OPENAI_API_KEY) throw localErr;
+      text = await transcribe(audioPath, 'whisper-1');
+    }
     res.json({ text });
   } catch (err) {
     res.status(500).json({ error: err.message });

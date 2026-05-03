@@ -100,6 +100,10 @@ npm test
 
 Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingLabel`, `buildMarkdownReport`). No external dependencies required (ffmpeg not needed).
 
+## Recent Updates (2026-05-03)
+
+- **DDP Tutor voice input** — replaced the Web Speech API (which relied on Google's servers and produced intermittent "network" errors) with `MediaRecorder` → server-side Whisper transcription via a new `POST /api/tutor/transcribe` endpoint. Works reliably over HTTPS with no external speech service dependency.
+
 ## Recent Updates (2026-04-28)
 
 - **Site-wide palette propagation** — orange/cream/navy palette from the DDP Tutor redesign applied to all remaining pages: Interview (`styles.css`), Podcast Reviewer (`podcast-reviewer.css`), Module Proofreader, L3 Reviewer, Login, and Admin. Dark-mode base colours updated across every `:root` block (`--bg` #0D1420, `--surface` #1E2A44, `--text` #F5E8D0, `--brand` #E8743C). Light-mode tokens in `theme.css` updated to match (cream #F5E8D0 background, burnt orange #B8520A brand, navy #1E2A44 text). Tool-specific accents (purple, green, cyan, orange-assess) preserved on each page.

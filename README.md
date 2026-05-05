@@ -123,6 +123,10 @@ npm test
 
 Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingLabel`, `buildMarkdownReport`). No external dependencies required (ffmpeg not needed).
 
+## Recent Updates (2026-05-06)
+
+- **DDP app production deployment** — `heroku-postbuild` now installs ddp-app deps, generates the Prisma client, and builds the Next.js bundle. On startup the main server auto-spawns the ddp-app (`next start` in production, `next dev` locally) with the SQLite `DATABASE_URL` and `CLAUDE_API_KEY` bridged to `ANTHROPIC_API_KEY`, so no separate process or manual step is needed.
+
 ## Recent Updates (2026-05-05)
 
 - **New: DDP Question Builder & Marker** (`/ddp/`) — full 5-phase build shipped as a standalone Next.js 15 app, proxied via Express. Generates SA, CL, MC, and Practical questions from 575 synced Crimes Act sections; auto-marks trainee answers in single and bulk modes against the official DDP matrices; pending review queue on dashboard; CSV export.
@@ -349,10 +353,12 @@ git push heroku main
 - [x] Pending review queue on dashboard
 - [x] Integrated as `/ddp/` subpage of main app via Express reverse proxy
 - [x] `dev:all` script — both servers started concurrently with colour-coded output
+- [x] Auto-spawn from main server — `npm run dev` starts both servers, no separate command needed
+- [x] Heroku production deployment — `heroku-postbuild` builds ddp-app; `next start` used in production; SQLite DATABASE_URL and ANTHROPIC_API_KEY injected into child process
 - [ ] XML export (Totara/Moodle-compatible) — button present, not yet wired
 - [ ] Practical (PR) marking matrix and prompt
 - [ ] Library edit / delete / batch export
 
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)
-- [ ] Deploy to Heroku
+- [x] Deploy to Heroku — live at [traviss.org](https://traviss.org)

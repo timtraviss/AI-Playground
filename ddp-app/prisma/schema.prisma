@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Act {
+  id          Int       @id @default(autoincrement())
+  shortTitle  String
+  workId      String    @unique
+  versionId   String
+  versionDate DateTime
+  syncedAt    DateTime  @default(now())
+  sections    Section[]
+}
+
+model Section {
+  id          Int        @id @default(autoincrement())
+  actId       Int
+  act         Act        @relation(fields: [actId], references: [id])
+  number      String
+  heading     String
+  partHeading String?
+  fullText    String
+  rawXml      String
+  questions   Question[]
+
+  @@unique([actId, number])
+}
+
+model Question {
+  id           Int          @id @default(autoincrement())
+  sectionId    Int
+  section      Section      @relation(fields: [sectionId], references: [id])
+  type         String
+  name         String
+  questionText String
+  defaultGrade Float
+  focusNote    String?
+  createdAt    DateTime     @default(now())
+  markingRuns  MarkingRun[]
+}
+
+model MarkingRun {
+  id              Int               @id @default(autoincrement())
+  questionId      Int
+  question        Question          @relation(fields: [questionId], references: [id])
+  answerText      String
+  fileName        String?
+  totalMark       Float
+  overallBand     String
+  overallFeedback String
+  mode            String
+  status          String
+  createdAt       DateTime          @default(now())
+  criteria        CriterionResult[]
+}
+
+model CriterionResult {
+  id             Int        @id @default(autoincrement())
+  markingRunId   Int
+  markingRun     MarkingRun @relation(fields: [markingRunId], references: [id], onDelete: Cascade)
+  name           String
+  marksAvailable Float
+  marksAwarded   Float
+  band           String
+  descriptor     String
+  evidence       String
+  suggestion     String
+}

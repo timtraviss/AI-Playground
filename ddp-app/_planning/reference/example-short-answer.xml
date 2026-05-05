@@ -1,0 +1,1016 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>$cat2$/ROBBERY/Robbery DDC/Robbery DDC SA</text>
+
+    </category>
+  </question>
+
+<!-- question: 135133  -->
+  <question type="essay">
+    <name>
+      <text>Q11 - Facts of Lapier Case</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[R v Lapier states "Robbery is complete the instant the
+property is taken, even if possession by the thief is only momentary."
+
+Explain the facts of Lapier and how this applies to the offence of
+Robbery.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135134  -->
+  <question type="essay">
+    <name>
+      <text>Q12 - When Offence is Complete</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[R v Lapier states "Robbery is complete the instant the
+property is taken, even if possession by the thief is only momentary."
+
+In your own words explain when it is that an offence is complete.
+Give 2 examples of this in relation to Robbery.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135135  -->
+  <question type="essay">
+    <name>
+      <text>Q13 - Definition of Dishonestly</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Section 217 defines dishonestly as
+
+"...in relation to an act or omission, means done or omitted without a
+belief that there was expressed or implied consent to, or authority for,
+the act or omission from a person entitled to give such consent or
+authority."
+
+Explain this definition in your own words and give an example of a
+dishonest act that relates to the offence of Robbery (s234).]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135136  -->
+  <question type="essay">
+    <name>
+      <text>Q14 - Dishonestly in Context of Robbery</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Dishonestly is described in section 217 as
+
+"...an act or omission... done or omitted without a belief that there
+was express or implied consent to, or authority for, the act or omission
+from a person entitled to give such consent or authority."
+
+In your own words explain this definition of dishonestly in the context
+of Robbery.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135137  -->
+  <question type="essay">
+    <name>
+      <text>Q15 - Interview Questions for Suspect on Dishonestly</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Dishonestly is described in section 217 as
+
+"...an act or omission... done or omitted without a belief that there
+was express or implied consent to, or authority for, the act or omission
+from a person entitled to give such consent or authority."
+
+Give two examples of questions you could ask to cover the element of
+dishonestly when interviewing a suspect in relation to Robbery.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135139  -->
+  <question type="essay">
+    <name>
+      <text>Q17 - Claim of Right Definition</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Claim of right is defined in Section 2 CA1961
+
+"Claim of right in relation to any act, means a belief at the time of
+the act in a proprietary or possessory right in property in relation to
+which the offence is alleged to have been committed, although that
+belief may be based on ignorance or mistake of fact or of any matter of
+law other than the enactment against which the offence is alleged to
+have been committed."
+
+In your own words explain what this definition of Claim of Right means
+in relation to Robbery.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135140  -->
+  <question type="essay">
+    <name>
+      <text>Q18 - Claim of Right as Defence</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Claim of right is defined in Section 2 CA1961&nbsp;<p>"<i>Claim of right in relation to any act, means a belief at the time of
+the act in a proprietary or possessory right in property in relation to
+which the offence is alleged to have been committed, although that
+belief may be based on ignorance or mistake of fact or of any matter of
+law other than the enactment against which the offence is alleged to
+have been committed."</i>&nbsp;</p><p>Claim of Right is a Defence.&nbsp;</p><p><br></p><p><b>In your own</b> words explain the defence of claim of right.</p><p>How does claim of right relate to theft? And secondly, how does this relate to robbery?</p><p></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135141  -->
+  <question type="essay">
+    <name>
+      <text>Q19 - Legal Entitlement and Robbery</text>
+    </name>
+    <questiontext format="html">
+      <text>If an individual genuinely believes that they are legally
+entitled to the property they have taken, can they be charged with
+robbery under s234?
+
+Explain your answer with reasons.</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135142  -->
+  <question type="essay">
+    <name>
+      <text>Q20 - Interview Questions for Possession</text>
+    </name>
+    <questiontext format="html">
+      <text>You are interviewing Dave about a robbery he has committed --
+stealing shoes at knifepoint. R v Cox describes two types of physical
+possession that must be proved.
+
+What questions could you ask Dave to ensure possession is covered off in
+relation to the shoes Dave has stolen.</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135143  -->
+  <question type="essay">
+    <name>
+      <text>Q21 - Physical Element of Possession</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[R v Cox states,
+
+"Possession involves two ... elements. The first, often called the
+physical element, is actual or potential physical custody or
+control."
+
+In your own words explain what the "physical element" of possession is
+and give an example]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135144  -->
+  <question type="essay">
+    <name>
+      <text>Q22 - Potential Physical Custody or Control</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[R v Cox states,
+
+"Possession involves two ... elements. The first, often called the
+physical element, is actual or potential physical custody or
+control."
+
+In your own words explain what "potential physical custody or control"
+is and give an example.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135146  -->
+  <question type="essay">
+    <name>
+      <text>Q24 - Violence in Context of Robbery</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA["Robbery is theft accompanied by... violence to any
+person..."
+
+Robbery requires theft accompanied by violence.
+
+Explain in your own words what constitutes violence in the context
+of robbery.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135147  -->
+  <question type="essay">
+    <name>
+      <text>Q25 - Threats of Violence</text>
+    </name>
+    <questiontext format="html">
+      <text>Robbery requires theft accompanied by violence or threats of
+violence.
+
+Explain in your own words what constitutes threats of violence and give
+an example.</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135149  -->
+  <question type="essay">
+    <name>
+      <text>Q27 - Threats of Violence in Robbery</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Robbery may be complete when theft is accompanied by threats
+of violence.
+
+Explain in your own words what "threats of violence" mean in the context
+of robbery and give two examples.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135124  -->
+  <question type="essay">
+    <name>
+      <text>Q2 - Full Actus Reus of Theft</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[S 219 Crimes Act 1961, defines the offence of theft as
+
+"Dishonestly and without claim of right taking any property with intent
+to deprive any owner permanently of that property or of any interest in
+that property;"
+
+Explain in your own words what the full actus reus of theft is.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135125  -->
+  <question type="essay">
+    <name>
+      <text>Q3 - Full Mens Rea of Theft</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[S 219 Crimes Act 1961, defines the offence of theft as
+
+"Dishonestly and without claim of right taking any property with intent
+to deprive any owner permanently of that property or of any interest in
+that property;"
+
+Explain in your own words what the full mens rea of theft is.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135126  -->
+  <question type="essay">
+    <name>
+      <text>Q4 - Taking Property</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Theft involves the 'taking' of property with intent to deprive
+the owner of it permanently.
+
+Explain in your own words what 'taking' is and give an example.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135127  -->
+  <question type="essay">
+    <name>
+      <text>Q5 - Interview Questions for Intent to Deprive</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Theft involves the 'taking' of property with intent to deprive
+the owner of it permanently.&nbsp;<p><br></p><p>You are interviewing a suspect for a
+robbery.&nbsp;</p><p>Give two examples of questions you could ask to cover off this important
+evidential requirement? Explain why have you chosen these questions.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135128  -->
+  <question type="essay">
+    <name>
+      <text>Q6 - Interview Questions for Intent Element</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Theft involves the 'taking' of property with intent to deprive
+the owner of it permanently. You are interviewing a suspect for a
+robbery.
+
+Give two examples of questions you could ask to cover off this element
+of theft and explain how your questions aid evidential sufficiency.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135129  -->
+  <question type="essay">
+    <name>
+      <text>Q7 - When Theft Element is Complete</text>
+    </name>
+    <questiontext format="html">
+      <text>Robbery requires the element of theft to be complete.
+
+Explain in your own words when this element of robbery is complete.</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135130  -->
+  <question type="essay">
+    <name>
+      <text>Q8 - R v Lapier - Robbery Completion</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[R v Lapier states <i>"Robbery is complete the instant the
+property is taken, even if possession by the thief is only momentary."</i>&nbsp;<p><br></p><p>Explain what this means in your own words and give an example.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135131  -->
+  <question type="essay">
+    <name>
+      <text>Q9 - Interview Questions for Robbery Evidence</text>
+    </name>
+    <questiontext format="html">
+      <text>You are interviewing a suspect of a robbery. The suspect admits
+punching a person but that when he saw that the punch had given the
+person a blood-nose, he immediately changed his mind and handed back the
+property to the Victim. He walked away empty-handed.
+
+What questions could you ask your suspect to ensure that the offence of
+robbery is evidentially covered off.</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 148230  -->
+  <question type="essay">
+    <name>
+      <text>Robbery - Actus Reus and Mens Rea of Theft</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[s219 Crimes Act 1961 states,
+
+"Theft or stealing is the act of, ---
+
+dishonestly and without claim of right, taking any property with intent
+to deprive any owner permanently of that property or of any interest in
+that property;"
+
+Theft is an essential element of Robbery.
+
+Explain in your own words what the actus reus and mens rea of theft is.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 148700  -->
+  <question type="essay">
+    <name>
+      <text>Robbery - Actus Reus and Mens Rea of Theft</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[s219 Crimes Act 1961 states,
+
+"Theft or stealing is the act of, ---
+
+dishonestly and without claim of right, taking any property with intent
+to deprive any owner permanently of that property or of any interest in
+that property;"
+
+Theft is an essential element of Robbery.
+
+Explain in your own words what the actus reus and mens rea of theft is.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 147691  -->
+  <question type="essay">
+    <name>
+      <text>Robbery - Actus Reus and Mens Rea of Theft</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[s219 Crimes Act 1961 states,
+
+"Theft or stealing is the act of, ---
+
+dishonestly and without claim of right, taking any property with intent
+to deprive any owner permanently of that property or of any interest in
+that property;"
+
+Theft is an essential element of Robbery.
+
+Explain in your own words what the actus reus and mens rea of theft is.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 147960  -->
+  <question type="essay">
+    <name>
+      <text>Robbery - Actus Reus and Mens Rea of Theft</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[s219 Crimes Act 1961 states,
+
+"Theft or stealing is the act of, ---
+
+dishonestly and without claim of right, taking any property with intent
+to deprive any owner permanently of that property or of any interest in
+that property;"
+
+Theft is an essential element of Robbery.
+
+Explain in your own words what the actus reus and mens rea of theft is.]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135123  -->
+  <question type="essay">
+    <name>
+      <text>Robbery - Actus Reus and Mens Rea of Theft</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Section 219 Crimes Act 1961 states,&nbsp;<p><br><p>"<i>Theft or stealing is the act of, ---
+
+dishonestly and without claim of right, taking any property with intent
+to deprive any owner permanently of that property or of any interest in
+that property;</i>"&nbsp;</p><p>Theft is an essential element of Robbery.</p><p>Explain in your own words what the <b>actus reus </b>and <b>mens rea </b>of theft is. Use examples to demonstrate your understanding.</p></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135138  -->
+  <question type="essay">
+    <name>
+      <text>Robbery - Interview Questions for Victim on Dishonestly</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Dishonestly is described in Section 217 as&nbsp;<p>"<i>...an act or omission... done or omitted without a belief that there
+was express or implied consent to, or authority for, the act or omission
+from a person entitled to give such consent or authority.</i>"&nbsp;</p><p>Give two examples of questions you could ask to cover the element of
+dishonestly when interviewing a <b>Victim</b> of Robbery.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135132  -->
+  <question type="essay">
+    <name>
+      <text>Robbery - R v Lapier Explanation</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<i>R v Lapier</i> states,<p><br><p>"<i>Robbery is complete the instant the
+property is taken, even if possession by the thief is only momentary.</i>"&nbsp;</p><p>In your own words, explain what this means and give an example that demonstrates your understanding.</p></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135148  -->
+  <question type="essay">
+    <name>
+      <text>Robbery - Violence and Threats Definition</text>
+    </name>
+    <questiontext format="html">
+      <text>Explain in your own words what does and does not constitute
+violence and threats of violence, in the offence of Robbery s234. As
+well as an explanation provide examples to reinforce your explanation.</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+<!-- question: 135145  -->
+  <question type="essay">
+    <name>
+      <text>Robbery - Violence in Robbery</text>
+    </name>
+    <questiontext format="html">
+      <text>Robbery requires theft accompanied by violence or threats
+of violence.
+
+Explain in your own words what constitutes violence and give your
+own example.</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>4.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
+  </question>
+
+</quiz>

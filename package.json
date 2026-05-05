@@ -10,7 +10,7 @@
     "dev:all": "concurrently --names 'main,ddp' --prefix-colors 'cyan,blue' 'node --watch server/index.js' 'npm --prefix ddp-app run dev -- --port 3001'",
     "convert-pdf": "node scripts/convert-pdf.js",
     "test": "node --test tests/**/*.test.js",
-    "heroku-postbuild": "node scripts/download-model.js && npm --prefix ddp-app install && npm --prefix ddp-app run db:generate && NEXT_PUBLIC_BASE_PATH=/ddp npm --prefix ddp-app run build"
+    "heroku-postbuild": "node scripts/download-model.js && npm --prefix ddp-app install && npm --prefix ddp-app run db:generate && DATABASE_URL=file:./prisma/dev.db npm --prefix ddp-app run db:deploy && NEXT_PUBLIC_BASE_PATH=/ddp npm --prefix ddp-app run build"
   },
   "engines": {
     "node": "24.x"

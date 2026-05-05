@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "sync-legislation": "tsx --env-file=.env.local scripts/sync-legislation.ts"

@@ -10,7 +10,8 @@
     "db:deploy": "prisma db push --skip-generate",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
-    "sync-legislation": "tsx --env-file=.env.local scripts/sync-legislation.ts"
+    "sync-legislation": "tsx --env-file=.env.local scripts/sync-legislation.ts",
+    "sync-legislation:prod": "tsx scripts/sync-legislation.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
@@ -21,6 +22,7 @@
     "@types/react-dom": "^19.1.2",
     "autoprefixer": "^10.4.21",
     "fast-xml-parser": "^4.5.1",
+    "tsx": "^4.19.2",
     "next": "^15.3.2",
     "pdf-parse": "^1.1.1",
     "postcss": "^8.5.3",
@@ -31,7 +33,6 @@
     "typescript": "^5.8.3",
     "zod": "^3.24.2"
   },
-  "devDependencies": {
-    "tsx": "^4.19.2"
-  }
+  "devDependencies": {}
+
 }

@@ -8,9 +8,9 @@ export async function GET(req: NextRequest) {
     where: q
       ? {
           OR: [
-            { number: { contains: q } },
-            { heading: { contains: q } },
-            { fullText: { contains: q } },
+            { number: { contains: q, mode: 'insensitive' } },
+            { heading: { contains: q, mode: 'insensitive' } },
+            { fullText: { contains: q, mode: 'insensitive' } },
           ],
         }
       : undefined,

@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["ddp"]
 }
 
 model Act {
@@ -15,6 +16,8 @@ model Act {
   versionDate DateTime
   syncedAt    DateTime  @default(now())
   sections    Section[]
+
+  @@schema("ddp")
 }
 
 model Section {
@@ -29,6 +32,7 @@ model Section {
   questions   Question[]
 
   @@unique([actId, number])
+  @@schema("ddp")
 }
 
 model Question {
@@ -42,6 +46,8 @@ model Question {
   focusNote    String?
   createdAt    DateTime     @default(now())
   markingRuns  MarkingRun[]
+
+  @@schema("ddp")
 }
 
 model MarkingRun {
@@ -57,6 +63,8 @@ model MarkingRun {
   status          String
   createdAt       DateTime          @default(now())
   criteria        CriterionResult[]
+
+  @@schema("ddp")
 }
 
 model CriterionResult {
@@ -70,4 +78,6 @@ model CriterionResult {
   descriptor     String
   evidence       String
   suggestion     String
+
+  @@schema("ddp")
 }

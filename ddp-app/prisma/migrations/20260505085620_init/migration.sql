@@ -1,5 +1,8 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "ddp";
+
 -- CreateTable
-CREATE TABLE "Act" (
+CREATE TABLE "ddp"."Act" (
     "id" SERIAL NOT NULL,
     "shortTitle" TEXT NOT NULL,
     "workId" TEXT NOT NULL,
@@ -10,7 +13,7 @@ CREATE TABLE "Act" (
 );
 
 -- CreateTable
-CREATE TABLE "Section" (
+CREATE TABLE "ddp"."Section" (
     "id" SERIAL NOT NULL,
     "actId" INTEGER NOT NULL,
     "number" TEXT NOT NULL,
@@ -22,7 +25,7 @@ CREATE TABLE "Section" (
 );
 
 -- CreateTable
-CREATE TABLE "Question" (
+CREATE TABLE "ddp"."Question" (
     "id" SERIAL NOT NULL,
     "sectionId" INTEGER NOT NULL,
     "type" TEXT NOT NULL,
@@ -35,7 +38,7 @@ CREATE TABLE "Question" (
 );
 
 -- CreateTable
-CREATE TABLE "MarkingRun" (
+CREATE TABLE "ddp"."MarkingRun" (
     "id" SERIAL NOT NULL,
     "questionId" INTEGER NOT NULL,
     "answerText" TEXT NOT NULL,
@@ -50,7 +53,7 @@ CREATE TABLE "MarkingRun" (
 );
 
 -- CreateTable
-CREATE TABLE "CriterionResult" (
+CREATE TABLE "ddp"."CriterionResult" (
     "id" SERIAL NOT NULL,
     "markingRunId" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
@@ -64,19 +67,19 @@ CREATE TABLE "CriterionResult" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Act_workId_key" ON "Act"("workId");
+CREATE UNIQUE INDEX "Act_workId_key" ON "ddp"."Act"("workId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Section_actId_number_key" ON "Section"("actId", "number");
+CREATE UNIQUE INDEX "Section_actId_number_key" ON "ddp"."Section"("actId", "number");
 
 -- AddForeignKey
-ALTER TABLE "Section" ADD CONSTRAINT "Section_actId_fkey" FOREIGN KEY ("actId") REFERENCES "Act"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ddp"."Section" ADD CONSTRAINT "Section_actId_fkey" FOREIGN KEY ("actId") REFERENCES "ddp"."Act"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Question" ADD CONSTRAINT "Question_sectionId_fkey" FOREIGN KEY ("sectionId") REFERENCES "Section"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ddp"."Question" ADD CONSTRAINT "Question_sectionId_fkey" FOREIGN KEY ("sectionId") REFERENCES "ddp"."Section"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MarkingRun" ADD CONSTRAINT "MarkingRun_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "Question"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ddp"."MarkingRun" ADD CONSTRAINT "MarkingRun_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "ddp"."Question"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CriterionResult" ADD CONSTRAINT "CriterionResult_markingRunId_fkey" FOREIGN KEY ("markingRunId") REFERENCES "MarkingRun"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ddp"."CriterionResult" ADD CONSTRAINT "CriterionResult_markingRunId_fkey" FOREIGN KEY ("markingRunId") REFERENCES "ddp"."MarkingRun"("id") ON DELETE CASCADE ON UPDATE CASCADE;

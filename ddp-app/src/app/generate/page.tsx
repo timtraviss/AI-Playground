@@ -47,7 +47,7 @@ export default function GeneratePage() {
       })
 
       if (!res.ok || !res.body) {
-        setError(`Generation failed (${res.status}). Check that ANTHROPIC_API_KEY is set in .env.local.`)
+        setError(`Generation failed (${res.status}). The service may be temporarily unavailable — please try again.`)
         return
       }
 

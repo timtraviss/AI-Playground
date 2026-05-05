@@ -30,6 +30,9 @@ export async function POST(req: NextRequest) {
   const readable = new ReadableStream({
     async start(controller) {
       const enc = new TextEncoder()
+      // Send an immediate ping so Heroku's router sees the first byte quickly
+      // and doesn't 503 before the Anthropic API responds
+      controller.enqueue(enc.encode(': ping\n\n'))
       try {
         const stream = anthropic.messages.stream({
           model: 'claude-opus-4-7',
@@ -63,7 +66,7 @@ export async function POST(req: NextRequest) {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
-      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no', // disable Nginx/Heroku proxy buffering
     },
   })
 }

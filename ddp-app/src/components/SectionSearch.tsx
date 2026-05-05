@@ -30,31 +30,31 @@ export default function SectionSearch() {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-3">Section search</h2>
+      <h2 className="text-lg font-semibold mb-3 text-ink">Section search</h2>
       <input
         type="text"
         value={q}
         onChange={(e) => search(e.target.value)}
         placeholder="Search by section number or heading (e.g. 219, robbery, theft)…"
-        className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
       />
-      {loading && <p className="text-sm text-gray-400 mt-2">Searching…</p>}
+      {loading && <p className="text-sm text-muted mt-2">Searching…</p>}
       {results.length > 0 && (
         <ul className="mt-3 divide-y border rounded-lg bg-white">
           {results.map((s) => (
             <li key={s.id} className="px-4 py-3">
-              <span className="font-mono text-blue-700 text-sm">s{s.number}</span>
-              <span className="mx-2 text-gray-300">—</span>
+              <span className="font-mono text-accent text-sm">s{s.number}</span>
+              <span className="mx-2 text-edge">—</span>
               <span className="text-sm font-medium">{s.heading}</span>
               {s.partHeading && (
-                <span className="ml-2 text-xs text-gray-400">{s.partHeading}</span>
+                <span className="ml-2 text-xs text-muted">{s.partHeading}</span>
               )}
             </li>
           ))}
         </ul>
       )}
       {!loading && q.trim() && results.length === 0 && (
-        <p className="text-sm text-gray-400 mt-2">No results.</p>
+        <p className="text-sm text-muted mt-2">No results.</p>
       )}
     </div>
   )

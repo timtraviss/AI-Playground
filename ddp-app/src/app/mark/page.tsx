@@ -101,22 +101,22 @@ export default function MarkPage() {
   return (
     <main className="max-w-3xl mx-auto p-8">
       <div className="mb-6">
-        <Link href="/" className="text-sm text-blue-600 hover:underline">← Dashboard</Link>
-        <h1 className="text-2xl font-bold mt-2">Mark answer</h1>
+        <Link href="/" className="text-sm text-accent hover:underline">← Dashboard</Link>
+        <h1 className="text-2xl font-bold mt-2 text-ink">Mark answer</h1>
       </div>
 
       <div className="space-y-5">
         {/* Question picker */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
             Question
           </label>
           {loadingQuestions ? (
-            <p className="text-sm text-gray-400">Loading questions…</p>
+            <p className="text-sm text-muted">Loading questions…</p>
           ) : questions.length === 0 ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted">
               No SA or CL questions in the library yet.{' '}
-              <Link href="/generate" className="text-blue-600 hover:underline">Generate one first.</Link>
+              <Link href="/generate" className="text-accent hover:underline">Generate one first.</Link>
             </p>
           ) : (
             <select
@@ -126,7 +126,7 @@ export default function MarkPage() {
                 setMarkingRun(null)
                 setError(null)
               }}
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="">— select a question —</option>
               {questions.map((q) => (
@@ -137,7 +137,7 @@ export default function MarkPage() {
             </select>
           )}
           {selected && (
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="mt-1 text-xs text-muted">
               s{selected.section.number} — {selected.section.heading}
             </p>
           )}
@@ -146,8 +146,8 @@ export default function MarkPage() {
         {/* Answer input */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-sm font-medium text-gray-700">Trainee answer</label>
-            <label className="text-sm text-blue-600 hover:underline cursor-pointer">
+            <label className="text-sm font-medium text-sub">Trainee answer</label>
+            <label className="text-sm text-accent hover:underline cursor-pointer">
               Upload .txt
               <input
                 ref={fileInputRef}
@@ -163,16 +163,16 @@ export default function MarkPage() {
             onChange={(e) => setAnswerText(e.target.value)}
             rows={8}
             placeholder="Paste the trainee's answer here, or upload a .txt file above…"
-            className="w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+            className="w-full bg-surface2 border border-edge rounded-lg px-4 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent resize-y"
           />
           {answerText && (
-            <p className="text-xs text-gray-400 mt-1">{answerText.trim().split(/\s+/).length} words</p>
+            <p className="text-xs text-muted mt-1">{answerText.trim().split(/\s+/).length} words</p>
           )}
         </div>
 
         {/* Mode toggle */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Mode</label>
+          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">Mode</label>
           <div className="flex gap-2">
             {(['auto', 'draft'] as const).map((m) => (
               <button
@@ -180,8 +180,8 @@ export default function MarkPage() {
                 onClick={() => setMode(m)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                   mode === m
-                    ? 'bg-blue-600 border-blue-600 text-white'
-                    : 'border-gray-300 hover:border-blue-400'
+                    ? 'bg-accent border-accent text-white'
+                    : 'border-edge text-sub hover:border-accent hover:text-accent'
                 }`}
               >
                 {m === 'auto' ? 'Auto — confirm immediately' : 'Draft — review before confirming'}
@@ -194,7 +194,7 @@ export default function MarkPage() {
         <button
           onClick={mark}
           disabled={!canMark}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors"
+          className="w-full py-3 bg-accent hover:opacity-90 disabled:opacity-40 text-white font-medium rounded-lg transition-colors"
         >
           {marking ? 'Marking…' : 'Mark'}
         </button>
@@ -202,8 +202,8 @@ export default function MarkPage() {
 
       {/* Error */}
       {error && (
-        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="mt-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+          <p className="text-sm text-red-400">{error}</p>
         </div>
       )}
 

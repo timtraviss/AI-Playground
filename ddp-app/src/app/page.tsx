@@ -22,9 +22,9 @@ export default async function Home() {
   }
 
   return (
-    <main className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-1">DDP Question Builder & Marker</h1>
-      <p className="text-gray-500 mb-8">NZ Police Detective Development Programme</p>
+    <main className="max-w-4xl mx-auto px-6 py-8">
+      <h1 className="text-3xl font-bold mb-1 text-ink">DDP Question Builder & Marker</h1>
+      <p className="text-muted mb-8 text-sm">NZ Police Detective Development Programme</p>
 
       <div className="grid grid-cols-4 gap-4 mb-4">
         <Stat label="Sections loaded" value={sectionCount} />
@@ -51,9 +51,9 @@ export default async function Home() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-white border rounded-lg p-5">
-      <div className="text-3xl font-bold text-blue-600">{value}</div>
-      <div className="text-sm text-gray-500 mt-1">{label}</div>
+    <div className="bg-surface border border-edge rounded-lg p-5">
+      <div className="text-3xl font-bold text-accent">{value}</div>
+      <div className="text-xs text-muted mt-1">{label}</div>
     </div>
   )
 }
@@ -62,7 +62,7 @@ function ActionCard({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-5 flex items-center justify-center text-sm font-medium transition-colors"
+      className="bg-accent hover:opacity-90 text-white rounded-lg p-5 flex items-center justify-center text-sm font-medium transition-opacity"
     >
       {label}
     </Link>

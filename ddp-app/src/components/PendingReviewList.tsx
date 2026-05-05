@@ -22,11 +22,11 @@ interface PendingRun {
 }
 
 const bandColour: Record<string, string> = {
-  'Not Achieved': 'bg-red-100 text-red-800',
-  'Developing': 'bg-yellow-100 text-yellow-800',
+  'Not Achieved': 'bg-red-500/20 text-red-300',
+  'Developing': 'bg-amber-500/20 text-amber-300',
   'Achieved': 'bg-blue-100 text-blue-800',
   'Merit': 'bg-purple-100 text-purple-800',
-  'Excellence': 'bg-green-100 text-green-800',
+  'Excellence': 'bg-green-500/20 text-green-300',
 }
 
 export default function PendingReviewList() {
@@ -58,39 +58,39 @@ export default function PendingReviewList() {
 
   return (
     <div className="mt-10">
-      <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+      <h2 className="text-lg font-semibold mb-3 text-ink flex items-center gap-2">
         Pending review
-        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">
+        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold">
           {runs.length}
         </span>
       </h2>
-      <div className="bg-white border rounded-lg divide-y">
+      <div className="bg-surface border border-edge rounded-lg divide-y">
         {runs.map((run) => (
           <div key={run.id} className="px-5 py-4 flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-medium truncate">{run.question.name}</span>
-                <span className="text-xs text-gray-400 uppercase">{run.question.type}</span>
-                <span className="text-xs text-gray-400">s{run.question.section.number}</span>
+                <span className="text-sm font-medium truncate text-ink">{run.question.name}</span>
+                <span className="text-xs text-muted uppercase">{run.question.type}</span>
+                <span className="text-xs text-muted">s{run.question.section.number}</span>
               </div>
               {run.fileName && (
-                <p className="text-xs text-gray-400 mt-0.5">{run.fileName}</p>
+                <p className="text-xs text-muted mt-0.5">{run.fileName}</p>
               )}
-              <p className="text-xs text-gray-500 mt-1 line-clamp-2">{run.overallFeedback}</p>
+              <p className="text-xs text-muted mt-1 line-clamp-2">{run.overallFeedback}</p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <div className="text-right">
-                <div className="text-sm font-semibold">
+                <div className="text-sm font-semibold text-ink">
                   {run.totalMark}/{run.question.defaultGrade}
                 </div>
-                <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${bandColour[run.overallBand] ?? 'bg-gray-100 text-gray-700'}`}>
+                <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${bandColour[run.overallBand] ?? 'bg-surface2 text-sub'}`}>
                   {run.overallBand}
                 </span>
               </div>
               <button
                 onClick={() => confirm(run.id)}
                 disabled={confirming === run.id}
-                className="px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white text-xs font-medium rounded-lg transition-colors"
+                className="px-3 py-1.5 bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
               >
                 {confirming === run.id ? '…' : 'Confirm'}
               </button>

@@ -134,21 +134,21 @@ export default function BulkMarkPage() {
   return (
     <main className="max-w-3xl mx-auto p-8">
       <div className="mb-6">
-        <Link href="/" className="text-sm text-blue-600 hover:underline">← Dashboard</Link>
-        <h1 className="text-2xl font-bold mt-2">Bulk mark</h1>
-        <p className="text-sm text-gray-500 mt-1">Mark multiple answer files against the same question.</p>
+        <Link href="/" className="text-sm text-accent hover:underline">← Dashboard</Link>
+        <h1 className="text-2xl font-bold mt-2 text-ink">Bulk mark</h1>
+        <p className="text-sm text-muted mt-1">Mark multiple answer files against the same question.</p>
       </div>
 
       <div className="space-y-5">
         {/* Question picker */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Question</label>
+          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">Question</label>
           {loadingQuestions ? (
-            <p className="text-sm text-gray-400">Loading…</p>
+            <p className="text-sm text-muted">Loading…</p>
           ) : questions.length === 0 ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted">
               No SA or CL questions saved yet.{' '}
-              <Link href="/generate" className="text-blue-600 hover:underline">Generate one first.</Link>
+              <Link href="/generate" className="text-accent hover:underline">Generate one first.</Link>
             </p>
           ) : (
             <select
@@ -157,7 +157,7 @@ export default function BulkMarkPage() {
                 setSelectedId(e.target.value === '' ? '' : parseInt(e.target.value, 10))
                 setResults([])
               }}
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="">— select a question —</option>
               {questions.map((q) => (
@@ -171,7 +171,7 @@ export default function BulkMarkPage() {
 
         {/* File picker */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
             Answer files <span className="font-normal text-gray-400">(.txt, one per trainee)</span>
           </label>
           <input
@@ -180,23 +180,23 @@ export default function BulkMarkPage() {
             accept=".txt"
             multiple
             onChange={handleFiles}
-            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            className="block w-full text-sm text-sub file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-accent/10 file:text-accent hover:file:bg-accent/20"
           />
           {files.length > 0 && (
-            <p className="mt-1 text-xs text-gray-400">{files.length} file{files.length !== 1 ? 's' : ''} selected</p>
+            <p className="mt-1 text-xs text-muted">{files.length} file{files.length !== 1 ? 's' : ''} selected</p>
           )}
         </div>
 
         {/* Mode */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Mode</label>
+          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">Mode</label>
           <div className="flex gap-2">
             {(['auto', 'draft'] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => setMode(m)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                  mode === m ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-300 hover:border-blue-400'
+                  mode === m ? 'bg-accent border-accent text-white' : 'border-edge text-sub hover:border-accent hover:text-accent'
                 }`}
               >
                 {m === 'auto' ? 'Auto — confirm immediately' : 'Draft — review before confirming'}
@@ -209,7 +209,7 @@ export default function BulkMarkPage() {
         <button
           onClick={markAll}
           disabled={!canMark}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors"
+          className="w-full py-3 bg-accent hover:opacity-90 disabled:opacity-40 text-white font-medium rounded-lg transition-colors"
         >
           {processing ? `Marking… (${progress.current}/${progress.total})` : `Mark ${files.length || ''} answer${files.length !== 1 ? 's' : ''}`}
         </button>
@@ -218,7 +218,7 @@ export default function BulkMarkPage() {
       {/* Progress bar */}
       {processing && (
         <div className="mt-6">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
+          <div className="flex justify-between text-xs text-muted mb-1">
             <span>Processing files</span>
             <span>{pct}%</span>
           </div>
@@ -271,12 +271,12 @@ export default function BulkMarkPage() {
                       {r.status === 'error' ? (
                         <span className="text-red-600 text-xs">{r.error}</span>
                       ) : (
-                        <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${bandColour[r.band] ?? 'bg-gray-100 text-gray-700'}`}>
+                        <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${bandColour[r.band] ?? 'bg-gray-100 text-sub'}`}>
                           {r.band}
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-gray-500 capitalize">{r.status}</td>
+                    <td className="px-4 py-2.5 text-xs text-muted capitalize">{r.status}</td>
                   </tr>
                 ))}
               </tbody>
@@ -296,15 +296,15 @@ export default function BulkMarkPage() {
                   <>
                     <div className="bg-white border rounded-lg p-3 text-center">
                       <div className="text-xl font-bold text-blue-600">{avg.toFixed(1)}</div>
-                      <div className="text-xs text-gray-500">avg / {maxMark}</div>
+                      <div className="text-xs text-muted">avg / {maxMark}</div>
                     </div>
                     <div className="bg-white border rounded-lg p-3 text-center">
                       <div className="text-xl font-bold text-green-600">{max}</div>
-                      <div className="text-xs text-gray-500">highest</div>
+                      <div className="text-xs text-muted">highest</div>
                     </div>
                     <div className="bg-white border rounded-lg p-3 text-center">
                       <div className="text-xl font-bold text-red-500">{min}</div>
-                      <div className="text-xs text-gray-500">lowest</div>
+                      <div className="text-xs text-muted">lowest</div>
                     </div>
                   </>
                 )

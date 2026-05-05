@@ -109,14 +109,14 @@ export default function GeneratePage() {
   return (
     <main className="max-w-3xl mx-auto p-8">
       <div className="mb-6">
-        <Link href="/" className="text-sm text-blue-600 hover:underline">← Dashboard</Link>
-        <h1 className="text-2xl font-bold mt-2">Generate question</h1>
+        <Link href="/" className="text-sm text-accent hover:underline">← Dashboard</Link>
+        <h1 className="text-2xl font-bold mt-2 text-ink">Generate question</h1>
       </div>
 
       <div className="space-y-5">
         {/* Section picker */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
             Legislation section
           </label>
           <SectionPicker value={section} onChange={setSection} />
@@ -124,7 +124,7 @@ export default function GeneratePage() {
 
         {/* Type selector */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
             Question type
           </label>
           <div className="flex gap-2">
@@ -141,8 +141,8 @@ export default function GeneratePage() {
                 onClick={() => setType(t)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                   type === t
-                    ? 'bg-blue-600 border-blue-600 text-white'
-                    : 'border-gray-300 hover:border-blue-400'
+                    ? 'bg-accent border-accent text-white'
+                    : 'border-edge text-sub hover:border-accent hover:text-accent'
                 }`}
               >
                 {label}
@@ -153,7 +153,7 @@ export default function GeneratePage() {
 
         {/* Focus note */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
             Focus note <span className="font-normal text-gray-400">(optional)</span>
           </label>
           <textarea
@@ -161,7 +161,7 @@ export default function GeneratePage() {
             onChange={(e) => setFocusNote(e.target.value)}
             rows={2}
             placeholder="e.g. Focus on evidential sufficiency for the mens rea element"
-            className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent resize-none"
           />
         </div>
 
@@ -169,7 +169,7 @@ export default function GeneratePage() {
         <button
           onClick={generate}
           disabled={!canGenerate}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors"
+          className="w-full py-3 bg-accent hover:opacity-90 disabled:opacity-40 text-white font-medium rounded-lg transition-colors"
         >
           {streaming ? 'Generating…' : 'Generate'}
         </button>
@@ -178,7 +178,7 @@ export default function GeneratePage() {
       {/* Streaming preview */}
       {streaming && streamText && (
         <div className="mt-8">
-          <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">Generating…</p>
+          <p className="text-xs text-muted mb-2 uppercase tracking-wide">Generating…</p>
           <pre className="whitespace-pre-wrap text-sm bg-gray-50 border rounded-lg p-4 font-mono text-gray-600 max-h-60 overflow-auto">
             {streamText}
           </pre>
@@ -187,8 +187,8 @@ export default function GeneratePage() {
 
       {/* Error */}
       {error && (
-        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="mt-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+          <p className="text-sm text-red-400">{error}</p>
         </div>
       )}
 

@@ -1,3 +1,179 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Fonts ─────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Audiowide';
+  src: url('/fonts/Audiowide-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ── Design tokens ──────────────────────────────────────────────────── */
+:root {
+  --bg:          #0D1420;
+  --surface:     #1E2A44;
+  --surface-2:   #243352;
+  --border:      #2E3D5E;
+  --text:        #F5E8D0;
+  --text-sub:    #D4C4A0;
+  --text-muted:  #9A8E7A;
+  --brand:       #E8743C;
+  --learn:       #38bdf8;
+  --verify:      #22c55e;
+  --review:      #a78bfa;
+  --audio:       #22d3ee;
+  --warn:        #f59e0b;
+  --assess:      #fb923c;
+  --danger:      #ef4444;
+  --tool-accent: var(--brand);
+  --nav-bg:      #141D2E;
+  --nav-height:  56px;
+  --font-display:'Audiowide', cursive;
+  --font-body:   'Inter', system-ui, sans-serif;
+  --font-serif:  'Crimson Pro', Georgia, serif;
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.35);
+  --shadow-lg:   0 18px 45px rgba(0,0,0,0.55);
+}
+
+body.light {
+  --bg:         #F5E8D0;
+  --surface:    #ffffff;
+  --surface-2:  #EDE0C4;
+  --border:     #D4C4A0;
+  --text:       #1E2A44;
+  --text-sub:   #2E3D5E;
+  --text-muted: #4A5878;
+  --brand:      #B8520A;
+  --nav-bg:     rgba(245,232,208,0.92);
+}
+
+/* ── Base ───────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* ── Nav bar ────────────────────────────────────────────────────────── */
+.site-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: rgba(20,29,46,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(245,232,208,0.1);
+}
+body.light .site-nav {
+  background: rgba(245,232,208,0.92);
+  border-bottom-color: rgba(0,0,0,0.1);
+}
+
+.hamburger {
+  width: 36px; height: 36px;
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 5px; padding: 6px; border-radius: 6px;
+  transition: background 0.15s;
+}
+.hamburger:hover { background: rgba(245,232,208,0.08); }
+body.light .hamburger:hover { background: rgba(0,0,0,0.06); }
+.hamburger span {
+  display: block; width: 18px; height: 2px;
+  background: var(--text); border-radius: 2px;
+  transition: background 0.15s;
+}
+
+.nav-brand-group {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none; flex: 1; margin-left: 8px;
+}
+.nav-logo-img { width: 32px; height: 32px; transition: transform 0.3s ease; }
+.nav-brand-group:hover .nav-logo-img { transform: rotate(15deg) scale(1.1); }
+.nav-wordmark {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 400;
+  color: var(--brand); letter-spacing: 0.02em;
+}
+.nav-wordmark span { color: var(--text); }
+
+.nav-theme-btn {
+  width: 36px; height: 36px;
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; font-size: 16px; color: var(--text-muted);
+  transition: background 0.15s, color 0.15s;
+}
+.nav-theme-btn:hover { background: rgba(245,232,208,0.08); color: var(--text); }
+body.light .nav-theme-btn:hover { background: rgba(0,0,0,0.06); }
+
+/* ── Nav drawer ─────────────────────────────────────────────────────── */
+.nav-drawer {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 280px; z-index: 1100;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  transform: translateX(-100%);
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+  display: flex; flex-direction: column;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+.nav-drawer.open { transform: translateX(0); }
+body.light .nav-drawer { background: #ffffff; }
+
+.nav-drawer-logo {
+  padding: 8px 20px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.nav-drawer-logo img { width: 36px; height: 36px; }
+.nav-drawer-logo span {
+  font-family: var(--font-display);
+  font-size: 16px; color: var(--brand);
+}
+
+.nav-links { list-style: none; padding: 0; margin: 0; }
+.nav-links li a {
+  display: block; padding: 10px 20px;
+  text-decoration: none; color: var(--text-sub);
+  font-size: 14px; font-weight: 500;
+  transition: background 0.12s, color 0.12s;
+  border-radius: 0;
+}
+.nav-links li a:hover {
+  background: rgba(245,232,208,0.05); color: var(--text);
+}
+body.light .nav-links li a:hover { background: rgba(0,0,0,0.04); }
+.nav-links li a.active {
+  color: var(--brand); background: rgba(232,116,60,0.1);
+}
+body.light .nav-links li a.active { background: rgba(184,82,10,0.08); }
+
+.nav-divider {
+  height: 1px; background: var(--border);
+  margin: 8px 20px;
+}
+
+/* ── Overlay ────────────────────────────────────────────────────────── */
+.nav-overlay {
+  position: fixed; inset: 0; z-index: 1050;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+}

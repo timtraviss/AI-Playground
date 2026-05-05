@@ -98,15 +98,15 @@ export default function QuestionEditor({
   }
 
   return (
-    <div className="bg-white border rounded-lg p-6 space-y-4">
+    <div className="bg-surface border border-edge rounded-lg p-6 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+        <span className="text-xs font-medium uppercase tracking-wide text-muted">
           {typeLabel[type]} · s{section.number} · {draft.defaultGrade} marks
         </span>
         <button
           onClick={onRegenerate}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-accent hover:underline"
         >
           Regenerate ↺
         </button>
@@ -114,18 +114,18 @@ export default function QuestionEditor({
 
       {/* Editable name */}
       <div>
-        <label className="text-xs text-gray-500 uppercase tracking-wide">Question name</label>
+        <label className="text-xs text-muted uppercase tracking-wide">Question name</label>
         <input
           type="text"
           value={draft.name}
           onChange={(e) => onNameChange(e.target.value)}
-          className="mt-1 w-full border rounded px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="mt-1 w-full bg-surface2 border border-edge rounded px-3 py-2 text-sm font-medium text-ink focus:outline-none focus:ring-2 focus:ring-accent"
         />
       </div>
 
       {/* Question body */}
       <div>
-        <label className="text-xs text-gray-500 uppercase tracking-wide">Question</label>
+        <label className="text-xs text-muted uppercase tracking-wide">Question</label>
         {mcData ? (
           <div className="mt-1 p-4 bg-gray-50 rounded border text-sm space-y-3">
             <p className="font-medium">{mcData.stem}</p>
@@ -140,7 +140,7 @@ export default function QuestionEditor({
           </div>
         ) : (
           <div
-            className="mt-1 prose prose-sm max-w-none p-4 bg-gray-50 rounded border text-sm leading-relaxed"
+            className="mt-1 prose prose-sm max-w-none p-4 bg-surface2 rounded border border-edge text-sm text-sub leading-relaxed"
             dangerouslySetInnerHTML={{ __html: draft.questionText }}
           />
         )}
@@ -151,32 +151,32 @@ export default function QuestionEditor({
         <button
           onClick={save}
           disabled={saving || saved}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white text-sm rounded-lg font-medium transition-colors"
+          className="px-4 py-2 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors"
         >
           {saved ? 'Saved ✓' : saving ? 'Saving…' : 'Save to library'}
         </button>
         <button
           onClick={downloadMd}
-          className="px-4 py-2 border hover:bg-gray-50 text-sm rounded-lg transition-colors"
+          className="px-4 py-2 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"
         >
           Download .md
         </button>
         <button
           onClick={downloadTxt}
-          className="px-4 py-2 border hover:bg-gray-50 text-sm rounded-lg transition-colors"
+          className="px-4 py-2 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"
         >
           Download .txt
         </button>
         <button
           disabled
           title="XML export coming in Phase 3"
-          className="px-4 py-2 border text-gray-300 text-sm rounded-lg cursor-not-allowed"
+          className="px-4 py-2 border text-edge text-sm rounded-lg cursor-not-allowed"
         >
           Export XML
         </button>
       </div>
 
-      {saveError && <p className="text-sm text-red-600">{saveError}</p>}
+      {saveError && <p className="text-sm text-red-400">{saveError}</p>}
     </div>
   )
 }

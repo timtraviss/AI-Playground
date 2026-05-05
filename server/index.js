@@ -180,10 +180,19 @@ app.listen(PORT, () => {
   if (!process.env.CLAUDE_API_KEY) console.warn('  ⚠  CLAUDE_API_KEY not set');
 
   // Auto-start the DDP Question Builder sub-app on port 3001
-  const ddp = spawn('npm', ['run', 'dev', '--', '--port', '3001'], {
+  const isDev = process.env.NODE_ENV !== 'production';
+  const ddp = spawn('npm', ['run', isDev ? 'dev' : 'start'], {
     cwd: resolve(projectRoot, 'ddp-app'),
     stdio: 'inherit',
     shell: true,
+    env: {
+      ...process.env,
+      PORT: '3001',
+      // SQLite path — overrides Heroku's PostgreSQL DATABASE_URL for this child process
+      DATABASE_URL: 'file:./prisma/dev.db',
+      // ddp-app uses ANTHROPIC_API_KEY; main app uses CLAUDE_API_KEY
+      ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY || '',
+    },
   });
   ddp.on('error', (err) => console.warn('  ⚠  DDP app failed to start:', err.message));
   process.on('exit', () => ddp.kill());

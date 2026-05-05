@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { requestLogger, errorLogger } from './middleware/logger.js';
 import { logsRouter } from './routes/logs.js';
 import { initDb, getPool } from './lib/db.js';
@@ -142,6 +143,20 @@ app.get('/my-usage', (req, res) => res.redirect('/my-usage/'));
 app.get('/my-usage/', (req, res) => {
   res.sendFile(resolve(projectRoot, 'public', 'my-usage', 'index.html'));
 });
+
+// DDP Question Builder — proxy to Next.js app on port 3001
+app.use(createProxyMiddleware({
+  target: 'http://localhost:3001',
+  changeOrigin: true,
+  pathFilter: '/ddp',
+  on: {
+    error: (_err, _req, res) => {
+      res.status(502).send(
+        'DDP app is not running. Start it with: npm --prefix ddp-app run dev -- --port 3001'
+      );
+    },
+  },
+}));
 
 // Landing page fallback
 app.get('*', (req, res) => {

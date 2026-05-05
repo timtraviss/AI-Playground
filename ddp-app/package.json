@@ -14,6 +14,10 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
     "@prisma/client": "^6.7.0",
+    "@types/node": "^22.15.18",
+    "@types/pdf-parse": "^1.1.4",
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.2",
     "autoprefixer": "^10.4.21",
     "fast-xml-parser": "^4.5.1",
     "next": "^15.3.2",
@@ -27,10 +31,6 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/node": "^22.15.18",
-    "@types/pdf-parse": "^1.1.4",
-    "@types/react": "^19.1.4",
-    "@types/react-dom": "^19.1.2",
     "tsx": "^4.19.2"
   }
 }

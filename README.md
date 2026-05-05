@@ -1,8 +1,30 @@
 # Traviss.org — AI Demo Projects
 
-A Node.js/Express web app hosted at [Traviss.org](https://traviss.org) that showcases AI-powered tools for investigative interviewing, legislative review, and training content.
+A Node.js/Express web app hosted at [Traviss.org](https://traviss.org) that showcases AI-powered tools for investigative interviewing, legislative review, and training content. The DDP Question Builder & Marker runs as an embedded Next.js sub-app at `/ddp/`.
 
 ## Projects
+
+### DDP Question Builder & Marker (`/ddp/`)
+
+Standalone Next.js 15 app (proxied via Express) for generating and marking NZ Police Detective Development Programme assessment questions. Powered by Claude Opus 4.7 and the official DDP marking matrices.
+
+**Generate questions** from any of 575 synced Crimes Act 1961 sections:
+- Short Answer (SA, 4 marks) — concept, application, evidential sufficiency
+- Criminal Liability (CL, 10 marks) — legislation, core concepts, case law, defences, evidential sufficiency
+- Multi-choice (MC, 1 mark) — 3-option with exactly one correct answer
+- Practical (PR, 10 marks) — scenario-based application
+
+Questions stream in via SSE, are editable before saving, and can be downloaded as `.md` or `.txt`.
+
+**Mark trainee answers** against the DDP matrices:
+- Single answer mode — paste or upload a `.txt` answer, choose auto (confirmed immediately) or draft (held for review)
+- Bulk mode — select multiple `.txt` files against one question, progress bar, results table with avg/high/low stats, CSV export
+- MarkingSheet shows per-criterion marks, band badge, verbatim descriptor, evidence quote, and improvement suggestion
+- Pending review queue on the dashboard for draft markings awaiting confirmation
+
+Legislation data sourced from the PCO XML API (`legislation.govt.nz`) with an idempotent sync script — 575 sections loaded in seconds.
+
+---
 
 ### P.E.A.C.E. Interview Tutor (`/interview/`)
 
@@ -68,10 +90,11 @@ All transcript content is processed in memory — nothing is written to disk or 
 ## Stack
 
 - **Backend:** Node.js, Express
-- **AI:** Anthropic Claude (Sonnet 4.6), OpenAI Whisper, ElevenLabs
+- **DDP sub-app:** Next.js 15 (App Router, Turbopack), Prisma + SQLite, proxied at `/ddp/`
+- **AI:** Anthropic Claude (Sonnet 4.6 / Opus 4.7), OpenAI Whisper, ElevenLabs
 - **Audio:** fluent-ffmpeg + ffmpeg-static (bundled Linux/macOS binaries — no system install needed)
 - **Legislation API:** legislation.govt.nz REST API
-- **Frontend:** Vanilla HTML/CSS/JS
+- **Frontend:** Vanilla HTML/CSS/JS (main app); React + Tailwind (DDP sub-app)
 
 ## Setup
 
@@ -99,6 +122,10 @@ npm test
 ```
 
 Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingLabel`, `buildMarkdownReport`). No external dependencies required (ffmpeg not needed).
+
+## Recent Updates (2026-05-05)
+
+- **New: DDP Question Builder & Marker** (`/ddp/`) — full 5-phase build shipped as a standalone Next.js 15 app, proxied via Express. Generates SA, CL, MC, and Practical questions from 575 synced Crimes Act sections; auto-marks trainee answers in single and bulk modes against the official DDP matrices; pending review queue on dashboard; CSV export.
 
 ## Recent Updates (2026-05-03)
 
@@ -307,6 +334,24 @@ git push heroku main
 - [x] My Usage page (`/my-usage/`) — user-scoped cost/token dashboard with bar chart
 - [ ] Email notification when monthly cost exceeds a threshold
 - [ ] Per-tool access control (restrict specific tools to specific roles)
+
+### DDP Question Builder & Marker
+- [x] Legislation sync — 575 Crimes Act 1961 sections via PCO XML API, idempotent upsert
+- [x] SA question generation with SSE streaming and QuestionEditor
+- [x] CL question generation
+- [x] MC question generation (stem + 3 options, JSON-normalised)
+- [x] Practical question generation
+- [x] Question library — save, list, download .md / .txt
+- [x] Single answer marking — SA and CL against official DDP matrices, auto and draft modes
+- [x] MarkingSheet — per-criterion marks, band badges, descriptors, evidence, suggestions
+- [x] Confirm draft runs via PATCH /api/mark-runs/[id]
+- [x] Bulk marking — multi-file upload, per-file progress, results table, CSV export
+- [x] Pending review queue on dashboard
+- [x] Integrated as `/ddp/` subpage of main app via Express reverse proxy
+- [x] `dev:all` script — both servers started concurrently with colour-coded output
+- [ ] XML export (Totara/Moodle-compatible) — button present, not yet wired
+- [ ] Practical (PR) marking matrix and prompt
+- [ ] Library edit / delete / batch export
 
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)

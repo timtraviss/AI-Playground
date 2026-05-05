@@ -2,6 +2,7 @@ import express from 'express';
 import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { spawn } from 'child_process';
 import dotenv from 'dotenv';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { requestLogger, errorLogger } from './middleware/logger.js';
@@ -177,4 +178,13 @@ app.listen(PORT, () => {
   if (!process.env.ELEVENLABS_API_KEY) console.warn('  ⚠  ELEVENLABS_API_KEY not set');
   if (!process.env.ELEVENLABS_AGENT_ID) console.warn('  ⚠  ELEVENLABS_AGENT_ID not set');
   if (!process.env.CLAUDE_API_KEY) console.warn('  ⚠  CLAUDE_API_KEY not set');
+
+  // Auto-start the DDP Question Builder sub-app on port 3001
+  const ddp = spawn('npm', ['run', 'dev', '--', '--port', '3001'], {
+    cwd: resolve(projectRoot, 'ddp-app'),
+    stdio: 'inherit',
+    shell: true,
+  });
+  ddp.on('error', (err) => console.warn('  ⚠  DDP app failed to start:', err.message));
+  process.on('exit', () => ddp.kill());
 });

@@ -188,8 +188,6 @@ app.listen(PORT, () => {
     env: {
       ...process.env,
       PORT: '3001',
-      // SQLite path — overrides Heroku's PostgreSQL DATABASE_URL for this child process
-      DATABASE_URL: 'file:./prisma/dev.db',
       // ddp-app uses ANTHROPIC_API_KEY; main app uses CLAUDE_API_KEY
       ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY || '',
     },

@@ -26,6 +26,7 @@ export default function SectionPicker({
   const [results, setResults] = useState<SectionResult[]>([])
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -40,12 +41,27 @@ export default function SectionPicker({
 
   async function search(q: string) {
     setQuery(q)
+    setSearchError(null)
     if (!q.trim()) { setResults([]); setOpen(false); return }
     setLoading(true)
     setOpen(true)
     try {
       const res = await fetch(apiUrl(`/api/sections?q=${encodeURIComponent(q)}`))
-      setResults(await res.json())
+      if (!res.ok) {
+        setSearchError(`Search failed (${res.status}) — check Heroku logs`)
+        setResults([])
+        return
+      }
+      const data = await res.json()
+      if (!Array.isArray(data)) {
+        setSearchError('Unexpected response from server')
+        setResults([])
+        return
+      }
+      setResults(data)
+    } catch (err) {
+      setSearchError(err instanceof Error ? err.message : String(err))
+      setResults([])
     } finally {
       setLoading(false)
     }
@@ -105,6 +121,10 @@ export default function SectionPicker({
             </li>
           ))}
         </ul>
+      )}
+
+      {searchError && (
+        <p className="mt-1 text-xs text-red-400">{searchError}</p>
       )}
 
       {value && (

@@ -149,47 +149,59 @@ async function syncFromPdf(config: ActConfig, pdfPath: string) {
 // ── Main sync ──────────────────────────────────────────────────────────────────
 
 async function syncAct(config: ActConfig) {
-  let xmlText: string
+  let unique: SectionData[]
 
+  // Try live network fetch first
+  let xmlText = ''
   try {
     xmlText = await fetchXml(config)
   } catch (err) {
     console.error(`Fetch failed: ${err}`)
-    const fallback = path.join(__dirname, '..', 'data', 'crimes-act-fallback.pdf')
-    if (fs.existsSync(fallback)) {
-      await syncFromPdf(config, fallback)
-      return
-    }
-    throw new Error('No XML and no PDF fallback available')
   }
 
-  const parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: '@_',
-    textNodeName: '#text',
-    isArray: (name) =>
-      ['prov', 'subprov', 'para', 'part', 'subpart', 'schedule', 'item', 'def-para', 'indent'].includes(name),
-    parseTagValue: false,
-    trimValues: true,
-  })
+  if (xmlText.length > 0) {
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: '@_',
+      textNodeName: '#text',
+      isArray: (name) =>
+        ['prov', 'subprov', 'para', 'part', 'subpart', 'schedule', 'item', 'def-para', 'indent'].includes(name),
+      parseTagValue: false,
+      trimValues: true,
+    })
 
-  const parsed = parser.parse(xmlText)
+    const parsed = parser.parse(xmlText)
+    const sections: SectionData[] = []
+    collectSections(parsed, null, sections)
 
-  const sections: SectionData[] = []
-  collectSections(parsed, null, sections)
+    const seen = new Set<string>()
+    unique = sections.filter((s) => {
+      if (seen.has(s.number)) return false
+      seen.add(s.number)
+      return true
+    })
 
-  // Deduplicate by number (keep first occurrence — most specific)
-  const seen = new Set<string>()
-  const unique = sections.filter((s) => {
-    if (seen.has(s.number)) return false
-    seen.add(s.number)
-    return true
-  })
-
-  console.log(`  Found ${sections.length} raw provisions → ${unique.length} unique section numbers`)
+    console.log(`  Found ${sections.length} raw provisions → ${unique.length} unique section numbers`)
+  } else {
+    // Network returned empty — try JSON bundle, then PDF fallback
+    const jsonFallback = path.join(__dirname, '..', 'data', `${config.workId.replace(/\//g, '-')}-sections.json`)
+    if (fs.existsSync(jsonFallback)) {
+      console.log(`  Network returned empty — using bundled JSON: ${path.basename(jsonFallback)}`)
+      const bundle = JSON.parse(fs.readFileSync(jsonFallback, 'utf-8')) as { sections: SectionData[] }
+      unique = bundle.sections
+      console.log(`  Loaded ${unique.length} sections from bundle`)
+    } else {
+      const pdfFallback = path.join(__dirname, '..', 'data', 'crimes-act-fallback.pdf')
+      if (fs.existsSync(pdfFallback)) {
+        await syncFromPdf(config, pdfFallback)
+        return
+      }
+      throw new Error('Network returned empty and no local fallback found')
+    }
+  }
 
   if (unique.length === 0) {
-    console.error('No sections found. Top-level XML keys:', Object.keys(parsed))
+    console.error('No sections found')
     process.exit(1)
   }
 

@@ -125,6 +125,12 @@ Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingL
 
 ## Recent Updates (2026-05-06)
 
+- **DDP: auto-generated question codes** — every saved question is assigned a unique identifier in the format `[ModuleCode][QuestionType][###]` (e.g. `ARSA001`, `RBMC003`, `KAPR001`). The code is derived from the selected module or by matching the legislation section number against section ranges in `modules.json`. It is stored in a dedicated `Question.code` column (independent of the editable name) so the sequence is reliable. The QuestionEditor pre-fills the name field with the next code so the user sees it before saving. Adding new modules or section ranges requires only editing `modules.json` — no code changes.
+
+- **DDP: legislation / module source toggle** — the Generate page now presents a segmented toggle (`Legislation | DDP Module`) instead of two independent dropdowns. Selecting a source shows the relevant picker; the two are mutually exclusive. Module section dropdown now includes H3-level headings (displayed as `↳ sub-section`) in addition to H1 chapters, with corresponding extraction support in `readModule`.
+
+- **DDP: module-only question generation** — questions generated from a DDP module (without a legislation section) can now be saved to the library. `Question.sectionId` is nullable; prompt builders accept `section: Section | null` and fall back to "use the module content provided in system context" when no section is selected.
+
 - **DDP app production deployment** — `heroku-postbuild` now installs ddp-app deps, generates the Prisma client, and builds the Next.js bundle. On startup the main server auto-spawns the ddp-app (`next start` in production, `next dev` locally) with the SQLite `DATABASE_URL` and `CLAUDE_API_KEY` bridged to `ANTHROPIC_API_KEY`, so no separate process or manual step is needed.
 
 ## Recent Updates (2026-05-05)
@@ -355,9 +361,12 @@ git push heroku main
 - [x] `dev:all` script — both servers started concurrently with colour-coded output
 - [x] Auto-spawn from main server — `npm run dev` starts both servers, no separate command needed
 - [x] Heroku production deployment — `heroku-postbuild` builds ddp-app; `next start` used in production; SQLite DATABASE_URL and ANTHROPIC_API_KEY injected into child process
-- [ ] XML export (Totara/Moodle-compatible) — button present, not yet wired
+- [x] DDP module as alternative question source — segmented toggle (Legislation | DDP Module), mutually exclusive, H1+H3 section picker
+- [x] Auto-generated question codes — `[ModuleCode][QuestionType][###]` format (e.g. ARSA001); stored on `Question.code`; `modules.json` is the editable source for codes and section ranges
+- [x] Module-only questions saveable to library — `Question.sectionId` nullable
 - [ ] Practical (PR) marking matrix and prompt
 - [ ] Library edit / delete / batch export
+- [ ] XML export (Totara/Moodle-compatible)
 
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)

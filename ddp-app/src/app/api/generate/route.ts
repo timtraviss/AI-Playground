@@ -9,7 +9,7 @@ import { readModule } from '@/lib/knowledge'
 import { z } from 'zod'
 
 const BodySchema = z.object({
-  sectionId: z.number().int().positive(),
+  sectionId: z.number().int().positive().optional(),
   type: z.enum(['SA', 'CL', 'MC', 'PR']),
   focusNote: z.string().optional(),
   moduleId: z.string().optional(),
@@ -22,8 +22,12 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return new Response('Bad request', { status: 400 })
 
   const { sectionId, type, focusNote, moduleId, moduleName, moduleSection } = parsed.data
-  const section = await prisma.section.findUnique({ where: { id: sectionId } })
-  if (!section) return new Response('Section not found', { status: 404 })
+  if (!sectionId && !moduleId) return new Response('Bad request: provide sectionId or moduleId', { status: 400 })
+
+  const section = sectionId
+    ? await prisma.section.findUnique({ where: { id: sectionId } })
+    : null
+  if (sectionId && !section) return new Response('Section not found', { status: 404 })
 
   const prompt =
     type === 'SA' ? buildGenerateShortAnswerPrompt({ section, focusNote })

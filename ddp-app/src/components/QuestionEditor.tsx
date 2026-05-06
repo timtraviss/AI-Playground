@@ -18,7 +18,7 @@ interface DraftQuestion {
 
 interface QuestionEditorProps {
   draft: DraftQuestion
-  section: SectionRef
+  section: SectionRef | null
   type: 'SA' | 'CL' | 'MC' | 'PR'
   onNameChange: (name: string) => void
   onRegenerate: () => void
@@ -36,6 +36,7 @@ export default function QuestionEditor({
   const [saveError, setSaveError] = useState<string | null>(null)
 
   async function save() {
+    if (!section) return
     setSaving(true)
     setSaveError(null)
     try {
@@ -66,8 +67,8 @@ export default function QuestionEditor({
         type,
         questionText: draft.questionText,
         defaultGrade: draft.defaultGrade,
-        sectionNumber: section.number,
-        sectionHeading: section.heading,
+        sectionNumber: section?.number ?? '',
+        sectionHeading: section?.heading ?? '',
       }),
       `${draft.name.replace(/\s+/g, '-').toLowerCase()}.md`
     )
@@ -80,8 +81,8 @@ export default function QuestionEditor({
         type,
         questionText: draft.questionText,
         defaultGrade: draft.defaultGrade,
-        sectionNumber: section.number,
-        sectionHeading: section.heading,
+        sectionNumber: section?.number ?? '',
+        sectionHeading: section?.heading ?? '',
       }),
       `${draft.name.replace(/\s+/g, '-').toLowerCase()}.txt`
     )
@@ -102,7 +103,7 @@ export default function QuestionEditor({
       {/* Header */}
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium uppercase tracking-wide text-muted">
-          {typeLabel[type]} · s{section.number} · {draft.defaultGrade} marks
+          {typeLabel[type]}{section ? ` · s${section.number}` : ''} · {draft.defaultGrade} marks
         </span>
         <button
           onClick={onRegenerate}
@@ -148,13 +149,15 @@ export default function QuestionEditor({
 
       {/* Actions */}
       <div className="flex flex-wrap gap-2 pt-1">
-        <button
-          onClick={save}
-          disabled={saving || saved}
-          className="px-4 py-2 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors"
-        >
-          {saved ? 'Saved ✓' : saving ? 'Saving…' : 'Save to library'}
-        </button>
+        {section && (
+          <button
+            onClick={save}
+            disabled={saving || saved}
+            className="px-4 py-2 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors"
+          >
+            {saved ? 'Saved ✓' : saving ? 'Saving…' : 'Save to library'}
+          </button>
+        )}
         <button
           onClick={downloadMd}
           className="px-4 py-2 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"

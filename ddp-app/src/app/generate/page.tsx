@@ -21,17 +21,23 @@ interface DraftQuestion {
 }
 
 interface Module { id: string; name: string }
+interface ModuleSection { title: string; level: 1 | 3 }
 
 type QuestionType = 'SA' | 'CL' | 'MC' | 'PR'
+type SourceType = 'legislation' | 'module'
 
 export default function GeneratePage() {
-  const [section, setSection] = useState<SectionResult | null>(null)
   const [type, setType] = useState<QuestionType>('SA')
+  const [sourceType, setSourceType] = useState<SourceType>('legislation')
   const [focusNote, setFocusNote] = useState('')
 
+  // Legislation source
+  const [section, setSection] = useState<SectionResult | null>(null)
+
+  // Module source
   const [modules, setModules] = useState<Module[]>([])
   const [moduleId, setModuleId] = useState('')
-  const [moduleSections, setModuleSections] = useState<string[]>([])
+  const [moduleSections, setModuleSections] = useState<ModuleSection[]>([])
   const [moduleSection, setModuleSection] = useState('')
 
   useEffect(() => {
@@ -66,7 +72,6 @@ export default function GeneratePage() {
   const [error, setError] = useState<string | null>(null)
 
   async function generate() {
-    if (!section) return
     setError(null)
     setDraft(null)
     setStreamText('')
@@ -77,12 +82,14 @@ export default function GeneratePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sectionId: section.id,
+          sectionId: sourceType === 'legislation' ? section?.id : undefined,
           type,
           focusNote: focusNote || undefined,
-          moduleId: moduleId || undefined,
-          moduleName: moduleId ? modules.find((m) => m.id === moduleId)?.name : undefined,
-          moduleSection: moduleSection || undefined,
+          moduleId: sourceType === 'module' ? moduleId || undefined : undefined,
+          moduleName: sourceType === 'module' && moduleId
+            ? modules.find((m) => m.id === moduleId)?.name
+            : undefined,
+          moduleSection: sourceType === 'module' ? moduleSection || undefined : undefined,
         }),
       })
 
@@ -110,7 +117,6 @@ export default function GeneratePage() {
           if (payload === '[DONE]') {
             try {
               const parsed = JSON.parse(accumulated)
-              // MC has stem+options instead of questionText — normalise before storing
               if (type === 'MC') {
                 setDraft({
                   name: parsed.name,
@@ -144,7 +150,10 @@ export default function GeneratePage() {
     }
   }
 
-  const canGenerate = !!section && !streaming
+  const canGenerate = !streaming && (
+    (sourceType === 'legislation' && !!section) ||
+    (sourceType === 'module' && !!moduleId)
+  )
 
   return (
     <main className="max-w-3xl mx-auto p-8">
@@ -154,20 +163,12 @@ export default function GeneratePage() {
       </div>
 
       <div className="space-y-5">
-        {/* Section picker */}
-        <div>
-          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
-            Legislation section
-          </label>
-          <SectionPicker value={section} onChange={setSection} />
-        </div>
-
-        {/* Type selector */}
+        {/* Question type */}
         <div>
           <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
             Question type
           </label>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {(
               [
                 { t: 'SA', label: 'SA — Short Answer (4 marks)' },
@@ -191,6 +192,83 @@ export default function GeneratePage() {
           </div>
         </div>
 
+        {/* Source toggle */}
+        <div>
+          <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
+            Question source
+          </label>
+          <div className="inline-flex rounded-lg border border-edge overflow-hidden">
+            {(['legislation', 'module'] as const).map((s) => (
+              <button
+                key={s}
+                onClick={() => setSourceType(s)}
+                className={`px-5 py-2 text-sm font-medium transition-colors ${
+                  sourceType === s
+                    ? 'bg-accent text-white'
+                    : 'bg-surface2 text-sub hover:text-ink'
+                }`}
+              >
+                {s === 'legislation' ? 'Legislation' : 'DDP Module'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Legislation picker */}
+        {sourceType === 'legislation' && (
+          <div>
+            <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
+              Legislation section
+            </label>
+            <SectionPicker value={section} onChange={setSection} />
+          </div>
+        )}
+
+        {/* Module picker */}
+        {sourceType === 'module' && (
+          <>
+            <div>
+              <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
+                DDP module
+              </label>
+              {modules.length === 0 ? (
+                <p className="text-sm text-muted">No modules available.</p>
+              ) : (
+                <select
+                  value={moduleId}
+                  onChange={(e) => setModuleId(e.target.value)}
+                  className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                >
+                  <option value="">— Select a module —</option>
+                  {modules.map((m) => (
+                    <option key={m.id} value={m.id}>{m.name}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {moduleId && moduleSections.length > 0 && (
+              <div>
+                <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
+                  Module section <span className="font-normal text-gray-400">(optional)</span>
+                </label>
+                <select
+                  value={moduleSection}
+                  onChange={(e) => setModuleSection(e.target.value)}
+                  className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                >
+                  <option value="">— Entire module —</option>
+                  {moduleSections.map((s) => (
+                    <option key={s.title} value={s.title}>
+                      {s.level === 3 ? `↳ ${s.title}` : s.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </>
+        )}
+
         {/* Focus note */}
         <div>
           <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
@@ -204,44 +282,6 @@ export default function GeneratePage() {
             className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent resize-none"
           />
         </div>
-
-        {/* Module (optional) */}
-        {modules.length > 0 && (
-          <div>
-            <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
-              DDP module <span className="font-normal text-gray-400">(optional)</span>
-            </label>
-            <select
-              value={moduleId}
-              onChange={(e) => setModuleId(e.target.value)}
-              className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
-            >
-              <option value="">— No module —</option>
-              {modules.map((m) => (
-                <option key={m.id} value={m.id}>{m.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {/* Module section (optional, only when a module is selected) */}
-        {moduleId && moduleSections.length > 0 && (
-          <div>
-            <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
-              Module section <span className="font-normal text-gray-400">(optional)</span>
-            </label>
-            <select
-              value={moduleSection}
-              onChange={(e) => setModuleSection(e.target.value)}
-              className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
-            >
-              <option value="">— Entire module —</option>
-              {moduleSections.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-        )}
 
         {/* Generate button */}
         <button
@@ -270,12 +310,12 @@ export default function GeneratePage() {
         </div>
       )}
 
-      {/* Question editor */}
-      {draft && section && (
+      {/* Question editor — pass null section when module-only */}
+      {draft && (
         <div className="mt-8">
           <QuestionEditor
             draft={draft}
-            section={section}
+            section={sourceType === 'legislation' ? section : null}
             type={type}
             onNameChange={(name) => setDraft((d) => d ? { ...d, name } : d)}
             onRegenerate={() => { setDraft(null); generate() }}

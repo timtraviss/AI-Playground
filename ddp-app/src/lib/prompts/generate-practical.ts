@@ -3,7 +3,7 @@
 import type { Section } from "@prisma/client";
 
 export function buildGeneratePracticalPrompt(input: {
-  section: Section;
+  section: Section | null;
   focusNote?: string;
 }) {
   const system = `You are a senior assessment writer for the New Zealand Police Detective Development Programme (DDP). You write Practical (PR) questions.
@@ -37,7 +37,8 @@ Return a single JSON object, no preamble, no markdown fences:
   "defaultGrade": 10
 }`;
 
-  const user = `Generate ONE Practical question based on the following section of New Zealand legislation.
+  const user = input.section
+    ? `Generate ONE Practical question based on the following section of New Zealand legislation.
 
 SECTION
 Number: ${input.section.number}
@@ -47,6 +48,10 @@ Full text:
 """
 ${input.section.fullText}
 """
+
+${input.focusNote ? `FOCUS REQUESTED BY THE TRAINER\n${input.focusNote}\n` : ""}
+Generate the question now. Return JSON only.`
+    : `Generate ONE Practical question based on the DDP training module content provided in the system context above.
 
 ${input.focusNote ? `FOCUS REQUESTED BY THE TRAINER\n${input.focusNote}\n` : ""}
 Generate the question now. Return JSON only.`;

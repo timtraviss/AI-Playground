@@ -3,7 +3,7 @@
 import type { Section } from "@prisma/client";
 
 export function buildGenerateShortAnswerPrompt(input: {
-  section: Section;
+  section: Section | null;
   focusNote?: string;
 }) {
   const system = `You are a senior assessment writer for the New Zealand Police Detective Development Programme (DDP). You write Short Answer (SA) questions for trainee detectives.
@@ -52,7 +52,8 @@ Return a single JSON object, no preamble, no markdown fences:
   "defaultGrade": 4
 }`;
 
-  const user = `Generate ONE Short Answer question based on the following section of New Zealand legislation.
+  const user = input.section
+    ? `Generate ONE Short Answer question based on the following section of New Zealand legislation.
 
 SECTION
 Number: ${input.section.number}
@@ -62,6 +63,10 @@ Full text:
 """
 ${input.section.fullText}
 """
+
+${input.focusNote ? `FOCUS REQUESTED BY THE TRAINER\n${input.focusNote}\n` : ""}
+Generate the question now. Return JSON only.`
+    : `Generate ONE Short Answer question based on the DDP training module content provided in the system context above.
 
 ${input.focusNote ? `FOCUS REQUESTED BY THE TRAINER\n${input.focusNote}\n` : ""}
 Generate the question now. Return JSON only.`;

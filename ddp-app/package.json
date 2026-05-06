@@ -11,7 +11,9 @@
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "sync-legislation": "tsx --env-file=.env.local scripts/sync-legislation.ts",
-    "sync-legislation:prod": "tsx scripts/sync-legislation.ts"
+    "sync-legislation:prod": "tsx scripts/sync-legislation.ts",
+    "backfill-codes": "tsx --env-file=.env.local scripts/backfill-codes.ts",
+    "backfill-codes:prod": "tsx scripts/backfill-codes.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",

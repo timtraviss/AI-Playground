@@ -36,8 +36,9 @@ export default function QuestionEditor({
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [generatedCode, setGeneratedCode] = useState<string | null>(null)
 
-  // Pre-fill name with generated code on mount
+  // Fetch next code on mount — shown as read-only Question ID, does NOT overwrite name
   useEffect(() => {
     const params = new URLSearchParams({ type })
     if (section) params.set('sectionId', String(section.id))
@@ -46,7 +47,7 @@ export default function QuestionEditor({
 
     fetch(apiUrl(`/api/questions/next-code?${params}`))
       .then((r) => r.json())
-      .then(({ code }: { code: string | null }) => { if (code) onNameChange(code) })
+      .then(({ code }: { code: string | null }) => { if (code) setGeneratedCode(code) })
       .catch(() => {})
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -61,6 +62,7 @@ export default function QuestionEditor({
         body: JSON.stringify({
           sectionId: section?.id,
           moduleId,
+          code: generatedCode ?? undefined,
           type,
           name: draft.name,
           questionText: draft.questionText,
@@ -68,9 +70,6 @@ export default function QuestionEditor({
         }),
       })
       if (!res.ok) throw new Error(await res.text())
-      const saved = await res.json()
-      // If server assigned a code, sync the name field
-      if (saved.code && saved.code !== draft.name) onNameChange(saved.code)
       setSaved(true)
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : String(err))
@@ -89,7 +88,7 @@ export default function QuestionEditor({
         sectionNumber: section?.number ?? '',
         sectionHeading: section?.heading ?? '',
       }),
-      `${draft.name.replace(/\s+/g, '-').toLowerCase()}.md`
+      `${(generatedCode ?? draft.name).replace(/\s+/g, '-').toLowerCase()}.md`
     )
   }
 
@@ -103,7 +102,7 @@ export default function QuestionEditor({
         sectionNumber: section?.number ?? '',
         sectionHeading: section?.heading ?? '',
       }),
-      `${draft.name.replace(/\s+/g, '-').toLowerCase()}.txt`
+      `${(generatedCode ?? draft.name).replace(/\s+/g, '-').toLowerCase()}.txt`
     )
   }
 
@@ -111,7 +110,6 @@ export default function QuestionEditor({
     SA: 'Short Answer', CL: 'Criminal Liability', MC: 'Multi-choice', PR: 'Practical',
   }
 
-  // MC stores stem+options as JSON in questionText
   let mcData: { stem: string; options: { text: string; correct: boolean }[] } | null = null
   if (type === 'MC') {
     try { mcData = JSON.parse(draft.questionText) } catch { /* render as-is */ }
@@ -124,22 +122,29 @@ export default function QuestionEditor({
         <span className="text-xs font-medium uppercase tracking-wide text-muted">
           {typeLabel[type]}{section ? ` · s${section.number}` : ''} · {draft.defaultGrade} marks
         </span>
-        <button
-          onClick={onRegenerate}
-          className="text-sm text-accent hover:underline"
-        >
+        <button onClick={onRegenerate} className="text-sm text-accent hover:underline">
           Regenerate ↺
         </button>
       </div>
 
+      {/* Question ID (read-only) */}
+      {generatedCode && (
+        <div>
+          <label className="text-xs text-muted uppercase tracking-wide">Question ID</label>
+          <p className="mt-1 px-3 py-2 bg-surface2 border border-edge rounded text-sm font-mono text-accent">
+            {generatedCode}
+          </p>
+        </div>
+      )}
+
       {/* Editable name */}
       <div>
-        <label className="text-xs text-muted uppercase tracking-wide">Question ID / name</label>
+        <label className="text-xs text-muted uppercase tracking-wide">Question name</label>
         <input
           type="text"
           value={draft.name}
           onChange={(e) => onNameChange(e.target.value)}
-          className="mt-1 w-full bg-surface2 border border-edge rounded px-3 py-2 text-sm font-medium text-ink font-mono focus:outline-none focus:ring-2 focus:ring-accent"
+          className="mt-1 w-full bg-surface2 border border-edge rounded px-3 py-2 text-sm font-medium text-ink focus:outline-none focus:ring-2 focus:ring-accent"
         />
       </div>
 
@@ -147,11 +152,11 @@ export default function QuestionEditor({
       <div>
         <label className="text-xs text-muted uppercase tracking-wide">Question</label>
         {mcData ? (
-          <div className="mt-1 p-4 bg-gray-50 rounded border text-sm space-y-3">
-            <p className="font-medium">{mcData.stem}</p>
+          <div className="mt-1 p-4 bg-surface2 rounded border border-edge text-sm space-y-3">
+            <p className="font-medium text-ink">{mcData.stem}</p>
             <ol className="space-y-1 list-[upper-alpha] list-inside">
               {mcData.options.map((opt, i) => (
-                <li key={i} className={opt.correct ? 'text-green-700 font-medium' : ''}>
+                <li key={i} className={opt.correct ? 'text-green-400 font-medium' : 'text-sub'}>
                   {opt.text}
                   {opt.correct && <span className="ml-1 text-xs">(correct)</span>}
                 </li>

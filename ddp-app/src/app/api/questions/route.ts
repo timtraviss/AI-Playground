@@ -6,6 +6,7 @@ import { z } from 'zod'
 const SaveSchema = z.object({
   sectionId: z.number().int().positive().optional(),
   moduleId: z.string().optional(),
+  code: z.string().optional(),
   type: z.enum(['SA', 'CL', 'MC', 'PR']),
   name: z.string().min(1).max(200),
   questionText: z.string().min(1),
@@ -18,13 +19,16 @@ export async function POST(req: NextRequest) {
   if (!parsed.success)
     return NextResponse.json({ error: 'Bad request', issues: parsed.error.issues }, { status: 400 })
 
-  const { sectionId, moduleId, type, name, questionText, defaultGrade, focusNote } = parsed.data
+  const { sectionId, moduleId, code: clientCode, type, name, questionText, defaultGrade, focusNote } = parsed.data
 
-  let moduleCode: string | null = null
-  if (moduleId) moduleCode = getCodeForModuleId(moduleId)
-  else if (sectionId) moduleCode = await getCodeForSectionId(sectionId)
-
-  const code = moduleCode ? await nextQuestionCode(moduleCode, type) : undefined
+  // Use client-provided code if given (avoids sequence race); otherwise generate
+  let code: string | undefined = clientCode
+  if (!code) {
+    let moduleCode: string | null = null
+    if (moduleId) moduleCode = getCodeForModuleId(moduleId)
+    else if (sectionId) moduleCode = await getCodeForSectionId(sectionId)
+    if (moduleCode) code = await nextQuestionCode(moduleCode, type)
+  }
 
   const question = await prisma.question.create({
     data: { sectionId, type, code, name, questionText, defaultGrade, focusNote },

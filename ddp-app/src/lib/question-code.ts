@@ -3,6 +3,7 @@ import path from 'path'
 import { prisma } from './db'
 
 const KNOWLEDGE_DIR = path.resolve(process.cwd(), '../server/data/knowledge')
+const QUESTION_TYPES = ['SA', 'CL', 'MC', 'PR']
 
 interface SectionRange {
   workId: string
@@ -13,6 +14,7 @@ interface SectionRange {
 interface ModuleEntry {
   id: string
   code?: string
+  topic?: string
   sections?: SectionRange[]
 }
 
@@ -24,6 +26,22 @@ function loadModules(): ModuleEntry[] {
 
 export function getCodeForModuleId(moduleId: string): string | null {
   return loadModules().find((m) => m.id === moduleId)?.code ?? null
+}
+
+export function getTopicForCode(questionCode: string): string | null {
+  for (const m of loadModules()) {
+    if (!m.code || !m.topic) continue
+    for (const type of QUESTION_TYPES) {
+      if (questionCode.startsWith(m.code + type)) return m.topic
+    }
+  }
+  return null
+}
+
+export function getAllTopics(): Array<{ code: string; topic: string }> {
+  return loadModules()
+    .filter((m): m is ModuleEntry & { code: string; topic: string } => !!m.code && !!m.topic)
+    .map(({ code, topic }) => ({ code, topic }))
 }
 
 export async function getCodeForSectionId(sectionId: number): Promise<string | null> {

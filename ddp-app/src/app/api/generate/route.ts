@@ -5,19 +5,23 @@ import { buildGenerateShortAnswerPrompt } from '@/lib/prompts/generate-sa'
 import { buildGenerateCriminalLiabilityPrompt } from '@/lib/prompts/generate-cl'
 import { buildGenerateMultiChoicePrompt } from '@/lib/prompts/generate-mc'
 import { buildGeneratePracticalPrompt } from '@/lib/prompts/generate-practical'
+import { readModule } from '@/lib/knowledge'
 import { z } from 'zod'
 
 const BodySchema = z.object({
   sectionId: z.number().int().positive(),
   type: z.enum(['SA', 'CL', 'MC', 'PR']),
   focusNote: z.string().optional(),
+  moduleId: z.string().optional(),
+  moduleName: z.string().optional(),
+  moduleSection: z.string().optional(),
 })
 
 export async function POST(req: NextRequest) {
   const parsed = BodySchema.safeParse(await req.json())
   if (!parsed.success) return new Response('Bad request', { status: 400 })
 
-  const { sectionId, type, focusNote } = parsed.data
+  const { sectionId, type, focusNote, moduleId, moduleName, moduleSection } = parsed.data
   const section = await prisma.section.findUnique({ where: { id: sectionId } })
   if (!section) return new Response('Section not found', { status: 404 })
 
@@ -26,6 +30,15 @@ export async function POST(req: NextRequest) {
     : type === 'CL' ? buildGenerateCriminalLiabilityPrompt({ section, focusNote })
     : type === 'MC' ? buildGenerateMultiChoicePrompt({ section, focusNote })
     : buildGeneratePracticalPrompt({ section, focusNote })
+
+  if (moduleId) {
+    const moduleText = readModule(moduleId, moduleSection)
+    if (moduleText) {
+      const label = moduleName ?? moduleId
+      const sectionNote = moduleSection ? ` — section: "${moduleSection}"` : ''
+      prompt.system += `\n\n---\n\n## DDP TRAINING MODULE CONTEXT (${label}${sectionNote})\n\nThe student is studying this module. Ensure the question tests knowledge that aligns with the module's learning objectives and uses its terminology.\n\n${moduleText}`
+    }
+  }
 
   const readable = new ReadableStream({
     async start(controller) {

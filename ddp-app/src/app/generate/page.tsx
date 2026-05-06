@@ -20,12 +20,35 @@ interface DraftQuestion {
   defaultGrade: number
 }
 
+interface Module { id: string; name: string }
+
 type QuestionType = 'SA' | 'CL' | 'MC' | 'PR'
 
 export default function GeneratePage() {
   const [section, setSection] = useState<SectionResult | null>(null)
   const [type, setType] = useState<QuestionType>('SA')
   const [focusNote, setFocusNote] = useState('')
+
+  const [modules, setModules] = useState<Module[]>([])
+  const [moduleId, setModuleId] = useState('')
+  const [moduleSections, setModuleSections] = useState<string[]>([])
+  const [moduleSection, setModuleSection] = useState('')
+
+  useEffect(() => {
+    fetch(apiUrl('/api/modules'))
+      .then((r) => r.json())
+      .then(setModules)
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    if (!moduleId) { setModuleSections([]); setModuleSection(''); return }
+    fetch(apiUrl(`/api/modules/${moduleId}/sections`))
+      .then((r) => r.json())
+      .then(setModuleSections)
+      .catch(() => setModuleSections([]))
+    setModuleSection('')
+  }, [moduleId])
 
   // Pre-load section if ?sectionId= is in the URL (linked from dashboard search)
   useEffect(() => {
@@ -53,7 +76,14 @@ export default function GeneratePage() {
       const res = await fetch(apiUrl('/api/generate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sectionId: section.id, type, focusNote: focusNote || undefined }),
+        body: JSON.stringify({
+          sectionId: section.id,
+          type,
+          focusNote: focusNote || undefined,
+          moduleId: moduleId || undefined,
+          moduleName: moduleId ? modules.find((m) => m.id === moduleId)?.name : undefined,
+          moduleSection: moduleSection || undefined,
+        }),
       })
 
       if (!res.ok || !res.body) {
@@ -174,6 +204,44 @@ export default function GeneratePage() {
             className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent resize-none"
           />
         </div>
+
+        {/* Module (optional) */}
+        {modules.length > 0 && (
+          <div>
+            <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
+              DDP module <span className="font-normal text-gray-400">(optional)</span>
+            </label>
+            <select
+              value={moduleId}
+              onChange={(e) => setModuleId(e.target.value)}
+              className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+            >
+              <option value="">— No module —</option>
+              {modules.map((m) => (
+                <option key={m.id} value={m.id}>{m.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Module section (optional, only when a module is selected) */}
+        {moduleId && moduleSections.length > 0 && (
+          <div>
+            <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
+              Module section <span className="font-normal text-gray-400">(optional)</span>
+            </label>
+            <select
+              value={moduleSection}
+              onChange={(e) => setModuleSection(e.target.value)}
+              className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+            >
+              <option value="">— Entire module —</option>
+              {moduleSections.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Generate button */}
         <button

@@ -24,7 +24,7 @@ export default async function Home() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-8">
       <h1 className="text-3xl font-bold mb-1 text-ink">DDP Question Builder & Marker</h1>
-      <p className="text-muted mb-8 text-sm">NZ Police Detective Development Programme</p>
+      <p className="text-muted mb-8 text-sm">Detective Development Programme</p>
 
       <div className="grid grid-cols-4 gap-4 mb-4">
         <Stat label="Sections loaded" value={sectionCount} />

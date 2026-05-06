@@ -48,7 +48,7 @@ export default async function LibraryPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm truncate text-ink">{q.name}</p>
                 <p className="text-xs text-muted mt-0.5">
-                  s{q.section.number} — {q.section.heading} · {q.defaultGrade} marks
+                  {q.section ? `s${q.section.number} — ${q.section.heading} · ` : ''}{q.defaultGrade} marks
                 </p>
               </div>
               <span className="text-xs text-muted whitespace-nowrap">

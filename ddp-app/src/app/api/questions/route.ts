@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db'
 import { z } from 'zod'
 
 const SaveSchema = z.object({
-  sectionId: z.number().int().positive(),
+  sectionId: z.number().int().positive().optional(),
   type: z.enum(['SA', 'CL', 'MC', 'PR']),
   name: z.string().min(1).max(200),
   questionText: z.string().min(1),

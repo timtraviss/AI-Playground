@@ -31,9 +31,9 @@ export async function POST(req: NextRequest) {
 
   const promptInput = {
     questionText: question.questionText,
-    sectionFullText: question.section.fullText,
-    sectionNumber: question.section.number,
-    sectionHeading: question.section.heading,
+    sectionFullText: question.section?.fullText ?? '',
+    sectionNumber: question.section?.number ?? '',
+    sectionHeading: question.section?.heading ?? '',
     answerText,
   }
 

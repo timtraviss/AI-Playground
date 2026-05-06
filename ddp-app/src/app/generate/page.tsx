@@ -316,6 +316,7 @@ export default function GeneratePage() {
           <QuestionEditor
             draft={draft}
             section={sourceType === 'legislation' ? section : null}
+            moduleId={sourceType === 'module' ? moduleId : undefined}
             type={type}
             onNameChange={(name) => setDraft((d) => d ? { ...d, name } : d)}
             onRegenerate={() => { setDraft(null); generate() }}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toMarkdown, toPlainText, downloadText } from '@/lib/text-export'
 import { apiUrl } from '@/lib/api'
 
@@ -19,6 +19,7 @@ interface DraftQuestion {
 interface QuestionEditorProps {
   draft: DraftQuestion
   section: SectionRef | null
+  moduleId?: string
   type: 'SA' | 'CL' | 'MC' | 'PR'
   onNameChange: (name: string) => void
   onRegenerate: () => void
@@ -27,6 +28,7 @@ interface QuestionEditorProps {
 export default function QuestionEditor({
   draft,
   section,
+  moduleId,
   type,
   onNameChange,
   onRegenerate,
@@ -34,6 +36,20 @@ export default function QuestionEditor({
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+
+  // Pre-fill name with generated code on mount
+  useEffect(() => {
+    const params = new URLSearchParams({ type })
+    if (section) params.set('sectionId', String(section.id))
+    else if (moduleId) params.set('moduleId', moduleId)
+    else return
+
+    fetch(apiUrl(`/api/questions/next-code?${params}`))
+      .then((r) => r.json())
+      .then(({ code }: { code: string | null }) => { if (code) onNameChange(code) })
+      .catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function save() {
     setSaving(true)
@@ -44,6 +60,7 @@ export default function QuestionEditor({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sectionId: section?.id,
+          moduleId,
           type,
           name: draft.name,
           questionText: draft.questionText,
@@ -51,6 +68,9 @@ export default function QuestionEditor({
         }),
       })
       if (!res.ok) throw new Error(await res.text())
+      const saved = await res.json()
+      // If server assigned a code, sync the name field
+      if (saved.code && saved.code !== draft.name) onNameChange(saved.code)
       setSaved(true)
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : String(err))
@@ -114,12 +134,12 @@ export default function QuestionEditor({
 
       {/* Editable name */}
       <div>
-        <label className="text-xs text-muted uppercase tracking-wide">Question name</label>
+        <label className="text-xs text-muted uppercase tracking-wide">Question ID / name</label>
         <input
           type="text"
           value={draft.name}
           onChange={(e) => onNameChange(e.target.value)}
-          className="mt-1 w-full bg-surface2 border border-edge rounded px-3 py-2 text-sm font-medium text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+          className="mt-1 w-full bg-surface2 border border-edge rounded px-3 py-2 text-sm font-medium text-ink font-mono focus:outline-none focus:ring-2 focus:ring-accent"
         />
       </div>
 

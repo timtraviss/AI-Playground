@@ -2,41 +2,60 @@
   {
     "id": "arson_v16",
     "name": "Arson v16",
+    "code": "AR",
+    "sections": [{ "workId": "public-1961-43", "from": 267, "to": 269 }],
     "updatedAt": "2026-04-20T20:04:01.139Z"
   },
   {
     "id": "evidence_v4",
     "name": "Evidence v4",
+    "code": "EV",
+    "sections": [],
     "updatedAt": "2026-04-20T21:36:47.441Z"
   },
   {
     "id": "fraud_v8",
     "name": "Fraud v8",
-    "updatedAt": "2026-04-20T21:37:11.801Z"
+    "code": "FR",
+    "sections": [{ "workId": "public-1961-43", "from": 240, "to": 265 }],
+    "updatedAt": "2026-04-20T21:37:11.741Z"
   },
   {
     "id": "robbery_blackmail_v5",
     "name": "Robbery & Blackmail v5",
-    "updatedAt": "2026-04-24T04:19:47.851Z"
+    "code": "RB",
+    "sections": [{ "workId": "public-1961-43", "from": 234, "to": 239 }],
+    "updatedAt": "2026-04-24T04:19:47.841Z"
   },
   {
     "id": "associations_v9",
     "name": "Associations v9",
-    "updatedAt": "2026-04-24T04:20:12.482Z"
+    "code": "AO",
+    "sections": [
+      { "workId": "public-1961-43", "from": 66, "to": 72 },
+      { "workId": "public-1961-43", "from": 108, "to": 108 }
+    ],
+    "updatedAt": "2026-04-24T04:20:12.542Z"
   },
   {
     "id": "serious_assaults_firearms_v11",
     "name": "Serious Assaults & Firearms v11",
-    "updatedAt": "2026-04-24T04:20:37.328Z"
+    "code": "SF",
+    "sections": [{ "workId": "public-1961-43", "from": 188, "to": 204 }],
+    "updatedAt": "2026-04-24T04:20:37.542Z"
   },
   {
     "id": "kidnapping_and_trafficking_v14",
     "name": "Kidnapping and Trafficking v14",
+    "code": "KA",
+    "sections": [{ "workId": "public-1961-43", "from": 208, "to": 210 }],
     "updatedAt": "2026-04-24T04:22:23.015Z"
   },
   {
     "id": "basic_legal_concepts_v16",
     "name": "Basic Legal Concepts v16",
+    "code": "BL",
+    "sections": [],
     "updatedAt": "2026-04-24T04:23:56.456Z"
   }
 ]

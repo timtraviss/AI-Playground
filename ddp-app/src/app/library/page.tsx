@@ -46,7 +46,11 @@ export default async function LibraryPage() {
                 {TYPE_LABEL[q.type] ?? q.type}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate text-ink">{q.name}</p>
+                <p className="font-medium text-sm truncate text-ink font-mono">
+                  {q.code && q.code !== q.name
+                    ? <><span className="text-accent">{q.code}</span> — {q.name}</>
+                    : q.name}
+                </p>
                 <p className="text-xs text-muted mt-0.5">
                   {q.section ? `s${q.section.number} — ${q.section.heading} · ` : ''}{q.defaultGrade} marks
                 </p>

@@ -4,7 +4,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 import dotenv from 'dotenv';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
 import { requestLogger, errorLogger } from './middleware/logger.js';
 import { logsRouter } from './routes/logs.js';
 import { initDb, getPool } from './lib/db.js';
@@ -146,11 +146,14 @@ app.get('/my-usage/', (req, res) => {
 });
 
 // DDP Question Builder — proxy to Next.js app on port 3001
+// fixRequestBody is required because express.json() consumes the POST body before
+// the proxy can forward it — without this, /api/generate receives an empty body.
 app.use(createProxyMiddleware({
   target: 'http://localhost:3001',
   changeOrigin: true,
   pathFilter: '/ddp',
   on: {
+    proxyReq: fixRequestBody,
     error: (_err, _req, res) => {
       res.status(502).send(
         'DDP app is not running. Start it with: npm --prefix ddp-app run dev -- --port 3001'

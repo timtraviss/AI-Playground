@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { apiUrl } from '@/lib/api'
 
 interface SectionResult {
@@ -42,13 +43,18 @@ export default function SectionSearch() {
       {results.length > 0 && (
         <ul className="mt-3 divide-y divide-edge border border-edge rounded-lg bg-surface">
           {results.map((s) => (
-            <li key={s.id} className="px-4 py-3">
-              <span className="font-mono text-accent text-sm">s{s.number}</span>
-              <span className="mx-2 text-edge">—</span>
-              <span className="text-sm font-medium text-sub">{s.heading}</span>
-              {s.partHeading && (
-                <span className="ml-2 text-xs text-muted">{s.partHeading}</span>
-              )}
+            <li key={s.id}>
+              <Link
+                href={`/generate?sectionId=${s.id}`}
+                className="flex items-baseline gap-2 px-4 py-3 hover:bg-accent/10 transition-colors"
+              >
+                <span className="font-mono text-accent text-sm shrink-0">s{s.number}</span>
+                <span className="text-edge">—</span>
+                <span className="text-sm font-medium text-sub">{s.heading}</span>
+                {s.partHeading && (
+                  <span className="ml-1 text-xs text-muted">{s.partHeading}</span>
+                )}
+              </Link>
             </li>
           ))}
         </ul>

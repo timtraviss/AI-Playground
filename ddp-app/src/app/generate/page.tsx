@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import SectionPicker from '@/components/SectionPicker'
 import QuestionEditor from '@/components/QuestionEditor'
@@ -26,6 +26,16 @@ export default function GeneratePage() {
   const [section, setSection] = useState<SectionResult | null>(null)
   const [type, setType] = useState<QuestionType>('SA')
   const [focusNote, setFocusNote] = useState('')
+
+  // Pre-load section if ?sectionId= is in the URL (linked from dashboard search)
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('sectionId')
+    if (!id) return
+    fetch(apiUrl(`/api/sections?id=${id}`))
+      .then((r) => r.ok ? r.json() : null)
+      .then((s) => { if (s) setSection(s) })
+      .catch(() => {})
+  }, [])
 
   const [streaming, setStreaming] = useState(false)
   const [streamText, setStreamText] = useState('')

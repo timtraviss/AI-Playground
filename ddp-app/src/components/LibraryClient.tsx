@@ -461,14 +461,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 )}
                 {panelQuestion.code && <span className="font-mono text-sm text-accent">{panelQuestion.code}</span>}
               </div>
-              <div className="flex items-center gap-3">
-                {!editMode && (
-                  <button onClick={startEdit} className="text-xs font-medium text-accent hover:opacity-80 transition-opacity border border-accent/40 rounded px-2.5 py-1">
-                    Edit
-                  </button>
-                )}
-                <button onClick={() => setPanelId(null)} className="text-muted hover:text-ink transition-colors text-lg leading-none">✕</button>
-              </div>
+              <button onClick={() => setPanelId(null)} className="text-muted hover:text-ink transition-colors text-lg leading-none">✕</button>
             </div>
 
             {/* Body */}
@@ -578,6 +571,12 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 </>
               ) : (
                 <>
+                  <button
+                    onClick={startEdit}
+                    className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors"
+                  >
+                    Edit
+                  </button>
                   <button
                     onClick={() => downloadAs(toBulkMarkdown([panelQuestion]), `${panelQuestion.code ?? panelQuestion.name}.md`, 'text/markdown')}
                     className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"

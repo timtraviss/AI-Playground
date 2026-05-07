@@ -463,7 +463,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
               </div>
               <div className="flex items-center gap-3">
                 {!editMode && (
-                  <button onClick={startEdit} className="text-xs text-muted hover:text-ink transition-colors border border-edge rounded px-2 py-1">
+                  <button onClick={startEdit} className="text-xs font-medium text-accent hover:opacity-80 transition-opacity border border-accent/40 rounded px-2.5 py-1">
                     Edit
                   </button>
                 )}
@@ -530,22 +530,20 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                   {/* Tag toggle */}
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted">Tag:</span>
-                    <div className="flex rounded-lg border border-edge overflow-hidden text-xs font-medium">
-                      {(['exam', 'practice'] as const).map((t) => (
-                        <button
-                          key={t}
-                          disabled={tagging}
-                          onClick={() => handleTagToggle(t)}
-                          className={`px-3 py-1 capitalize transition-colors ${
-                            panelQuestion.tag === t
-                              ? TAG_COLOR[t]
-                              : 'text-muted hover:text-ink'
-                          }`}
-                        >
-                          {t}
-                        </button>
-                      ))}
-                    </div>
+                    {(['exam', 'practice'] as const).map((t) => (
+                      <button
+                        key={t}
+                        disabled={tagging}
+                        onClick={() => handleTagToggle(t)}
+                        className={`text-xs font-medium px-3 py-1 rounded-full capitalize transition-colors ${
+                          panelQuestion.tag === t
+                            ? TAG_COLOR[t]
+                            : 'bg-surface2 text-muted hover:text-ink'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
                   </div>
 
                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
@@ -640,13 +638,13 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 </div>
                 <div className="flex items-center gap-3">
                   <label className="text-sm font-medium text-sub whitespace-nowrap w-28">Tag all as:</label>
-                  <div className="flex rounded-lg border border-edge overflow-hidden text-xs font-medium">
+                  <div className="flex items-center gap-2">
                     {(['exam', 'practice'] as const).map((t) => (
                       <button
                         key={t}
                         onClick={() => setImportTag(t)}
-                        className={`px-4 py-1.5 capitalize transition-colors ${
-                          importTag === t ? TAG_COLOR[t] : 'text-muted hover:text-ink'
+                        className={`text-xs font-medium px-3 py-1 rounded-full capitalize transition-colors ${
+                          importTag === t ? TAG_COLOR[t] : 'bg-surface text-muted hover:text-ink'
                         }`}
                       >
                         {t}

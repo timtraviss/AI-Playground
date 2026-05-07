@@ -69,6 +69,11 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   const [importOpen, setImportOpen] = useState(false)
   const [importing, setImporting] = useState(false)
 
+  // Sync local state when server refreshes props after router.refresh()
+  useEffect(() => {
+    setQuestions(initialQuestions)
+  }, [initialQuestions])
+
   const types = [...new Set(questions.map((q) => q.type))].sort()
   const topics = [...new Set(questions.map((q) => q.topic).filter((t): t is string => !!t))].sort()
 
@@ -87,7 +92,6 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     }
   }, [someChecked, allChecked])
 
-  // Reset delete confirm when panel changes
   useEffect(() => { setDeleteConfirm(false) }, [panelId])
 
   function toggleAll() {
@@ -197,123 +201,13 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   }
 
   function closeImport() {
+    if (importing) return
     setImportOpen(false)
     setImportRows([])
     setImportModuleId('')
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
-
-  if (questions.length === 0 && !importOpen) {
-    return (
-      <>
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors"
-          >
-            Import XML
-          </button>
-          <input ref={fileInputRef} type="file" accept=".xml" className="hidden" onChange={handleFileChange} />
-        </div>
-        <div className="text-center py-16 text-muted">
-          <p>No questions saved yet.</p>
-          <Link href="/generate" className="mt-3 inline-block text-accent hover:underline text-sm">
-            Generate your first question →
-          </Link>
-        </div>
-        {importOpen && <ImportModal />}
-      </>
-    )
-  }
-
-  function ImportModal() {
-    return (
-      <>
-        <div className="fixed inset-0 bg-black/60 z-50" onClick={closeImport} />
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-          <div className="bg-surface border border-edge rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl pointer-events-auto">
-            {/* Modal header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-edge shrink-0">
-              <div>
-                <h2 className="text-base font-bold text-ink">Import questions</h2>
-                <p className="text-xs text-muted mt-0.5">{importRows.length} question{importRows.length !== 1 ? 's' : ''} found in file</p>
-              </div>
-              <button onClick={closeImport} className="text-muted hover:text-ink transition-colors text-lg leading-none">✕</button>
-            </div>
-
-            {/* Module assignment */}
-            <div className="px-5 py-3 border-b border-edge bg-surface2 shrink-0">
-              <div className="flex items-center gap-3">
-                <label className="text-sm font-medium text-sub whitespace-nowrap">Assign module:</label>
-                <select
-                  value={importModuleId}
-                  onChange={(e) => setImportModuleId(e.target.value)}
-                  className="flex-1 bg-surface border border-edge rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
-                >
-                  <option value="">No module (no code assigned)</option>
-                  {modules.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.name}{m.code ? ` (${m.code})` : ''}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Question table */}
-            <div className="flex-1 overflow-y-auto">
-              {importRows.length === 0 ? (
-                <p className="text-center py-12 text-muted text-sm">No essay questions found in file.</p>
-              ) : (
-                <table className="w-full text-sm">
-                  <thead className="sticky top-0 bg-surface2 border-b border-edge">
-                    <tr>
-                      <th className="text-left px-4 py-2.5 text-xs font-medium text-muted uppercase tracking-wide">Name</th>
-                      <th className="text-left px-4 py-2.5 text-xs font-medium text-muted uppercase tracking-wide w-36">Type</th>
-                      <th className="text-left px-4 py-2.5 text-xs font-medium text-muted uppercase tracking-wide w-20">Grade</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {importRows.map((row, i) => (
-                      <tr key={i} className="border-b border-edge last:border-0 hover:bg-surface2">
-                        <td className="px-4 py-2.5 text-ink font-medium">{row.name}</td>
-                        <td className="px-4 py-2.5">
-                          <select
-                            value={row.type}
-                            onChange={(e) => setRowType(i, e.target.value as 'CL' | 'PR')}
-                            className="bg-surface border border-edge rounded px-2 py-1 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-accent"
-                          >
-                            <option value="CL">Criminal Liability</option>
-                            <option value="PR">Practical</option>
-                          </select>
-                        </td>
-                        <td className="px-4 py-2.5 text-muted">{row.defaultGrade}m</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-
-            {/* Modal footer */}
-            <div className="px-5 py-4 border-t border-edge shrink-0 flex items-center justify-between gap-3">
-              <button onClick={closeImport} className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors">
-                Cancel
-              </button>
-              <button
-                onClick={doImport}
-                disabled={importing || importRows.length === 0}
-                className="px-4 py-1.5 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors"
-              >
-                {importing ? 'Importing…' : `Import ${importRows.length} question${importRows.length !== 1 ? 's' : ''}`}
-              </button>
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  }
 
   return (
     <>
@@ -375,8 +269,15 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
         </div>
       )}
 
-      {/* Table */}
-      {filtered.length === 0 ? (
+      {/* Empty state */}
+      {questions.length === 0 ? (
+        <div className="text-center py-16 text-muted">
+          <p>No questions saved yet.</p>
+          <Link href="/generate" className="mt-3 inline-block text-accent hover:underline text-sm">
+            Generate your first question →
+          </Link>
+        </div>
+      ) : filtered.length === 0 ? (
         <p className="text-center py-12 text-muted text-sm">No questions match the current filters.</p>
       ) : (
         <div className="border border-edge rounded-lg bg-surface overflow-hidden">
@@ -540,8 +441,97 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
         )}
       </div>
 
-      {/* Import modal */}
-      {importOpen && <ImportModal />}
+      {/* Import modal — inlined JSX (not a nested function component) so React
+          doesn't remount it on every re-render, preserving the importing state */}
+      {importOpen && (
+        <>
+          <div className="fixed inset-0 bg-black/60 z-50" onClick={closeImport} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+            <div className="bg-surface border border-edge rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl pointer-events-auto">
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-edge shrink-0">
+                <div>
+                  <h2 className="text-base font-bold text-ink">Import questions</h2>
+                  <p className="text-xs text-muted mt-0.5">{importRows.length} question{importRows.length !== 1 ? 's' : ''} found in file</p>
+                </div>
+                <button onClick={closeImport} className="text-muted hover:text-ink transition-colors text-lg leading-none">✕</button>
+              </div>
+
+              {/* Module assignment */}
+              <div className="px-5 py-3 border-b border-edge bg-surface2 shrink-0">
+                <div className="flex items-center gap-3">
+                  <label className="text-sm font-medium text-sub whitespace-nowrap">Assign module:</label>
+                  <select
+                    value={importModuleId}
+                    onChange={(e) => setImportModuleId(e.target.value)}
+                    className="flex-1 bg-surface border border-edge rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                  >
+                    <option value="">No module (no code assigned)</option>
+                    {modules.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}{m.code ? ` (${m.code})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Question table */}
+              <div className="flex-1 overflow-y-auto">
+                {importRows.length === 0 ? (
+                  <p className="text-center py-12 text-muted text-sm">No essay questions found in file.</p>
+                ) : (
+                  <table className="w-full text-sm">
+                    <thead className="sticky top-0 bg-surface2 border-b border-edge">
+                      <tr>
+                        <th className="text-left px-4 py-2.5 text-xs font-medium text-muted uppercase tracking-wide">Name</th>
+                        <th className="text-left px-4 py-2.5 text-xs font-medium text-muted uppercase tracking-wide w-36">Type</th>
+                        <th className="text-left px-4 py-2.5 text-xs font-medium text-muted uppercase tracking-wide w-20">Grade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {importRows.map((row, i) => (
+                        <tr key={i} className="border-b border-edge last:border-0 hover:bg-surface2">
+                          <td className="px-4 py-2.5 text-ink font-medium">{row.name}</td>
+                          <td className="px-4 py-2.5">
+                            <select
+                              value={row.type}
+                              onChange={(e) => setRowType(i, e.target.value as 'CL' | 'PR')}
+                              className="bg-surface border border-edge rounded px-2 py-1 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+                            >
+                              <option value="CL">Criminal Liability</option>
+                              <option value="PR">Practical</option>
+                            </select>
+                          </td>
+                          <td className="px-4 py-2.5 text-muted">{row.defaultGrade}m</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="px-5 py-4 border-t border-edge shrink-0 flex items-center justify-between gap-3">
+                <button
+                  onClick={closeImport}
+                  disabled={importing}
+                  className="px-3 py-1.5 border border-edge hover:bg-surface2 disabled:opacity-40 text-sm text-sub rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={doImport}
+                  disabled={importing || importRows.length === 0}
+                  className="px-4 py-1.5 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors"
+                >
+                  {importing ? 'Importing…' : `Import ${importRows.length} question${importRows.length !== 1 ? 's' : ''}`}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   )
 }

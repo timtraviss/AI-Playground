@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toBulkMarkdown, toTotaraXml, downloadAs, type ExportQuestion } from '@/lib/export'
+import { apiUrl } from '@/lib/api'
 
 const TYPE_LABEL: Record<string, string> = {
   SA: 'Short Answer',
@@ -18,8 +20,16 @@ const TYPE_COLOR: Record<string, string> = {
   PR: 'bg-amber-500/20 text-amber-300',
 }
 
+interface ImportRow {
+  name: string
+  questionText: string
+  defaultGrade: number
+  type: 'CL' | 'PR'
+}
+
 interface LibraryClientProps {
   questions: ExportQuestion[]
+  modules: Array<{ id: string; name: string; code: string | null }>
 }
 
 function MCDisplay({ questionText }: { questionText: string }) {
@@ -41,12 +51,23 @@ function MCDisplay({ questionText }: { questionText: string }) {
   )
 }
 
-export default function LibraryClient({ questions }: LibraryClientProps) {
+export default function LibraryClient({ questions: initialQuestions, modules }: LibraryClientProps) {
+  const router = useRouter()
+  const [questions, setQuestions] = useState(initialQuestions)
   const [typeFilter, setTypeFilter] = useState('')
   const [topicFilter, setTopicFilter] = useState('')
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [panelId, setPanelId] = useState<number | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const selectAllRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Import state
+  const [importRows, setImportRows] = useState<ImportRow[]>([])
+  const [importModuleId, setImportModuleId] = useState('')
+  const [importOpen, setImportOpen] = useState(false)
+  const [importing, setImporting] = useState(false)
 
   const types = [...new Set(questions.map((q) => q.type))].sort()
   const topics = [...new Set(questions.map((q) => q.topic).filter((t): t is string => !!t))].sort()
@@ -65,6 +86,9 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
       selectAllRef.current.indeterminate = someChecked && !allChecked
     }
   }, [someChecked, allChecked])
+
+  // Reset delete confirm when panel changes
+  useEffect(() => { setDeleteConfirm(false) }, [panelId])
 
   function toggleAll() {
     setSelected((s) => {
@@ -99,20 +123,201 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
     return new Date(iso).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: '2-digit' })
   }
 
-  if (questions.length === 0) {
+  // ── Delete ──────────────────────────────────────────────────────────────────
+
+  async function handleDelete() {
+    if (!panelQuestion) return
+    if (!deleteConfirm) { setDeleteConfirm(true); return }
+
+    setDeleting(true)
+    try {
+      await fetch(apiUrl(`/api/questions/${panelQuestion.id}`), { method: 'DELETE' })
+      setQuestions((prev) => prev.filter((q) => q.id !== panelQuestion.id))
+      setSelected((prev) => { const n = new Set(prev); n.delete(panelQuestion.id); return n })
+      setPanelId(null)
+    } finally {
+      setDeleting(false)
+      setDeleteConfirm(false)
+    }
+  }
+
+  // ── XML Import ──────────────────────────────────────────────────────────────
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(text, 'text/xml')
+      const rows: ImportRow[] = []
+      doc.querySelectorAll('question[type="essay"]').forEach((q) => {
+        const name = q.querySelector('name text')?.textContent?.trim() ?? ''
+        const questionText = q.querySelector('questiontext text')?.textContent?.trim() ?? ''
+        const grade = parseFloat(q.querySelector('defaultgrade')?.textContent ?? '0')
+        if (!name || !questionText) return
+        rows.push({ name, questionText, defaultGrade: grade, type: 'CL' })
+      })
+      setImportRows(rows)
+      setImportOpen(true)
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
+
+  function setRowType(i: number, type: 'CL' | 'PR') {
+    setImportRows((prev) => prev.map((r, idx) => idx === i ? { ...r, type } : r))
+  }
+
+  async function doImport() {
+    setImporting(true)
+    try {
+      const body = importRows.map((r) => ({
+        name: r.name,
+        questionText: r.questionText,
+        type: r.type,
+        defaultGrade: r.defaultGrade,
+        moduleId: importModuleId || undefined,
+      }))
+      const res = await fetch(apiUrl('/api/questions/import'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (res.ok) {
+        setImportOpen(false)
+        setImportRows([])
+        setImportModuleId('')
+        router.refresh()
+      }
+    } finally {
+      setImporting(false)
+    }
+  }
+
+  function closeImport() {
+    setImportOpen(false)
+    setImportRows([])
+    setImportModuleId('')
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+
+  if (questions.length === 0 && !importOpen) {
     return (
-      <div className="text-center py-16 text-muted">
-        <p>No questions saved yet.</p>
-        <Link href="/generate" className="mt-3 inline-block text-accent hover:underline text-sm">
-          Generate your first question →
-        </Link>
-      </div>
+      <>
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors"
+          >
+            Import XML
+          </button>
+          <input ref={fileInputRef} type="file" accept=".xml" className="hidden" onChange={handleFileChange} />
+        </div>
+        <div className="text-center py-16 text-muted">
+          <p>No questions saved yet.</p>
+          <Link href="/generate" className="mt-3 inline-block text-accent hover:underline text-sm">
+            Generate your first question →
+          </Link>
+        </div>
+        {importOpen && <ImportModal />}
+      </>
+    )
+  }
+
+  function ImportModal() {
+    return (
+      <>
+        <div className="fixed inset-0 bg-black/60 z-50" onClick={closeImport} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <div className="bg-surface border border-edge rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl pointer-events-auto">
+            {/* Modal header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-edge shrink-0">
+              <div>
+                <h2 className="text-base font-bold text-ink">Import questions</h2>
+                <p className="text-xs text-muted mt-0.5">{importRows.length} question{importRows.length !== 1 ? 's' : ''} found in file</p>
+              </div>
+              <button onClick={closeImport} className="text-muted hover:text-ink transition-colors text-lg leading-none">✕</button>
+            </div>
+
+            {/* Module assignment */}
+            <div className="px-5 py-3 border-b border-edge bg-surface2 shrink-0">
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-medium text-sub whitespace-nowrap">Assign module:</label>
+                <select
+                  value={importModuleId}
+                  onChange={(e) => setImportModuleId(e.target.value)}
+                  className="flex-1 bg-surface border border-edge rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                >
+                  <option value="">No module (no code assigned)</option>
+                  {modules.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}{m.code ? ` (${m.code})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Question table */}
+            <div className="flex-1 overflow-y-auto">
+              {importRows.length === 0 ? (
+                <p className="text-center py-12 text-muted text-sm">No essay questions found in file.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 bg-surface2 border-b border-edge">
+                    <tr>
+                      <th className="text-left px-4 py-2.5 text-xs font-medium text-muted uppercase tracking-wide">Name</th>
+                      <th className="text-left px-4 py-2.5 text-xs font-medium text-muted uppercase tracking-wide w-36">Type</th>
+                      <th className="text-left px-4 py-2.5 text-xs font-medium text-muted uppercase tracking-wide w-20">Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {importRows.map((row, i) => (
+                      <tr key={i} className="border-b border-edge last:border-0 hover:bg-surface2">
+                        <td className="px-4 py-2.5 text-ink font-medium">{row.name}</td>
+                        <td className="px-4 py-2.5">
+                          <select
+                            value={row.type}
+                            onChange={(e) => setRowType(i, e.target.value as 'CL' | 'PR')}
+                            className="bg-surface border border-edge rounded px-2 py-1 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+                          >
+                            <option value="CL">Criminal Liability</option>
+                            <option value="PR">Practical</option>
+                          </select>
+                        </td>
+                        <td className="px-4 py-2.5 text-muted">{row.defaultGrade}m</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* Modal footer */}
+            <div className="px-5 py-4 border-t border-edge shrink-0 flex items-center justify-between gap-3">
+              <button onClick={closeImport} className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors">
+                Cancel
+              </button>
+              <button
+                onClick={doImport}
+                disabled={importing || importRows.length === 0}
+                className="px-4 py-1.5 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors"
+              >
+                {importing ? 'Importing…' : `Import ${importRows.length} question${importRows.length !== 1 ? 's' : ''}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
     )
   }
 
   return (
     <>
-      {/* Filter bar */}
+      {/* Filter bar + Import button */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <select
           value={typeFilter}
@@ -130,10 +335,19 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
           <option value="">All topics</option>
           {topics.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
-        <span className="text-sm text-muted ml-auto">
+        <span className="text-sm text-muted">
           {filtered.length} question{filtered.length !== 1 ? 's' : ''}
           {(typeFilter || topicFilter) ? ' (filtered)' : ''}
         </span>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"
+          >
+            Import XML
+          </button>
+          <input ref={fileInputRef} type="file" accept=".xml" className="hidden" onChange={handleFileChange} />
+        </div>
       </div>
 
       {/* Export toolbar */}
@@ -192,7 +406,6 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
               className="grid items-center px-4 py-3 border-b border-edge last:border-0 hover:bg-surface2 cursor-pointer transition-colors"
               style={{ gridTemplateColumns: '40px 1fr' }}
             >
-              {/* Mobile: checkbox + full content in two columns */}
               <input
                 type="checkbox"
                 checked={selected.has(q.id)}
@@ -201,7 +414,6 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
                 className="rounded accent-accent cursor-pointer"
               />
 
-              {/* Desktop: full grid row inside */}
               <div className="hidden lg:grid items-center min-w-0 gap-x-3"
                 style={{ gridTemplateColumns: '130px 90px 160px 1fr 180px 80px' }}>
                 <span className={`text-xs font-medium px-2 py-0.5 rounded w-fit ${TYPE_COLOR[q.type] ?? 'bg-surface2 text-sub'}`}>
@@ -216,7 +428,6 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
                 <span className="text-xs text-muted whitespace-nowrap">{formatDate(q.createdAt)}</span>
               </div>
 
-              {/* Mobile: stacked layout */}
               <div className="lg:hidden flex flex-col gap-0.5 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded ${TYPE_COLOR[q.type] ?? 'bg-surface2 text-sub'}`}>
@@ -246,7 +457,6 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
       <div className={`fixed right-0 top-0 h-full w-full max-w-lg bg-surface border-l border-edge z-50 flex flex-col overflow-hidden transition-transform duration-200 ${panelQuestion ? 'translate-x-0' : 'translate-x-full'}`}>
         {panelQuestion && (
           <>
-            {/* Panel header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-edge shrink-0">
               <div className="flex items-center gap-3">
                 <span className={`text-xs font-medium px-2 py-0.5 rounded ${TYPE_COLOR[panelQuestion.type] ?? 'bg-surface2 text-sub'}`}>
@@ -264,11 +474,9 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
               </button>
             </div>
 
-            {/* Panel body */}
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
               <h2 className="text-base font-bold text-ink">{panelQuestion.name}</h2>
 
-              {/* Meta pills */}
               <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
                 {panelQuestion.topic && <span>{panelQuestion.topic}</span>}
                 {panelQuestion.section && (
@@ -278,7 +486,6 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
                 <span>{formatDate(panelQuestion.createdAt)}</span>
               </div>
 
-              {/* Question text */}
               <div className="pt-2">
                 <p className="text-xs text-muted uppercase tracking-wide mb-2">Question</p>
                 {panelQuestion.type === 'MC' ? (
@@ -292,7 +499,6 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
               </div>
             </div>
 
-            {/* Panel footer */}
             <div className="px-5 py-4 border-t border-edge shrink-0 flex gap-2">
               <button
                 onClick={() => {
@@ -318,10 +524,24 @@ export default function LibraryClient({ questions }: LibraryClientProps) {
               >
                 Download XML
               </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className={`ml-auto px-3 py-1.5 text-sm rounded-lg transition-colors font-medium ${
+                  deleteConfirm
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'border border-edge hover:bg-red-900/30 hover:border-red-700 text-muted hover:text-red-400'
+                }`}
+              >
+                {deleting ? 'Deleting…' : deleteConfirm ? 'Confirm delete' : 'Delete'}
+              </button>
             </div>
           </>
         )}
       </div>
+
+      {/* Import modal */}
+      {importOpen && <ImportModal />}
     </>
   )
 }

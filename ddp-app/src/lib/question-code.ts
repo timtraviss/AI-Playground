@@ -13,6 +13,7 @@ interface SectionRange {
 
 interface ModuleEntry {
   id: string
+  name?: string
   code?: string
   topic?: string
   sections?: SectionRange[]
@@ -42,6 +43,10 @@ export function getAllTopics(): Array<{ code: string; topic: string }> {
   return loadModules()
     .filter((m): m is ModuleEntry & { code: string; topic: string } => !!m.code && !!m.topic)
     .map(({ code, topic }) => ({ code, topic }))
+}
+
+export function getAllModules(): Array<{ id: string; name: string; code: string | null }> {
+  return loadModules().map((m) => ({ id: m.id, name: m.name ?? m.id, code: m.code ?? null }))
 }
 
 export async function getCodeForSectionId(sectionId: number): Promise<string | null> {

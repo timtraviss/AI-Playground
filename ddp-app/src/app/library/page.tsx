@@ -2,23 +2,26 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
-import { getTopicForCode } from '@/lib/question-code'
+import { getTopicForCode, getAllModules } from '@/lib/question-code'
 import LibraryClient from '@/components/LibraryClient'
 
 export default async function LibraryPage() {
-  const raw = await prisma.question.findMany({
-    select: {
-      id: true,
-      code: true,
-      name: true,
-      type: true,
-      questionText: true,
-      defaultGrade: true,
-      createdAt: true,
-      section: { select: { number: true, heading: true } },
-    },
-    orderBy: { createdAt: 'desc' },
-  })
+  const [raw, modules] = await Promise.all([
+    prisma.question.findMany({
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        type: true,
+        questionText: true,
+        defaultGrade: true,
+        createdAt: true,
+        section: { select: { number: true, heading: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+    Promise.resolve(getAllModules()),
+  ])
 
   const questions = raw.map((q) => ({
     ...q,
@@ -33,7 +36,7 @@ export default async function LibraryPage() {
         <h1 className="text-2xl font-bold mt-2 text-ink">Question library</h1>
         <p className="text-muted text-sm mt-1">{questions.length} saved question{questions.length !== 1 ? 's' : ''}</p>
       </div>
-      <LibraryClient questions={questions} />
+      <LibraryClient questions={questions} modules={modules} />
     </main>
   )
 }

@@ -123,6 +123,12 @@ npm test
 
 Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingLabel`, `buildMarkdownReport`). No external dependencies required (ffmpeg not needed).
 
+## Recent Updates (2026-05-07)
+
+- **DDP: XML import** — "Import XML" button in the library reads a Moodle/Totara quiz export file client-side via `DOMParser`. A preview modal shows all parsed essay questions with a per-question type dropdown (defaulting to CL, switchable to PR) and a single module assignment dropdown for code generation. Confirmed imports `POST /api/questions/import`, auto-assign codes, and refresh the library.
+
+- **DDP: question delete** — trash button in the side panel footer with two-step confirm (turns red on first click, "Confirm delete" on second). `DELETE /api/questions/[id]` removes the record; the question is optimistically removed from local state without a page reload.
+
 ## Recent Updates (2026-05-06)
 
 - **DDP: auto-generated question codes** — every saved question is assigned a unique identifier in the format `[ModuleCode][QuestionType][###]` (e.g. `ARSA001`, `RBMC003`, `KAPR001`). The code is derived from the selected module or by matching the legislation section number against section ranges in `modules.json`. It is stored in a dedicated `Question.code` column (independent of the editable name) so the sequence is reliable. The QuestionEditor pre-fills the name field with the next code so the user sees it before saving. Adding new modules or section ranges requires only editing `modules.json` — no code changes.
@@ -364,9 +370,12 @@ git push heroku main
 - [x] DDP module as alternative question source — segmented toggle (Legislation | DDP Module), mutually exclusive, H1+H3 section picker
 - [x] Auto-generated question codes — `[ModuleCode][QuestionType][###]` format (e.g. ARSA001); stored on `Question.code`; `modules.json` is the editable source for codes and section ranges
 - [x] Module-only questions saveable to library — `Question.sectionId` nullable
+- [x] Library redesign — table with type/topic filters, code/name/topic/details/date columns, side panel for full question preview
+- [x] Bulk export from library as `.md` or Totara/Moodle-compatible XML
+- [x] Question delete — two-step confirm in side panel; `DELETE /api/questions/[id]`
+- [x] XML import — client-side DOMParser, preview modal, per-question CL/PR selector, module assignment, auto-generated codes at import time
 - [ ] Practical (PR) marking matrix and prompt
-- [ ] Library edit / delete / batch export
-- [ ] XML export (Totara/Moodle-compatible)
+- [ ] Library question edit (name, type, grade)
 
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)

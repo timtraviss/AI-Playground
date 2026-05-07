@@ -60,6 +60,9 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   const [panelId, setPanelId] = useState<number | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [editValues, setEditValues] = useState<{ name: string; type: string; defaultGrade: number; questionText: string } | null>(null)
+  const [saving, setSaving] = useState(false)
   const selectAllRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -92,7 +95,11 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     }
   }, [someChecked, allChecked])
 
-  useEffect(() => { setDeleteConfirm(false) }, [panelId])
+  useEffect(() => {
+    setDeleteConfirm(false)
+    setEditMode(false)
+    setEditValues(null)
+  }, [panelId])
 
   function toggleAll() {
     setSelected((s) => {
@@ -142,6 +149,53 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     } finally {
       setDeleting(false)
       setDeleteConfirm(false)
+    }
+  }
+
+  // ── Edit ────────────────────────────────────────────────────────────────────
+
+  function startEdit() {
+    if (!panelQuestion) return
+    setEditValues({
+      name: panelQuestion.name,
+      type: panelQuestion.type,
+      defaultGrade: panelQuestion.defaultGrade,
+      questionText: panelQuestion.questionText,
+    })
+    setEditMode(true)
+  }
+
+  function cancelEdit() {
+    setEditMode(false)
+    setEditValues(null)
+  }
+
+  async function handleSave() {
+    if (!panelQuestion || !editValues) return
+    setSaving(true)
+    try {
+      const res = await fetch(apiUrl(`/api/questions/${panelQuestion.id}`), {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editValues.name,
+          type: editValues.type,
+          defaultGrade: editValues.defaultGrade,
+          questionText: editValues.questionText,
+        }),
+      })
+      if (res.ok) {
+        const updated = await res.json()
+        setQuestions((prev) => prev.map((q) =>
+          q.id === panelQuestion.id
+            ? { ...q, name: updated.name, type: updated.type, defaultGrade: updated.defaultGrade, questionText: updated.questionText }
+            : q
+        ))
+        setEditMode(false)
+        setEditValues(null)
+      }
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -359,84 +413,174 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
       <div className={`fixed right-0 top-0 h-full w-full max-w-lg bg-surface border-l border-edge z-50 flex flex-col overflow-hidden transition-transform duration-200 ${panelQuestion ? 'translate-x-0' : 'translate-x-full'}`}>
         {panelQuestion && (
           <>
+            {/* Panel header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-edge shrink-0">
               <div className="flex items-center gap-3">
-                <span className={`text-xs font-medium px-2 py-0.5 rounded ${TYPE_COLOR[panelQuestion.type] ?? 'bg-surface2 text-sub'}`}>
-                  {TYPE_LABEL[panelQuestion.type] ?? panelQuestion.type}
-                </span>
+                {editMode && editValues ? (
+                  <select
+                    value={editValues.type}
+                    onChange={(e) => setEditValues((v) => v ? { ...v, type: e.target.value } : v)}
+                    className="bg-surface2 border border-edge rounded px-2 py-0.5 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+                  >
+                    <option value="SA">Short Answer</option>
+                    <option value="CL">Criminal Liability</option>
+                    <option value="MC">Multi-choice</option>
+                    <option value="PR">Practical</option>
+                  </select>
+                ) : (
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded ${TYPE_COLOR[panelQuestion.type] ?? 'bg-surface2 text-sub'}`}>
+                    {TYPE_LABEL[panelQuestion.type] ?? panelQuestion.type}
+                  </span>
+                )}
                 {panelQuestion.code && (
                   <span className="font-mono text-sm text-accent">{panelQuestion.code}</span>
                 )}
               </div>
-              <button
-                onClick={() => setPanelId(null)}
-                className="text-muted hover:text-ink transition-colors text-lg leading-none"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-3">
+                {!editMode && (
+                  <button
+                    onClick={startEdit}
+                    className="text-xs text-muted hover:text-ink transition-colors border border-edge rounded px-2 py-1"
+                  >
+                    Edit
+                  </button>
+                )}
+                <button
+                  onClick={() => setPanelId(null)}
+                  className="text-muted hover:text-ink transition-colors text-lg leading-none"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
+            {/* Panel body */}
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
-              <h2 className="text-base font-bold text-ink">{panelQuestion.name}</h2>
-
-              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
-                {panelQuestion.topic && <span>{panelQuestion.topic}</span>}
-                {panelQuestion.section && (
-                  <span>s{panelQuestion.section.number} — {panelQuestion.section.heading}</span>
-                )}
-                <span>{panelQuestion.defaultGrade} marks</span>
-                <span>{formatDate(panelQuestion.createdAt)}</span>
-              </div>
-
-              <div className="pt-2">
-                <p className="text-xs text-muted uppercase tracking-wide mb-2">Question</p>
-                {panelQuestion.type === 'MC' ? (
-                  <MCDisplay questionText={panelQuestion.questionText} />
-                ) : (
-                  <div
-                    className="prose prose-sm max-w-none text-sub leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: panelQuestion.questionText }}
-                  />
-                )}
-              </div>
+              {editMode && editValues ? (
+                <>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs text-muted uppercase tracking-wide block mb-1">Name</label>
+                      <input
+                        type="text"
+                        value={editValues.name}
+                        onChange={(e) => setEditValues((v) => v ? { ...v, name: e.target.value } : v)}
+                        className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <label className="text-xs text-muted uppercase tracking-wide block mb-1">Marks</label>
+                        <input
+                          type="number"
+                          min={1}
+                          value={editValues.defaultGrade}
+                          onChange={(e) => setEditValues((v) => v ? { ...v, defaultGrade: parseFloat(e.target.value) || 1 } : v)}
+                          className="w-20 bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                      </div>
+                      {panelQuestion.code && (
+                        <div>
+                          <label className="text-xs text-muted uppercase tracking-wide block mb-1">Code</label>
+                          <span className="font-mono text-sm text-accent">{panelQuestion.code}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted uppercase tracking-wide block mb-1">Question text (HTML)</label>
+                      <textarea
+                        value={editValues.questionText}
+                        onChange={(e) => setEditValues((v) => v ? { ...v, questionText: e.target.value } : v)}
+                        rows={14}
+                        className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-xs text-ink font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent resize-y"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-base font-bold text-ink">{panelQuestion.name}</h2>
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
+                    {panelQuestion.topic && <span>{panelQuestion.topic}</span>}
+                    {panelQuestion.section && (
+                      <span>s{panelQuestion.section.number} — {panelQuestion.section.heading}</span>
+                    )}
+                    <span>{panelQuestion.defaultGrade} marks</span>
+                    <span>{formatDate(panelQuestion.createdAt)}</span>
+                  </div>
+                  <div className="pt-2">
+                    <p className="text-xs text-muted uppercase tracking-wide mb-2">Question</p>
+                    {panelQuestion.type === 'MC' ? (
+                      <MCDisplay questionText={panelQuestion.questionText} />
+                    ) : (
+                      <div
+                        className="prose prose-sm max-w-none text-sub leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: panelQuestion.questionText }}
+                      />
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
+            {/* Panel footer */}
             <div className="px-5 py-4 border-t border-edge shrink-0 flex gap-2">
-              <button
-                onClick={() => {
-                  downloadAs(
-                    toBulkMarkdown([panelQuestion]),
-                    `${panelQuestion.code ?? panelQuestion.name}.md`,
-                    'text/markdown'
-                  )
-                }}
-                className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"
-              >
-                Download .md
-              </button>
-              <button
-                onClick={() => {
-                  downloadAs(
-                    toTotaraXml([panelQuestion]),
-                    `${panelQuestion.code ?? panelQuestion.name}.xml`,
-                    'application/xml'
-                  )
-                }}
-                className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"
-              >
-                Download XML
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className={`ml-auto px-3 py-1.5 text-sm rounded-lg transition-colors font-medium ${
-                  deleteConfirm
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'border border-edge hover:bg-red-900/30 hover:border-red-700 text-muted hover:text-red-400'
-                }`}
-              >
-                {deleting ? 'Deleting…' : deleteConfirm ? 'Confirm delete' : 'Delete'}
-              </button>
+              {editMode ? (
+                <>
+                  <button
+                    onClick={cancelEdit}
+                    disabled={saving}
+                    className="px-3 py-1.5 border border-edge hover:bg-surface2 disabled:opacity-40 text-sm text-sub rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving || !editValues?.name.trim()}
+                    className="px-4 py-1.5 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors"
+                  >
+                    {saving ? 'Saving…' : 'Save changes'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      downloadAs(
+                        toBulkMarkdown([panelQuestion]),
+                        `${panelQuestion.code ?? panelQuestion.name}.md`,
+                        'text/markdown'
+                      )
+                    }}
+                    className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"
+                  >
+                    Download .md
+                  </button>
+                  <button
+                    onClick={() => {
+                      downloadAs(
+                        toTotaraXml([panelQuestion]),
+                        `${panelQuestion.code ?? panelQuestion.name}.xml`,
+                        'application/xml'
+                      )
+                    }}
+                    className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"
+                  >
+                    Download XML
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className={`ml-auto px-3 py-1.5 text-sm rounded-lg transition-colors font-medium ${
+                      deleteConfirm
+                        ? 'bg-red-600 hover:bg-red-700 text-white'
+                        : 'border border-edge hover:bg-red-900/30 hover:border-red-700 text-muted hover:text-red-400'
+                    }`}
+                  >
+                    {deleting ? 'Deleting…' : deleteConfirm ? 'Confirm delete' : 'Delete'}
+                  </button>
+                </>
+              )}
             </div>
           </>
         )}

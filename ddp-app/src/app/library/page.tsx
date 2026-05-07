@@ -11,6 +11,7 @@ export default async function LibraryPage() {
       select: {
         id: true,
         code: true,
+        tag: true,
         name: true,
         type: true,
         questionText: true,

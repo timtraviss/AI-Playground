@@ -20,6 +20,11 @@ const TYPE_COLOR: Record<string, string> = {
   PR: 'bg-amber-500/20 text-amber-300',
 }
 
+const TAG_COLOR: Record<string, string> = {
+  exam:     'bg-green-500/20 text-green-300',
+  practice: 'bg-amber-500/20 text-amber-300',
+}
+
 interface ImportRow {
   name: string
   questionText: string
@@ -56,19 +61,22 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   const [questions, setQuestions] = useState(initialQuestions)
   const [typeFilter, setTypeFilter] = useState('')
   const [topicFilter, setTopicFilter] = useState('')
+  const [tagFilter, setTagFilter] = useState('')
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [panelId, setPanelId] = useState<number | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [editMode, setEditMode] = useState(false)
-  const [editValues, setEditValues] = useState<{ name: string; type: string; defaultGrade: number; questionText: string } | null>(null)
+  const [editValues, setEditValues] = useState<{ name: string; type: string; tag: string; defaultGrade: number; questionText: string } | null>(null)
   const [saving, setSaving] = useState(false)
+  const [tagging, setTagging] = useState(false)
   const selectAllRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Import state
   const [importRows, setImportRows] = useState<ImportRow[]>([])
   const [importModuleId, setImportModuleId] = useState('')
+  const [importTag, setImportTag] = useState<'exam' | 'practice'>('exam')
   const [importOpen, setImportOpen] = useState(false)
   const [importing, setImporting] = useState(false)
 
@@ -83,6 +91,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   const filtered = questions.filter((q) => {
     if (typeFilter && q.type !== typeFilter) return false
     if (topicFilter && q.topic !== topicFilter) return false
+    if (tagFilter && q.tag !== tagFilter) return false
     return true
   })
 
@@ -134,7 +143,28 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     return new Date(iso).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: '2-digit' })
   }
 
-  // ── Delete ──────────────────────────────────────────────────────────────────
+  // ── Tag quick-toggle ─────────────────────────────────────────────────────────
+
+  async function handleTagToggle(newTag: 'exam' | 'practice') {
+    if (!panelQuestion || panelQuestion.tag === newTag) return
+    setTagging(true)
+    try {
+      const res = await fetch(apiUrl(`/api/questions/${panelQuestion.id}`), {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tag: newTag }),
+      })
+      if (res.ok) {
+        setQuestions((prev) => prev.map((q) =>
+          q.id === panelQuestion.id ? { ...q, tag: newTag } : q
+        ))
+      }
+    } finally {
+      setTagging(false)
+    }
+  }
+
+  // ── Delete ───────────────────────────────────────────────────────────────────
 
   async function handleDelete() {
     if (!panelQuestion) return
@@ -152,13 +182,14 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     }
   }
 
-  // ── Edit ────────────────────────────────────────────────────────────────────
+  // ── Edit ─────────────────────────────────────────────────────────────────────
 
   function startEdit() {
     if (!panelQuestion) return
     setEditValues({
       name: panelQuestion.name,
       type: panelQuestion.type,
+      tag: panelQuestion.tag,
       defaultGrade: panelQuestion.defaultGrade,
       questionText: panelQuestion.questionText,
     })
@@ -177,18 +208,13 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
       const res = await fetch(apiUrl(`/api/questions/${panelQuestion.id}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: editValues.name,
-          type: editValues.type,
-          defaultGrade: editValues.defaultGrade,
-          questionText: editValues.questionText,
-        }),
+        body: JSON.stringify(editValues),
       })
       if (res.ok) {
         const updated = await res.json()
         setQuestions((prev) => prev.map((q) =>
           q.id === panelQuestion.id
-            ? { ...q, name: updated.name, type: updated.type, defaultGrade: updated.defaultGrade, questionText: updated.questionText }
+            ? { ...q, name: updated.name, type: updated.type, tag: updated.tag, defaultGrade: updated.defaultGrade, questionText: updated.questionText }
             : q
         ))
         setEditMode(false)
@@ -199,7 +225,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     }
   }
 
-  // ── XML Import ──────────────────────────────────────────────────────────────
+  // ── XML Import ───────────────────────────────────────────────────────────────
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -236,6 +262,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
         name: r.name,
         questionText: r.questionText,
         type: r.type,
+        tag: importTag,
         defaultGrade: r.defaultGrade,
         moduleId: importModuleId || undefined,
       }))
@@ -248,6 +275,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
         setImportOpen(false)
         setImportRows([])
         setImportModuleId('')
+        setImportTag('exam')
         router.refresh()
       }
     } finally {
@@ -260,13 +288,14 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     setImportOpen(false)
     setImportRows([])
     setImportModuleId('')
+    setImportTag('exam')
   }
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+  // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
     <>
-      {/* Filter bar + Import button */}
+      {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <select
           value={typeFilter}
@@ -284,9 +313,18 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
           <option value="">All topics</option>
           {topics.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
+        <select
+          value={tagFilter}
+          onChange={(e) => setTagFilter(e.target.value)}
+          className="bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+        >
+          <option value="">All tags</option>
+          <option value="exam">Exam</option>
+          <option value="practice">Practice</option>
+        </select>
         <span className="text-sm text-muted">
           {filtered.length} question{filtered.length !== 1 ? 's' : ''}
-          {(typeFilter || topicFilter) ? ' (filtered)' : ''}
+          {(typeFilter || topicFilter || tagFilter) ? ' (filtered)' : ''}
         </span>
         <div className="ml-auto flex items-center gap-2">
           <button
@@ -303,28 +341,19 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
       {selected.size > 0 && (
         <div className="flex flex-wrap items-center gap-3 mb-4 px-4 py-3 bg-accent/10 border border-accent/30 rounded-lg">
           <span className="text-sm font-medium text-ink">{selected.size} selected</span>
-          <button
-            onClick={exportMd}
-            className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors"
-          >
+          <button onClick={exportMd} className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors">
             Export .md
           </button>
-          <button
-            onClick={exportXml}
-            className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors"
-          >
+          <button onClick={exportXml} className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors">
             Export XML (Totara)
           </button>
-          <button
-            onClick={() => setSelected(new Set())}
-            className="ml-auto text-sm text-muted hover:text-ink transition-colors"
-          >
+          <button onClick={() => setSelected(new Set())} className="ml-auto text-sm text-muted hover:text-ink transition-colors">
             Clear selection
           </button>
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty state / table */}
       {questions.length === 0 ? (
         <div className="text-center py-16 text-muted">
           <p>No questions saved yet.</p>
@@ -337,17 +366,14 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
       ) : (
         <div className="border border-edge rounded-lg bg-surface overflow-hidden">
           {/* Header */}
-          <div className="hidden lg:grid items-center px-4 py-2.5 border-b border-edge bg-surface2 text-xs font-medium text-muted uppercase tracking-wide"
-            style={{ gridTemplateColumns: '40px 130px 90px 160px 1fr 180px 80px' }}>
-            <input
-              ref={selectAllRef}
-              type="checkbox"
-              checked={allChecked}
-              onChange={toggleAll}
-              className="rounded accent-accent cursor-pointer"
-            />
+          <div
+            className="hidden lg:grid items-center px-4 py-2.5 border-b border-edge bg-surface2 text-xs font-medium text-muted uppercase tracking-wide"
+            style={{ gridTemplateColumns: '40px 120px 80px 80px 150px 1fr 170px 80px' }}
+          >
+            <input ref={selectAllRef} type="checkbox" checked={allChecked} onChange={toggleAll} className="rounded accent-accent cursor-pointer" />
             <span>Type</span>
             <span>Code</span>
+            <span>Tag</span>
             <span>Topic</span>
             <span>Name</span>
             <span>Details</span>
@@ -369,13 +395,15 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 onClick={(e) => toggleOne(q.id, e)}
                 className="rounded accent-accent cursor-pointer"
               />
-
               <div className="hidden lg:grid items-center min-w-0 gap-x-3"
-                style={{ gridTemplateColumns: '130px 90px 160px 1fr 180px 80px' }}>
+                style={{ gridTemplateColumns: '120px 80px 80px 150px 1fr 170px 80px' }}>
                 <span className={`text-xs font-medium px-2 py-0.5 rounded w-fit ${TYPE_COLOR[q.type] ?? 'bg-surface2 text-sub'}`}>
                   {TYPE_LABEL[q.type] ?? q.type}
                 </span>
                 <span className="font-mono text-xs text-accent truncate">{q.code ?? '—'}</span>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded w-fit capitalize ${TAG_COLOR[q.tag] ?? 'bg-surface2 text-sub'}`}>
+                  {q.tag}
+                </span>
                 <span className="text-sm text-sub truncate">{q.topic ?? '—'}</span>
                 <span className="text-sm text-ink font-medium truncate min-w-0">{q.name}</span>
                 <span className="text-xs text-muted truncate">
@@ -383,13 +411,15 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 </span>
                 <span className="text-xs text-muted whitespace-nowrap">{formatDate(q.createdAt)}</span>
               </div>
-
               <div className="lg:hidden flex flex-col gap-0.5 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded ${TYPE_COLOR[q.type] ?? 'bg-surface2 text-sub'}`}>
                     {TYPE_LABEL[q.type] ?? q.type}
                   </span>
                   {q.code && <span className="font-mono text-xs text-accent">{q.code}</span>}
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${TAG_COLOR[q.tag] ?? 'bg-surface2 text-sub'}`}>
+                    {q.tag}
+                  </span>
                 </div>
                 <p className="text-sm font-medium text-ink truncate">{q.name}</p>
                 <p className="text-xs text-muted">
@@ -403,17 +433,14 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
 
       {/* Side panel backdrop */}
       {panelQuestion && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 transition-opacity"
-          onClick={() => setPanelId(null)}
-        />
+        <div className="fixed inset-0 bg-black/50 z-40 transition-opacity" onClick={() => setPanelId(null)} />
       )}
 
       {/* Side panel */}
       <div className={`fixed right-0 top-0 h-full w-full max-w-lg bg-surface border-l border-edge z-50 flex flex-col overflow-hidden transition-transform duration-200 ${panelQuestion ? 'translate-x-0' : 'translate-x-full'}`}>
         {panelQuestion && (
           <>
-            {/* Panel header */}
+            {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-edge shrink-0">
               <div className="flex items-center gap-3">
                 {editMode && editValues ? (
@@ -432,138 +459,135 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                     {TYPE_LABEL[panelQuestion.type] ?? panelQuestion.type}
                   </span>
                 )}
-                {panelQuestion.code && (
-                  <span className="font-mono text-sm text-accent">{panelQuestion.code}</span>
-                )}
+                {panelQuestion.code && <span className="font-mono text-sm text-accent">{panelQuestion.code}</span>}
               </div>
               <div className="flex items-center gap-3">
                 {!editMode && (
-                  <button
-                    onClick={startEdit}
-                    className="text-xs text-muted hover:text-ink transition-colors border border-edge rounded px-2 py-1"
-                  >
+                  <button onClick={startEdit} className="text-xs text-muted hover:text-ink transition-colors border border-edge rounded px-2 py-1">
                     Edit
                   </button>
                 )}
-                <button
-                  onClick={() => setPanelId(null)}
-                  className="text-muted hover:text-ink transition-colors text-lg leading-none"
-                >
-                  ✕
-                </button>
+                <button onClick={() => setPanelId(null)} className="text-muted hover:text-ink transition-colors text-lg leading-none">✕</button>
               </div>
             </div>
 
-            {/* Panel body */}
+            {/* Body */}
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
               {editMode && editValues ? (
-                <>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-xs text-muted uppercase tracking-wide block mb-1">Name</label>
-                      <input
-                        type="text"
-                        value={editValues.name}
-                        onChange={(e) => setEditValues((v) => v ? { ...v, name: e.target.value } : v)}
-                        className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
-                      />
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div>
-                        <label className="text-xs text-muted uppercase tracking-wide block mb-1">Marks</label>
-                        <input
-                          type="number"
-                          min={1}
-                          value={editValues.defaultGrade}
-                          onChange={(e) => setEditValues((v) => v ? { ...v, defaultGrade: parseFloat(e.target.value) || 1 } : v)}
-                          className="w-20 bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
-                        />
-                      </div>
-                      {panelQuestion.code && (
-                        <div>
-                          <label className="text-xs text-muted uppercase tracking-wide block mb-1">Code</label>
-                          <span className="font-mono text-sm text-accent">{panelQuestion.code}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <label className="text-xs text-muted uppercase tracking-wide block mb-1">Question text (HTML)</label>
-                      <textarea
-                        value={editValues.questionText}
-                        onChange={(e) => setEditValues((v) => v ? { ...v, questionText: e.target.value } : v)}
-                        rows={14}
-                        className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-xs text-ink font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent resize-y"
-                      />
-                    </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs text-muted uppercase tracking-wide block mb-1">Name</label>
+                    <input
+                      type="text"
+                      value={editValues.name}
+                      onChange={(e) => setEditValues((v) => v ? { ...v, name: e.target.value } : v)}
+                      className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
                   </div>
-                </>
+                  <div className="flex items-start gap-4">
+                    <div>
+                      <label className="text-xs text-muted uppercase tracking-wide block mb-1">Marks</label>
+                      <input
+                        type="number"
+                        min={1}
+                        value={editValues.defaultGrade}
+                        onChange={(e) => setEditValues((v) => v ? { ...v, defaultGrade: parseFloat(e.target.value) || 1 } : v)}
+                        className="w-20 bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted uppercase tracking-wide block mb-1">Tag</label>
+                      <select
+                        value={editValues.tag}
+                        onChange={(e) => setEditValues((v) => v ? { ...v, tag: e.target.value } : v)}
+                        className="bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                      >
+                        <option value="exam">Exam</option>
+                        <option value="practice">Practice</option>
+                      </select>
+                    </div>
+                    {panelQuestion.code && (
+                      <div>
+                        <label className="text-xs text-muted uppercase tracking-wide block mb-1">Code</label>
+                        <span className="font-mono text-sm text-accent">{panelQuestion.code}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted uppercase tracking-wide block mb-1">Question text (HTML)</label>
+                    <textarea
+                      value={editValues.questionText}
+                      onChange={(e) => setEditValues((v) => v ? { ...v, questionText: e.target.value } : v)}
+                      rows={14}
+                      className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-xs text-ink font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent resize-y"
+                    />
+                  </div>
+                </div>
               ) : (
                 <>
                   <h2 className="text-base font-bold text-ink">{panelQuestion.name}</h2>
+
+                  {/* Tag toggle */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted">Tag:</span>
+                    <div className="flex rounded-lg border border-edge overflow-hidden text-xs font-medium">
+                      {(['exam', 'practice'] as const).map((t) => (
+                        <button
+                          key={t}
+                          disabled={tagging}
+                          onClick={() => handleTagToggle(t)}
+                          className={`px-3 py-1 capitalize transition-colors ${
+                            panelQuestion.tag === t
+                              ? TAG_COLOR[t]
+                              : 'text-muted hover:text-ink'
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
                     {panelQuestion.topic && <span>{panelQuestion.topic}</span>}
-                    {panelQuestion.section && (
-                      <span>s{panelQuestion.section.number} — {panelQuestion.section.heading}</span>
-                    )}
+                    {panelQuestion.section && <span>s{panelQuestion.section.number} — {panelQuestion.section.heading}</span>}
                     <span>{panelQuestion.defaultGrade} marks</span>
                     <span>{formatDate(panelQuestion.createdAt)}</span>
                   </div>
+
                   <div className="pt-2">
                     <p className="text-xs text-muted uppercase tracking-wide mb-2">Question</p>
                     {panelQuestion.type === 'MC' ? (
                       <MCDisplay questionText={panelQuestion.questionText} />
                     ) : (
-                      <div
-                        className="prose prose-sm max-w-none text-sub leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: panelQuestion.questionText }}
-                      />
+                      <div className="prose prose-sm max-w-none text-sub leading-relaxed" dangerouslySetInnerHTML={{ __html: panelQuestion.questionText }} />
                     )}
                   </div>
                 </>
               )}
             </div>
 
-            {/* Panel footer */}
+            {/* Footer */}
             <div className="px-5 py-4 border-t border-edge shrink-0 flex gap-2">
               {editMode ? (
                 <>
-                  <button
-                    onClick={cancelEdit}
-                    disabled={saving}
-                    className="px-3 py-1.5 border border-edge hover:bg-surface2 disabled:opacity-40 text-sm text-sub rounded-lg transition-colors"
-                  >
+                  <button onClick={cancelEdit} disabled={saving} className="px-3 py-1.5 border border-edge hover:bg-surface2 disabled:opacity-40 text-sm text-sub rounded-lg transition-colors">
                     Cancel
                   </button>
-                  <button
-                    onClick={handleSave}
-                    disabled={saving || !editValues?.name.trim()}
-                    className="px-4 py-1.5 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors"
-                  >
+                  <button onClick={handleSave} disabled={saving || !editValues?.name.trim()} className="px-4 py-1.5 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors">
                     {saving ? 'Saving…' : 'Save changes'}
                   </button>
                 </>
               ) : (
                 <>
                   <button
-                    onClick={() => {
-                      downloadAs(
-                        toBulkMarkdown([panelQuestion]),
-                        `${panelQuestion.code ?? panelQuestion.name}.md`,
-                        'text/markdown'
-                      )
-                    }}
+                    onClick={() => downloadAs(toBulkMarkdown([panelQuestion]), `${panelQuestion.code ?? panelQuestion.name}.md`, 'text/markdown')}
                     className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"
                   >
                     Download .md
                   </button>
                   <button
-                    onClick={() => {
-                      downloadAs(
-                        toTotaraXml([panelQuestion]),
-                        `${panelQuestion.code ?? panelQuestion.name}.xml`,
-                        'application/xml'
-                      )
-                    }}
+                    onClick={() => downloadAs(toTotaraXml([panelQuestion]), `${panelQuestion.code ?? panelQuestion.name}.xml`, 'application/xml')}
                     className="px-3 py-1.5 border border-edge hover:bg-surface2 text-sm text-sub rounded-lg transition-colors"
                   >
                     Download XML
@@ -586,14 +610,12 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
         )}
       </div>
 
-      {/* Import modal — inlined JSX (not a nested function component) so React
-          doesn't remount it on every re-render, preserving the importing state */}
+      {/* Import modal */}
       {importOpen && (
         <>
           <div className="fixed inset-0 bg-black/60 z-50" onClick={closeImport} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
             <div className="bg-surface border border-edge rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl pointer-events-auto">
-              {/* Header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-edge shrink-0">
                 <div>
                   <h2 className="text-base font-bold text-ink">Import questions</h2>
@@ -602,10 +624,9 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 <button onClick={closeImport} className="text-muted hover:text-ink transition-colors text-lg leading-none">✕</button>
               </div>
 
-              {/* Module assignment */}
-              <div className="px-5 py-3 border-b border-edge bg-surface2 shrink-0">
+              <div className="px-5 py-3 border-b border-edge bg-surface2 shrink-0 space-y-2">
                 <div className="flex items-center gap-3">
-                  <label className="text-sm font-medium text-sub whitespace-nowrap">Assign module:</label>
+                  <label className="text-sm font-medium text-sub whitespace-nowrap w-28">Assign module:</label>
                   <select
                     value={importModuleId}
                     onChange={(e) => setImportModuleId(e.target.value)}
@@ -613,15 +634,28 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                   >
                     <option value="">No module (no code assigned)</option>
                     {modules.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.name}{m.code ? ` (${m.code})` : ''}
-                      </option>
+                      <option key={m.id} value={m.id}>{m.name}{m.code ? ` (${m.code})` : ''}</option>
                     ))}
                   </select>
                 </div>
+                <div className="flex items-center gap-3">
+                  <label className="text-sm font-medium text-sub whitespace-nowrap w-28">Tag all as:</label>
+                  <div className="flex rounded-lg border border-edge overflow-hidden text-xs font-medium">
+                    {(['exam', 'practice'] as const).map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setImportTag(t)}
+                        className={`px-4 py-1.5 capitalize transition-colors ${
+                          importTag === t ? TAG_COLOR[t] : 'text-muted hover:text-ink'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              {/* Question table */}
               <div className="flex-1 overflow-y-auto">
                 {importRows.length === 0 ? (
                   <p className="text-center py-12 text-muted text-sm">No essay questions found in file.</p>
@@ -658,13 +692,8 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 )}
               </div>
 
-              {/* Footer */}
               <div className="px-5 py-4 border-t border-edge shrink-0 flex items-center justify-between gap-3">
-                <button
-                  onClick={closeImport}
-                  disabled={importing}
-                  className="px-3 py-1.5 border border-edge hover:bg-surface2 disabled:opacity-40 text-sm text-sub rounded-lg transition-colors"
-                >
+                <button onClick={closeImport} disabled={importing} className="px-3 py-1.5 border border-edge hover:bg-surface2 disabled:opacity-40 text-sm text-sub rounded-lg transition-colors">
                   Cancel
                 </button>
                 <button

@@ -41,6 +41,7 @@ model Question {
   section      Section?     @relation(fields: [sectionId], references: [id])
   type         String
   code         String?
+  tag          String       @default("exam")
   name         String
   questionText String
   defaultGrade Float

@@ -8,6 +8,7 @@ const TYPE_LABEL: Record<string, string> = {
 export interface ExportQuestion {
   id: number
   code: string | null
+  tag: string
   name: string
   type: string
   questionText: string

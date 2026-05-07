@@ -24,7 +24,7 @@ interface ImportRow {
   name: string
   questionText: string
   defaultGrade: number
-  type: 'CL' | 'PR'
+  type: 'SA' | 'CL' | 'MC' | 'PR'
 }
 
 interface LibraryClientProps {
@@ -161,7 +161,8 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
         const questionText = q.querySelector('questiontext text')?.textContent?.trim() ?? ''
         const grade = parseFloat(q.querySelector('defaultgrade')?.textContent ?? '0')
         if (!name || !questionText) return
-        rows.push({ name, questionText, defaultGrade: grade, type: 'CL' })
+        const type = grade <= 1 ? 'MC' : grade <= 4 ? 'SA' : 'CL'
+        rows.push({ name, questionText, defaultGrade: grade, type })
       })
       setImportRows(rows)
       setImportOpen(true)
@@ -170,7 +171,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     e.target.value = ''
   }
 
-  function setRowType(i: number, type: 'CL' | 'PR') {
+  function setRowType(i: number, type: 'SA' | 'CL' | 'MC' | 'PR') {
     setImportRows((prev) => prev.map((r, idx) => idx === i ? { ...r, type } : r))
   }
 
@@ -496,10 +497,12 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                           <td className="px-4 py-2.5">
                             <select
                               value={row.type}
-                              onChange={(e) => setRowType(i, e.target.value as 'CL' | 'PR')}
+                              onChange={(e) => setRowType(i, e.target.value as 'SA' | 'CL' | 'MC' | 'PR')}
                               className="bg-surface border border-edge rounded px-2 py-1 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-accent"
                             >
+                              <option value="SA">Short Answer</option>
                               <option value="CL">Criminal Liability</option>
+                              <option value="MC">Multi-choice</option>
                               <option value="PR">Practical</option>
                             </select>
                           </td>

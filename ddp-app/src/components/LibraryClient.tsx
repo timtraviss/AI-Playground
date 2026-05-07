@@ -79,6 +79,12 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   const [editNextCode, setEditNextCode] = useState<string | null>(null)
   const [fetchingCode, setFetchingCode] = useState(false)
 
+  // Bulk topic assignment
+  const [bulkTopicOpen, setBulkTopicOpen] = useState(false)
+  const [bulkTopicModuleId, setBulkTopicModuleId] = useState('')
+  const [bulkAssigning, setBulkAssigning] = useState(false)
+  const [bulkAssignDone, setBulkAssignDone] = useState(0)
+
   // Import state
   const [importRows, setImportRows] = useState<ImportRow[]>([])
   const [importModuleId, setImportModuleId] = useState('')
@@ -342,6 +348,45 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     setImportTag('exam')
   }
 
+  // ── Bulk topic assign ────────────────────────────────────────────────────────
+
+  async function doBulkAssign() {
+    if (!bulkTopicModuleId || bulkAssigning) return
+    setBulkAssigning(true)
+    setBulkAssignDone(0)
+
+    const toAssign = [...selected]
+      .map((id) => questions.find((q) => q.id === id))
+      .filter((q): q is NonNullable<typeof q> => !!q)
+
+    for (const q of toAssign) {
+      try {
+        const params = new URLSearchParams({ type: q.type, moduleId: bulkTopicModuleId })
+        const codeRes = await fetch(apiUrl(`/api/questions/next-code?${params}`))
+        const { code } = await codeRes.json()
+        if (!code) continue
+
+        await fetch(apiUrl(`/api/questions/${q.id}`), {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        })
+
+        const newTopic = topicModules.find((m) => code.startsWith(m.code))?.topic ?? null
+        setQuestions((prev) =>
+          prev.map((pq) => (pq.id === q.id ? { ...pq, code, topic: newTopic } : pq))
+        )
+        setBulkAssignDone((n) => n + 1)
+      } catch {
+        // skip failed question, continue with rest
+      }
+    }
+
+    setBulkAssigning(false)
+    setBulkTopicOpen(false)
+    setBulkTopicModuleId('')
+  }
+
   // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
@@ -390,17 +435,60 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
 
       {/* Export toolbar */}
       {selected.size > 0 && (
-        <div className="flex flex-wrap items-center gap-3 mb-4 px-4 py-3 bg-accent/10 border border-accent/30 rounded-lg">
-          <span className="text-sm font-medium text-ink">{selected.size} selected</span>
-          <button onClick={exportMd} className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors">
-            Export .md
-          </button>
-          <button onClick={exportXml} className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors">
-            Export XML (Totara)
-          </button>
-          <button onClick={() => setSelected(new Set())} className="ml-auto text-sm text-muted hover:text-ink transition-colors">
-            Clear selection
-          </button>
+        <div className="flex flex-col gap-2 mb-4 px-4 py-3 bg-accent/10 border border-accent/30 rounded-lg">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-sm font-medium text-ink">{selected.size} selected</span>
+            <button onClick={exportMd} className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors">
+              Export .md
+            </button>
+            <button onClick={exportXml} className="px-3 py-1.5 bg-accent hover:opacity-90 text-white text-sm rounded-lg font-medium transition-colors">
+              Export XML (Totara)
+            </button>
+            {topicModules.length > 0 && (
+              <button
+                onClick={() => { setBulkTopicOpen((v) => !v); setBulkTopicModuleId('') }}
+                className="px-3 py-1.5 border border-accent/50 hover:bg-accent/10 text-sm text-accent rounded-lg font-medium transition-colors"
+              >
+                Assign topic
+              </button>
+            )}
+            <button onClick={() => setSelected(new Set())} className="ml-auto text-sm text-muted hover:text-ink transition-colors">
+              Clear selection
+            </button>
+          </div>
+
+          {bulkTopicOpen && (
+            <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-accent/20">
+              <select
+                value={bulkTopicModuleId}
+                onChange={(e) => setBulkTopicModuleId(e.target.value)}
+                disabled={bulkAssigning}
+                className="bg-surface border border-edge rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50"
+              >
+                <option value="">— Pick a topic —</option>
+                {topicModules.map((m) => (
+                  <option key={m.id} value={m.id}>{m.topic}</option>
+                ))}
+              </select>
+              <button
+                onClick={doBulkAssign}
+                disabled={!bulkTopicModuleId || bulkAssigning}
+                className="px-4 py-1.5 bg-accent hover:opacity-90 disabled:opacity-40 text-white text-sm rounded-lg font-medium transition-colors"
+              >
+                {bulkAssigning
+                  ? `Assigning ${bulkAssignDone}/${selected.size}…`
+                  : `Assign to ${selected.size} question${selected.size !== 1 ? 's' : ''}`}
+              </button>
+              {!bulkAssigning && (
+                <button
+                  onClick={() => setBulkTopicOpen(false)}
+                  className="text-sm text-muted hover:text-ink transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 

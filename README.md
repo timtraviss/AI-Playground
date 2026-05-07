@@ -125,6 +125,8 @@ Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingL
 
 ## Recent Updates (2026-05-08)
 
+- **DDP: bulk topic assignment** — Select any number of questions in the library, click "Assign topic" in the selection toolbar, pick a module from the dropdown, and click assign. Codes are assigned sequentially per question type (e.g. ARSA001, ARSA002…) with a live counter showing progress. Local state updates immediately — no page reload needed.
+
 - **DDP: topic picker on generate + library** — When generating from a legislation section that doesn't auto-match a module, a **Topic** dropdown now appears in the QuestionEditor before saving. Selecting a topic fetches the next code (`ARSA001`, `FRSA001`, etc.) and displays it as the Question ID. In the library, opening a question's edit panel shows the same dropdown pre-populated from the existing code; changing the topic previews the new code inline and saves it on confirm.
 
 ## Recent Updates (2026-05-07)
@@ -382,6 +384,11 @@ git push heroku main
 - [x] Topic picker on generate — legislation-source questions can be assigned a topic before saving; auto-fetches next code (`ARSA001` etc.)
 - [x] Topic / code assignment in library — edit panel shows topic dropdown pre-populated from existing code; changing topic previews and saves new code
 - [ ] Practical (PR) marking matrix and prompt
+- [x] Bulk topic assignment — multi-select questions in library, click "Assign topic", pick a module, codes assigned sequentially with live progress counter
+- [ ] Marking history on question — "Marking runs" tab in library side panel showing past results (score, band, date, filename) with link to full MarkingSheet
+- [ ] Question duplicate — clone a question from the side panel (same section/type/text, new name + next code)
+- [ ] Text search in library — search across name and code in addition to the existing type/topic/tag filters
+- [ ] Topic override on generate — if a section auto-resolves to the wrong module, allow overriding the topic from the QuestionEditor before saving
 
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)

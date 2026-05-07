@@ -49,6 +49,12 @@ export function getAllModules(): Array<{ id: string; name: string; code: string 
   return loadModules().map((m) => ({ id: m.id, name: m.name ?? m.id, code: m.code ?? null }))
 }
 
+export function getAllTopicModules(): Array<{ id: string; name: string; code: string; topic: string }> {
+  return loadModules()
+    .filter((m): m is ModuleEntry & { code: string; topic: string } => !!m.code && !!m.topic)
+    .map(({ id, name, code, topic }) => ({ id, name: name ?? id, code, topic }))
+}
+
 export async function getCodeForSectionId(sectionId: number): Promise<string | null> {
   const section = await prisma.section.findUnique({
     where: { id: sectionId },

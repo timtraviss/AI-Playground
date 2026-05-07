@@ -16,6 +16,13 @@ interface DraftQuestion {
   defaultGrade: number
 }
 
+interface TopicModule {
+  id: string
+  name: string
+  code: string
+  topic: string
+}
+
 interface QuestionEditorProps {
   draft: DraftQuestion
   section: SectionRef | null
@@ -38,6 +45,11 @@ export default function QuestionEditor({
   const [saveError, setSaveError] = useState<string | null>(null)
   const [generatedCode, setGeneratedCode] = useState<string | null>(null)
 
+  // Topic picker — only for legislation source (no moduleId prop)
+  const [topicModules, setTopicModules] = useState<TopicModule[]>([])
+  const [selectedTopicModuleId, setSelectedTopicModuleId] = useState<string>('')
+  const [fetchingCode, setFetchingCode] = useState(false)
+
   // Fetch next code on mount — shown as read-only Question ID, does NOT overwrite name
   useEffect(() => {
     const params = new URLSearchParams({ type })
@@ -52,6 +64,30 @@ export default function QuestionEditor({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Fetch topic modules for legislation source (module source already has a code)
+  useEffect(() => {
+    if (moduleId) return
+    fetch(apiUrl('/api/questions/topics'))
+      .then((r) => r.json())
+      .then(setTopicModules)
+      .catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  async function handleTopicChange(newModuleId: string) {
+    setSelectedTopicModuleId(newModuleId)
+    if (!newModuleId) return
+    setFetchingCode(true)
+    try {
+      const params = new URLSearchParams({ type, moduleId: newModuleId })
+      const r = await fetch(apiUrl(`/api/questions/next-code?${params}`))
+      const { code } = await r.json()
+      if (code) setGeneratedCode(code)
+    } finally {
+      setFetchingCode(false)
+    }
+  }
+
   async function save() {
     setSaving(true)
     setSaveError(null)
@@ -61,7 +97,7 @@ export default function QuestionEditor({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sectionId: section?.id,
-          moduleId,
+          moduleId: selectedTopicModuleId || moduleId,
           code: generatedCode ?? undefined,
           type,
           name: draft.name,
@@ -127,12 +163,32 @@ export default function QuestionEditor({
         </button>
       </div>
 
+      {/* Topic picker — legislation source only */}
+      {!moduleId && topicModules.length > 0 && (
+        <div>
+          <label className="text-xs text-muted uppercase tracking-wide">
+            Topic
+            {!generatedCode && <span className="ml-1 text-accent normal-case font-normal">— select to assign a question code</span>}
+          </label>
+          <select
+            value={selectedTopicModuleId}
+            onChange={(e) => handleTopicChange(e.target.value)}
+            className="mt-1 w-full bg-surface2 border border-edge rounded px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+          >
+            <option value="">— Select a topic —</option>
+            {topicModules.map((m) => (
+              <option key={m.id} value={m.id}>{m.topic}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {/* Question ID (read-only) */}
       {generatedCode && (
         <div>
           <label className="text-xs text-muted uppercase tracking-wide">Question ID</label>
           <p className="mt-1 px-3 py-2 bg-surface2 border border-edge rounded text-sm font-mono text-accent">
-            {generatedCode}
+            {fetchingCode ? '…' : generatedCode}
           </p>
         </div>
       )}

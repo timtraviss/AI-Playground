@@ -73,6 +73,12 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   const selectAllRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Topic modules for code assignment
+  const [topicModules, setTopicModules] = useState<Array<{ id: string; name: string; code: string; topic: string }>>([])
+  const [editTopicModuleId, setEditTopicModuleId] = useState<string>('')
+  const [editNextCode, setEditNextCode] = useState<string | null>(null)
+  const [fetchingCode, setFetchingCode] = useState(false)
+
   // Import state
   const [importRows, setImportRows] = useState<ImportRow[]>([])
   const [importModuleId, setImportModuleId] = useState('')
@@ -84,6 +90,13 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   useEffect(() => {
     setQuestions(initialQuestions)
   }, [initialQuestions])
+
+  useEffect(() => {
+    fetch(apiUrl('/api/questions/topics'))
+      .then((r) => r.json())
+      .then(setTopicModules)
+      .catch(() => {})
+  }, [])
 
   const types = [...new Set(questions.map((q) => q.type))].sort()
   const topics = [...new Set(questions.map((q) => q.topic).filter((t): t is string => !!t))].sort()
@@ -108,6 +121,8 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     setDeleteConfirm(false)
     setEditMode(false)
     setEditValues(null)
+    setEditTopicModuleId('')
+    setEditNextCode(null)
   }, [panelId])
 
   function toggleAll() {
@@ -193,32 +208,68 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
       defaultGrade: panelQuestion.defaultGrade,
       questionText: panelQuestion.questionText,
     })
+    // Pre-select topic from existing code
+    if (panelQuestion.code && topicModules.length > 0) {
+      const matched = topicModules.find((m) => panelQuestion.code!.startsWith(m.code))
+      setEditTopicModuleId(matched?.id ?? '')
+    } else {
+      setEditTopicModuleId('')
+    }
+    setEditNextCode(panelQuestion.code ?? null)
     setEditMode(true)
   }
 
   function cancelEdit() {
     setEditMode(false)
     setEditValues(null)
+    setEditTopicModuleId('')
+    setEditNextCode(null)
+  }
+
+  async function handleEditTopicChange(newModuleId: string) {
+    setEditTopicModuleId(newModuleId)
+    if (!newModuleId) { setEditNextCode(null); return }
+    const type = editValues?.type ?? panelQuestion?.type ?? 'SA'
+    setFetchingCode(true)
+    try {
+      const params = new URLSearchParams({ type, moduleId: newModuleId })
+      const r = await fetch(apiUrl(`/api/questions/next-code?${params}`))
+      const { code } = await r.json()
+      setEditNextCode(code ?? null)
+    } finally {
+      setFetchingCode(false)
+    }
   }
 
   async function handleSave() {
     if (!panelQuestion || !editValues) return
     setSaving(true)
     try {
+      const body: Record<string, unknown> = { ...editValues }
+      // Include new code only if it differs from the current one
+      if (editNextCode && editNextCode !== panelQuestion.code) {
+        body.code = editNextCode
+      }
       const res = await fetch(apiUrl(`/api/questions/${panelQuestion.id}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editValues),
+        body: JSON.stringify(body),
       })
       if (res.ok) {
         const updated = await res.json()
+        const newCode: string | null = updated.code ?? panelQuestion.code ?? null
+        const newTopic = newCode
+          ? (topicModules.find((m) => newCode.startsWith(m.code))?.topic ?? null)
+          : null
         setQuestions((prev) => prev.map((q) =>
           q.id === panelQuestion.id
-            ? { ...q, name: updated.name, type: updated.type, tag: updated.tag, defaultGrade: updated.defaultGrade, questionText: updated.questionText }
+            ? { ...q, name: updated.name, type: updated.type, tag: updated.tag, defaultGrade: updated.defaultGrade, questionText: updated.questionText, code: newCode, topic: newTopic }
             : q
         ))
         setEditMode(false)
         setEditValues(null)
+        setEditTopicModuleId('')
+        setEditNextCode(null)
       }
     } finally {
       setSaving(false)
@@ -459,7 +510,11 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                     {TYPE_LABEL[panelQuestion.type] ?? panelQuestion.type}
                   </span>
                 )}
-                {panelQuestion.code && <span className="font-mono text-sm text-accent">{panelQuestion.code}</span>}
+                {(editMode ? editNextCode : panelQuestion.code) && (
+                  <span className="font-mono text-sm text-accent">
+                    {editMode ? editNextCode : panelQuestion.code}
+                  </span>
+                )}
               </div>
               <button onClick={() => setPanelId(null)} className="text-muted hover:text-ink transition-colors text-lg leading-none">✕</button>
             </div>
@@ -499,13 +554,28 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                         <option value="practice">Practice</option>
                       </select>
                     </div>
-                    {panelQuestion.code && (
-                      <div>
-                        <label className="text-xs text-muted uppercase tracking-wide block mb-1">Code</label>
-                        <span className="font-mono text-sm text-accent">{panelQuestion.code}</span>
-                      </div>
-                    )}
                   </div>
+                  {/* Topic / code assignment */}
+                  {topicModules.length > 0 && (
+                    <div>
+                      <label className="text-xs text-muted uppercase tracking-wide block mb-1">Topic</label>
+                      <select
+                        value={editTopicModuleId}
+                        onChange={(e) => handleEditTopicChange(e.target.value)}
+                        className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                      >
+                        <option value="">— No topic —</option>
+                        {topicModules.map((m) => (
+                          <option key={m.id} value={m.id}>{m.topic}</option>
+                        ))}
+                      </select>
+                      {editNextCode && (
+                        <p className="mt-1 text-xs text-muted">
+                          Code: <span className="font-mono text-accent">{fetchingCode ? '…' : editNextCode}</span>
+                        </p>
+                      )}
+                    </div>
+                  )}
                   <div>
                     <label className="text-xs text-muted uppercase tracking-wide block mb-1">Question text (HTML)</label>
                     <textarea

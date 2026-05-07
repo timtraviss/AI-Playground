@@ -8,6 +8,7 @@ const PatchSchema = z.object({
   tag: z.enum(['practice', 'exam']).optional(),
   defaultGrade: z.number().positive().optional(),
   questionText: z.string().min(1).optional(),
+  code: z.string().min(1).optional(),
 })
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

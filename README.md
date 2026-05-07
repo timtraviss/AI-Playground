@@ -123,6 +123,10 @@ npm test
 
 Tests cover `computeTargetKbps` edge cases and the L3 report generator (`ratingLabel`, `buildMarkdownReport`). No external dependencies required (ffmpeg not needed).
 
+## Recent Updates (2026-05-08)
+
+- **DDP: topic picker on generate + library** — When generating from a legislation section that doesn't auto-match a module, a **Topic** dropdown now appears in the QuestionEditor before saving. Selecting a topic fetches the next code (`ARSA001`, `FRSA001`, etc.) and displays it as the Question ID. In the library, opening a question's edit panel shows the same dropdown pre-populated from the existing code; changing the topic previews the new code inline and saves it on confirm.
+
 ## Recent Updates (2026-05-07)
 
 - **DDP: XML import** — "Import XML" button in the library reads a Moodle/Totara quiz export file client-side via `DOMParser`. A preview modal shows all parsed essay questions with a per-question type dropdown (defaulting to CL, switchable to PR) and a single module assignment dropdown for code generation. Confirmed imports `POST /api/questions/import`, auto-assign codes, and refresh the library.
@@ -374,8 +378,10 @@ git push heroku main
 - [x] Bulk export from library as `.md` or Totara/Moodle-compatible XML
 - [x] Question delete — two-step confirm in side panel; `DELETE /api/questions/[id]`
 - [x] XML import — client-side DOMParser, preview modal, per-question CL/PR selector, module assignment, auto-generated codes at import time
+- [x] Library question edit — name, type, grade, tag, question text; edit panel in library side panel
+- [x] Topic picker on generate — legislation-source questions can be assigned a topic before saving; auto-fetches next code (`ARSA001` etc.)
+- [x] Topic / code assignment in library — edit panel shows topic dropdown pre-populated from existing code; changing topic previews and saves new code
 - [ ] Practical (PR) marking matrix and prompt
-- [ ] Library question edit (name, type, grade)
 
 ### Deployment
 - [x] Heroku-ready (Procfile, engines field, ephemeral /tmp uploads)

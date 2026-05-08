@@ -65,5 +65,45 @@
     "topic": "Basic Legal Concepts",
     "sections": [],
     "updatedAt": "2026-04-24T04:23:56.456Z"
+  },
+  {
+    "id": "sexual_offences",
+    "name": "Sexual Offences",
+    "code": "SO",
+    "topic": "Sexual Offences",
+    "sections": [{ "workId": "public-1961-43", "from": 127, "to": 144 }],
+    "updatedAt": "2026-05-08T00:00:00.000Z"
+  },
+  {
+    "id": "drugs",
+    "name": "Drugs",
+    "code": "DR",
+    "topic": "Drugs",
+    "sections": [],
+    "updatedAt": "2026-05-08T00:00:00.000Z"
+  },
+  {
+    "id": "search_and_surveillance",
+    "name": "Search & Surveillance",
+    "code": "SS",
+    "topic": "Search & Surveillance",
+    "sections": [],
+    "updatedAt": "2026-05-08T00:00:00.000Z"
+  },
+  {
+    "id": "serious_crime_investigations",
+    "name": "Serious Crime Investigations",
+    "code": "SC",
+    "topic": "Serious Crime Investigations",
+    "sections": [],
+    "updatedAt": "2026-05-08T00:00:00.000Z"
+  },
+  {
+    "id": "homicide_law",
+    "name": "Homicide Law",
+    "code": "HL",
+    "topic": "Homicide Law",
+    "sections": [{ "workId": "public-1961-43", "from": 167, "to": 182 }],
+    "updatedAt": "2026-05-08T00:00:00.000Z"
   }
 ]

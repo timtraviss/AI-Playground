@@ -157,12 +157,27 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   const selectedQuestions = questions.filter((q) => selected.has(q.id))
   const panelQuestion = panelId != null ? questions.find((q) => q.id === panelId) ?? null : null
 
+  function exportFilename(ext: string): string | null {
+    if (selectedQuestions.length === 1) {
+      const q = selectedQuestions[0]
+      const base = (q.code ?? q.name).replace(/[/\\?%*:|"<>]/g, '-')
+      return `${base}.${ext}`
+    }
+    const input = window.prompt('Export filename:', 'questions')
+    if (input === null) return null
+    return `${input.trim() || 'questions'}.${ext}`
+  }
+
   function exportMd() {
-    downloadAs(toBulkMarkdown(selectedQuestions), 'questions.md', 'text/markdown')
+    const filename = exportFilename('md')
+    if (!filename) return
+    downloadAs(toBulkMarkdown(selectedQuestions), filename, 'text/markdown')
   }
 
   function exportXml() {
-    downloadAs(toTotaraXml(selectedQuestions), 'questions.xml', 'application/xml')
+    const filename = exportFilename('xml')
+    if (!filename) return
+    downloadAs(toTotaraXml(selectedQuestions), filename, 'application/xml')
   }
 
   function formatDate(iso: string) {
@@ -175,6 +190,10 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     if (!panelQuestion) return
     const current = panelQuestion.tags
     const next = current.includes(t) ? current.filter((x) => x !== t) : [...current, t]
+    // Optimistic update — reflect change immediately, roll back on failure
+    setQuestions((prev) => prev.map((q) =>
+      q.id === panelQuestion.id ? { ...q, tags: next } : q
+    ))
     setTagging(true)
     try {
       const res = await fetch(apiUrl(`/api/questions/${panelQuestion.id}`), {
@@ -182,11 +201,15 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tags: next }),
       })
-      if (res.ok) {
+      if (!res.ok) {
         setQuestions((prev) => prev.map((q) =>
-          q.id === panelQuestion.id ? { ...q, tags: next } : q
+          q.id === panelQuestion.id ? { ...q, tags: current } : q
         ))
       }
+    } catch {
+      setQuestions((prev) => prev.map((q) =>
+        q.id === panelQuestion.id ? { ...q, tags: current } : q
+      ))
     } finally {
       setTagging(false)
     }

@@ -40,3 +40,6 @@ npm run dev
 - [x] Bulk topic assignment
 - [x] XML import
 - [x] Multi-tag support — `exam`, `practice`, `DDP`, `DMP` with multi-select toggle pills
+
+### Potential upgrades
+- [ ] **Migrate to Supabase** — Supabase is PostgreSQL with a much better dashboard (table editor, SQL editor, logs) and a generous free tier vs Heroku's ~$5/mo. Migration = export data from Heroku Postgres, import into Supabase, update `DATABASE_URL`. Prisma works with Supabase out of the box.

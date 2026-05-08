@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { z } from 'zod'
 
+const VALID_TAGS = ['exam', 'practice', 'DDP', 'DMP'] as const
+
 const PatchSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   type: z.enum(['SA', 'CL', 'MC', 'PR']).optional(),
-  tag: z.enum(['practice', 'exam']).optional(),
+  tags: z.array(z.enum(VALID_TAGS)).optional(),
   defaultGrade: z.number().positive().optional(),
   questionText: z.string().min(1).optional(),
   code: z.string().min(1).optional(),
@@ -20,10 +22,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!parsed.success)
     return NextResponse.json({ error: 'Bad request', issues: parsed.error.issues }, { status: 400 })
 
+  const { tags, ...rest } = parsed.data
+  const data: Record<string, unknown> = { ...rest }
+  if (tags !== undefined) data.tags = JSON.stringify(tags)
+
   try {
     const updated = await prisma.question.update({
       where: { id: numId },
-      data: parsed.data,
+      data,
     })
     return NextResponse.json(updated)
   } catch {

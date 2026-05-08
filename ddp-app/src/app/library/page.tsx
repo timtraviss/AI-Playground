@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import { getTopicForCode, getAllModules } from '@/lib/question-code'
 import LibraryClient from '@/components/LibraryClient'
+import { parseTags } from '@/lib/export'
 
 export default async function LibraryPage() {
   const [raw, modules] = await Promise.all([
@@ -11,7 +12,7 @@ export default async function LibraryPage() {
       select: {
         id: true,
         code: true,
-        tag: true,
+        tags: true,
         name: true,
         type: true,
         questionText: true,
@@ -27,6 +28,7 @@ export default async function LibraryPage() {
   const questions = raw.map((q) => ({
     ...q,
     createdAt: q.createdAt.toISOString(),
+    tags: parseTags(q.tags),
     topic: q.code ? getTopicForCode(q.code) : null,
   }))
 

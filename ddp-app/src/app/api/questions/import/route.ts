@@ -3,11 +3,13 @@ import { prisma } from '@/lib/db'
 import { getCodeForModuleId, nextQuestionCode } from '@/lib/question-code'
 import { z } from 'zod'
 
+const VALID_TAGS = ['exam', 'practice', 'DDP', 'DMP'] as const
+
 const ImportItem = z.object({
   name: z.string().min(1).max(200),
   questionText: z.string().min(1),
   type: z.enum(['SA', 'CL', 'MC', 'PR']),
-  tag: z.enum(['practice', 'exam']).default('exam'),
+  tags: z.array(z.enum(VALID_TAGS)).default([]),
   defaultGrade: z.number().positive(),
   moduleId: z.string().optional(),
 })
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
     const question = await prisma.question.create({
       data: {
         type: item.type,
-        tag: item.tag,
+        tags: JSON.stringify(item.tags),
         name: item.name,
         questionText: item.questionText,
         defaultGrade: item.defaultGrade,

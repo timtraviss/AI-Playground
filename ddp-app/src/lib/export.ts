@@ -5,10 +5,19 @@ const TYPE_LABEL: Record<string, string> = {
   PR: 'Practical',
 }
 
+export function parseTags(raw: string): string[] {
+  try {
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : raw ? [raw] : []
+  } catch {
+    return raw ? [raw] : []
+  }
+}
+
 export interface ExportQuestion {
   id: number
   code: string | null
-  tag: string
+  tags: string[]
   name: string
   type: string
   questionText: string

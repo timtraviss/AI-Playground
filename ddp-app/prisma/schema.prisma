@@ -42,6 +42,7 @@ model Question {
   type         String
   code         String?
   tag          String       @default("exam")
+  tags         String       @default("[]")
   name         String
   questionText String
   defaultGrade Float

@@ -41,7 +41,6 @@ model Question {
   section      Section?     @relation(fields: [sectionId], references: [id])
   type         String
   code         String?
-  tag          String       @default("exam")
   tags         String       @default("[]")
   name         String
   questionText String

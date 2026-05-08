@@ -280,6 +280,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 ...q,
                 name: updated.name,
                 type: updated.type,
+                // server returns tags as a JSON string; use local edit array to stay parsed
                 tags: editValues?.tags ?? q.tags,
                 defaultGrade: updated.defaultGrade,
                 questionText: updated.questionText,

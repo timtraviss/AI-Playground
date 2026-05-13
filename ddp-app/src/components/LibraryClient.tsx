@@ -91,6 +91,11 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   const [bulkAssigning, setBulkAssigning] = useState(false)
   const [bulkAssignDone, setBulkAssignDone] = useState(0)
 
+  // Bulk grader info generation
+  const [bulkGenerating, setBulkGenerating] = useState(false)
+  const [bulkGenerateDone, setBulkGenerateDone] = useState(0)
+  const [bulkGenerateTotal, setBulkGenerateTotal] = useState(0)
+
   // Import state
   const [importRows, setImportRows] = useState<ImportRow[]>([])
   const [importModuleId, setImportModuleId] = useState('')
@@ -447,6 +452,36 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     setBulkTopicModuleId('')
   }
 
+  async function doGenerateGraderInfo() {
+    if (bulkGenerating) return
+    const toGenerate = [...selected]
+      .map((id) => questions.find((q) => q.id === id))
+      .filter((q): q is NonNullable<typeof q> => !!q && (q.type === 'SA' || q.type === 'CL'))
+
+    if (toGenerate.length === 0) return
+    setBulkGenerating(true)
+    setBulkGenerateDone(0)
+    setBulkGenerateTotal(toGenerate.length)
+
+    for (const q of toGenerate) {
+      try {
+        const res = await fetch(apiUrl(`/api/questions/${q.id}/generate-grader-info`), {
+          method: 'POST',
+        })
+        if (!res.ok) continue
+        const { graderInfo } = await res.json()
+        setQuestions((prev) =>
+          prev.map((pq) => (pq.id === q.id ? { ...pq, graderInfo } : pq))
+        )
+      } catch {
+        // skip failed question, continue
+      }
+      setBulkGenerateDone((n) => n + 1)
+    }
+
+    setBulkGenerating(false)
+  }
+
   // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
@@ -518,6 +553,24 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 Assign topic
               </button>
             )}
+            {(() => {
+              const saClCount = [...selected]
+                .map((id) => questions.find((q) => q.id === id))
+                .filter((q): q is NonNullable<typeof q> => !!q && (q.type === 'SA' || q.type === 'CL'))
+                .length
+              if (saClCount === 0) return null
+              return (
+                <button
+                  onClick={doGenerateGraderInfo}
+                  disabled={bulkGenerating}
+                  className="px-3 py-1.5 border border-accent/50 hover:bg-accent/10 disabled:opacity-40 text-sm text-accent rounded-lg font-medium transition-colors"
+                >
+                  {bulkGenerating
+                    ? `Generating ${bulkGenerateDone}/${bulkGenerateTotal}…`
+                    : `Generate grader info (${saClCount})`}
+                </button>
+              )
+            })()}
             <button onClick={() => setSelected(new Set())} className="ml-auto text-sm text-muted hover:text-ink transition-colors">
               Clear selection
             </button>

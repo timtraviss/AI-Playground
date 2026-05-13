@@ -72,7 +72,8 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [editMode, setEditMode] = useState(false)
-  const [editValues, setEditValues] = useState<{ name: string; type: string; tags: string[]; defaultGrade: number; questionText: string } | null>(null)
+  const [editValues, setEditValues] = useState<{ name: string; type: string; tags: string[]; defaultGrade: number; questionText: string; graderInfo: string } | null>(null)
+  const [graderInfoOpen, setGraderInfoOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [tagging, setTagging] = useState(false)
   const selectAllRef = useRef<HTMLInputElement>(null)
@@ -134,6 +135,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     setEditValues(null)
     setEditTopicModuleId('')
     setEditNextCode(null)
+    setGraderInfoOpen(false)
   }, [panelId])
 
   function toggleAll() {
@@ -243,6 +245,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
       tags: panelQuestion.tags,
       defaultGrade: panelQuestion.defaultGrade,
       questionText: panelQuestion.questionText,
+      graderInfo: panelQuestion.graderInfo ?? '',
     })
     // Pre-select topic from existing code
     if (panelQuestion.code && topicModules.length > 0) {
@@ -307,6 +310,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                 tags: editValues?.tags ?? q.tags,
                 defaultGrade: updated.defaultGrade,
                 questionText: updated.questionText,
+                graderInfo: editValues?.graderInfo ?? q.graderInfo,
                 code: newCode,
                 topic: newTopic,
               }
@@ -753,6 +757,18 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                       className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-xs text-ink font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent resize-y"
                     />
                   </div>
+                  {(editValues.type === 'SA' || editValues.type === 'CL') && (
+                    <div>
+                      <label className="text-xs text-muted uppercase tracking-wide block mb-1">Grader info (model answer)</label>
+                      <textarea
+                        value={editValues.graderInfo}
+                        onChange={(e) => setEditValues((v) => v ? { ...v, graderInfo: e.target.value } : v)}
+                        rows={10}
+                        placeholder="Claude-generated model answer for markers. Leave blank to generate later."
+                        className="w-full bg-surface2 border border-edge rounded-lg px-3 py-2 text-xs text-ink leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent resize-y"
+                      />
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>
@@ -792,6 +808,22 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
                       <div className="prose prose-sm max-w-none text-sub leading-relaxed" dangerouslySetInnerHTML={{ __html: panelQuestion.questionText }} />
                     )}
                   </div>
+                  {(panelQuestion.type === 'SA' || panelQuestion.type === 'CL') && panelQuestion.graderInfo && (
+                    <div className="pt-2 border-t border-edge">
+                      <button
+                        onClick={() => setGraderInfoOpen((v) => !v)}
+                        className="flex items-center gap-2 text-xs text-muted uppercase tracking-wide hover:text-ink transition-colors w-full text-left"
+                      >
+                        <span>Grader info</span>
+                        <span className="ml-auto">{graderInfoOpen ? '▲' : '▼'}</span>
+                      </button>
+                      {graderInfoOpen && (
+                        <p className="mt-2 text-sm text-sub whitespace-pre-wrap leading-relaxed">
+                          {panelQuestion.graderInfo}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
             </div>

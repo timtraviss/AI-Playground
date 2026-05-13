@@ -17,6 +17,7 @@ export default async function LibraryPage() {
         type: true,
         questionText: true,
         defaultGrade: true,
+        graderInfo: true,
         createdAt: true,
         section: { select: { number: true, heading: true } },
       },

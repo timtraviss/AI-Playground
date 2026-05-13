@@ -11,6 +11,7 @@ const PatchSchema = z.object({
   defaultGrade: z.number().positive().optional(),
   questionText: z.string().min(1).optional(),
   code: z.string().min(1).optional(),
+  graderInfo: z.string().optional(),
 })
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

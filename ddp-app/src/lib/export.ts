@@ -24,6 +24,7 @@ export interface ExportQuestion {
   defaultGrade: number
   createdAt: string
   topic: string | null
+  graderInfo: string | null
   section: { number: string; heading: string } | null
 }
 
@@ -109,6 +110,10 @@ ${answers}
   </question>`
     }
 
+    const graderInfoBlock = (q.type === 'SA' || q.type === 'CL')
+      ? `\n    <graderinfo format="html">\n      <text>${q.graderInfo ? `<![CDATA[${q.graderInfo}]]>` : ''}</text>\n    </graderinfo>`
+      : ''
+
     return `  <question type="essay">
     <name><text>${fullName}</text></name>
     <questiontext format="html">
@@ -121,7 +126,7 @@ ${answers}
     <responserequired>1</responserequired>
     <responsefieldlines>15</responsefieldlines>
     <attachments>0</attachments>
-    <attachmentsrequired>0</attachmentsrequired>
+    <attachmentsrequired>0</attachmentsrequired>${graderInfoBlock}
   </question>`
   })
 

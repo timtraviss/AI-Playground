@@ -352,6 +352,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
           text: a.querySelector('text')?.textContent?.trim() ?? '',
           correct: a.getAttribute('fraction') === '100',
         })).filter((o) => o.text)
+        if (options.length === 0) return
         const questionText = JSON.stringify({ stem, options })
         rows.push({ name, questionText, defaultGrade: grade, type: 'MC' })
       })
@@ -894,7 +895,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
 
               <div className="flex-1 overflow-y-auto">
                 {importRows.length === 0 ? (
-                  <p className="text-center py-12 text-muted text-sm">No essay questions found in file.</p>
+                  <p className="text-center py-12 text-muted text-sm">No questions found in file.</p>
                 ) : (
                   <table className="w-full text-sm">
                     <thead className="sticky top-0 bg-surface2 border-b border-edge">

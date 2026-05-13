@@ -333,6 +333,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
       const parser = new DOMParser()
       const doc = parser.parseFromString(text, 'text/xml')
       const rows: ImportRow[] = []
+
       doc.querySelectorAll('question[type="essay"]').forEach((q) => {
         const name = q.querySelector('name text')?.textContent?.trim() ?? ''
         const questionText = q.querySelector('questiontext text')?.textContent?.trim() ?? ''
@@ -341,6 +342,21 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
         const type = grade <= 1 ? 'MC' : grade <= 4 ? 'SA' : 'CL'
         rows.push({ name, questionText, defaultGrade: grade, type })
       })
+
+      doc.querySelectorAll('question[type="multichoice"]').forEach((q) => {
+        const name = q.querySelector('name text')?.textContent?.trim() ?? ''
+        const stem = q.querySelector('questiontext text')?.textContent?.trim() ?? ''
+        const grade = parseFloat(q.querySelector('defaultgrade')?.textContent ?? '1')
+        if (!name || !stem) return
+        const options = Array.from(q.querySelectorAll('answer')).map((a) => ({
+          text: a.querySelector('text')?.textContent?.trim() ?? '',
+          correct: a.getAttribute('fraction') === '100',
+        })).filter((o) => o.text)
+        if (options.length === 0) return
+        const questionText = JSON.stringify({ stem, options })
+        rows.push({ name, questionText, defaultGrade: grade, type: 'MC' })
+      })
+
       setImportRows(rows)
       setImportOpen(true)
     }
@@ -879,7 +895,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
 
               <div className="flex-1 overflow-y-auto">
                 {importRows.length === 0 ? (
-                  <p className="text-center py-12 text-muted text-sm">No essay questions found in file.</p>
+                  <p className="text-center py-12 text-muted text-sm">No questions found in file.</p>
                 ) : (
                   <table className="w-full text-sm">
                     <thead className="sticky top-0 bg-surface2 border-b border-edge">

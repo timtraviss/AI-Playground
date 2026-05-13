@@ -46,6 +46,7 @@ model Question {
   questionText String
   defaultGrade Float
   focusNote    String?
+  graderInfo   String?
   createdAt    DateTime     @default(now())
   markingRuns  MarkingRun[]
 

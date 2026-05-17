@@ -4,6 +4,7 @@ import { anthropic } from '@/lib/anthropic'
 import { buildMarkShortAnswerPrompt } from '@/lib/prompts/mark-sa'
 import { buildMarkCriminalLiabilityPrompt } from '@/lib/prompts/mark-cl'
 import { ShortAnswerMarkingZ, CriminalLiabilityMarkingZ } from '@/lib/schemas'
+import { logUsage } from '@/lib/usage-logger'
 import { z } from 'zod'
 
 const BodySchema = z.object({
@@ -55,6 +56,15 @@ export async function POST(req: NextRequest) {
     rawJson = block.text.trim()
     // Strip markdown fences if present
     rawJson = rawJson.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '')
+    logUsage({
+      tool: `ddp-mark-${question.type.toLowerCase()}`,
+      usage: {
+        input_tokens: msg.usage.input_tokens,
+        output_tokens: msg.usage.output_tokens,
+        cache_read_input_tokens: msg.usage.cache_read_input_tokens ?? undefined,
+      },
+      model: 'claude-opus-4-7',
+    }).catch(console.error)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     return new Response(JSON.stringify({ error: msg }), { status: 502, headers: { 'Content-Type': 'application/json' } })

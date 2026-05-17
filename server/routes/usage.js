@@ -23,7 +23,7 @@ usageRouter.get('/admin', async (req, res) => {
   if (userId) { params.push(userId); filters.push(`AND ul.user_id = $${params.length}`); }
   if (tool)   { params.push(tool);   filters.push(`AND ul.tool = $${params.length}`); }
 
-  const where = `WHERE ul.user_id IS NOT NULL ${filters.join(' ')}`;
+  const where = `WHERE 1=1 ${filters.join(' ')}`;
 
   try {
     const [summary, byUser, log, count] = await Promise.all([

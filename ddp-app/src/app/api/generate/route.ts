@@ -6,6 +6,7 @@ import { buildGenerateCriminalLiabilityPrompt } from '@/lib/prompts/generate-cl'
 import { buildGenerateMultiChoicePrompt } from '@/lib/prompts/generate-mc'
 import { buildGeneratePracticalPrompt } from '@/lib/prompts/generate-practical'
 import { readModule } from '@/lib/knowledge'
+import { logUsage } from '@/lib/usage-logger'
 import { z } from 'zod'
 
 const BodySchema = z.object({
@@ -70,6 +71,17 @@ export async function POST(req: NextRequest) {
         }
 
         controller.enqueue(enc.encode('data: [DONE]\n\n'))
+
+        const finalMsg = await stream.finalMessage()
+        logUsage({
+          tool: `ddp-generate-${type.toLowerCase()}`,
+          usage: {
+            input_tokens: finalMsg.usage.input_tokens,
+            output_tokens: finalMsg.usage.output_tokens,
+            cache_read_input_tokens: finalMsg.usage.cache_read_input_tokens ?? undefined,
+          },
+          model: 'claude-opus-4-7',
+        }).catch(console.error)
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
         controller.enqueue(enc.encode(`data: ${JSON.stringify({ error: msg })}\n\n`))

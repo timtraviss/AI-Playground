@@ -33,7 +33,7 @@ export async function logUsage({
   const cost = computeCost(usage, model)
   try {
     await prisma.$executeRaw`
-      INSERT INTO usage_log (user_id, tool, model, input_tokens, output_tokens, cache_read_tokens, cost_usd)
+      INSERT INTO public.usage_log (user_id, tool, model, input_tokens, output_tokens, cache_read_tokens, cost_usd)
       VALUES (
         NULL,
         ${tool},

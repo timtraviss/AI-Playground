@@ -40,7 +40,8 @@ npm run dev
 - [x] Bulk topic assignment
 - [x] XML import (essay + multichoice)
 - [x] Multi-tag support — `exam`, `practice`, `DDP`, `DMP` with multi-select toggle pills
-- [x] Grader info — Claude-generated model answers for SA/CL questions; bulk generate, editable in panel, exported to `<graderinfo>` in Totara XML
+- [x] Grader info — Claude-generated model answers for SA/CL questions; bulk generate, editable in panel, exported to `<graderinfo>` in Totara XML and included in `.md` exports
+- [x] Practice code suffix — questions tagged `practice` get a `P` suffix on their code (e.g. `SOSA001P`); exam and practice maintain separate counters
 
 ### Potential upgrades
 - [ ] **Migrate to Supabase** — Supabase is PostgreSQL with a much better dashboard (table editor, SQL editor, logs) and a generous free tier vs Heroku's ~$5/mo. Migration = export data from Heroku Postgres, import into Supabase, update `DATABASE_URL`. Prisma works with Supabase out of the box.

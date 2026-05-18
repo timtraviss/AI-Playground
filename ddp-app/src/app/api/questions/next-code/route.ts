@@ -6,13 +6,14 @@ const QuerySchema = z.object({
   type: z.enum(['SA', 'CL', 'MC', 'PR']),
   sectionId: z.coerce.number().int().positive().optional(),
   moduleId: z.string().optional(),
+  practice: z.enum(['true', 'false']).optional(),
 })
 
 export async function GET(req: NextRequest) {
   const parsed = QuerySchema.safeParse(Object.fromEntries(req.nextUrl.searchParams))
   if (!parsed.success) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
 
-  const { type, sectionId, moduleId } = parsed.data
+  const { type, sectionId, moduleId, practice } = parsed.data
 
   let moduleCode: string | null = null
   if (moduleId) {
@@ -23,6 +24,6 @@ export async function GET(req: NextRequest) {
 
   if (!moduleCode) return NextResponse.json({ code: null })
 
-  const code = await nextQuestionCode(moduleCode, type)
+  const code = await nextQuestionCode(moduleCode, type, practice === 'true')
   return NextResponse.json({ code })
 }

@@ -274,9 +274,11 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     setEditTopicModuleId(newModuleId)
     if (!newModuleId) { setEditNextCode(null); return }
     const type = editValues?.type ?? panelQuestion?.type ?? 'SA'
+    const isPractice = (editValues?.tags ?? panelQuestion?.tags ?? []).includes('practice')
     setFetchingCode(true)
     try {
       const params = new URLSearchParams({ type, moduleId: newModuleId })
+      if (isPractice) params.set('practice', 'true')
       const r = await fetch(apiUrl(`/api/questions/next-code?${params}`))
       const { code } = await r.json()
       setEditNextCode(code ?? null)
@@ -427,6 +429,7 @@ export default function LibraryClient({ questions: initialQuestions, modules }: 
     for (const q of toAssign) {
       try {
         const params = new URLSearchParams({ type: q.type, moduleId: bulkTopicModuleId })
+        if (q.tags.includes('practice')) params.set('practice', 'true')
         const codeRes = await fetch(apiUrl(`/api/questions/next-code?${params}`))
         const { code } = await codeRes.json()
         if (!code) continue

@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
       continue
     }
 
-    const code = await nextQuestionCode(moduleCode, q.type)
+    const tags: string[] = (() => { try { return JSON.parse(q.tags) } catch { return [] } })()
+    const code = await nextQuestionCode(moduleCode, q.type, tags.includes('practice'))
     await prisma.question.update({ where: { id: q.id }, data: { code } })
     results.push({ id: q.id, name: q.name, code, status: 'updated' })
   }

@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     let code: string | undefined
     if (item.moduleId) {
       const moduleCode = getCodeForModuleId(item.moduleId)
-      if (moduleCode) code = await nextQuestionCode(moduleCode, item.type)
+      if (moduleCode) code = await nextQuestionCode(moduleCode, item.type, item.tags.includes('practice'))
     }
 
     const question = await prisma.question.create({

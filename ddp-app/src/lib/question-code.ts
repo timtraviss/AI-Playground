@@ -76,7 +76,7 @@ export async function getCodeForSectionId(sectionId: number): Promise<string | n
   return null
 }
 
-export async function nextQuestionCode(moduleCode: string, type: string): Promise<string> {
+export async function nextQuestionCode(moduleCode: string, type: string, practice = false): Promise<string> {
   const prefix = `${moduleCode}${type}`
   const existing = await prisma.question.findMany({
     where: { code: { startsWith: prefix } },
@@ -86,9 +86,17 @@ export async function nextQuestionCode(moduleCode: string, type: string): Promis
   let max = 0
   for (const q of existing) {
     if (!q.code) continue
-    const n = parseInt(q.code.slice(prefix.length), 10)
-    if (!isNaN(n) && n > max) max = n
+    const rest = q.code.slice(prefix.length)
+    if (practice) {
+      if (!rest.endsWith('P')) continue
+      const n = parseInt(rest.slice(0, -1), 10)
+      if (!isNaN(n) && n > max) max = n
+    } else {
+      if (rest.endsWith('P')) continue
+      const n = parseInt(rest, 10)
+      if (!isNaN(n) && n > max) max = n
+    }
   }
 
-  return `${prefix}${String(max + 1).padStart(3, '0')}`
+  return `${prefix}${String(max + 1).padStart(3, '0')}${practice ? 'P' : ''}`
 }

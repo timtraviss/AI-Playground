@@ -44,6 +44,10 @@ function stripHtml(html: string): string {
     .trim()
 }
 
+function plainToHtml(text: string): string {
+  return '<p>' + text.trim().split(/\n\n+/).map((p) => p.replace(/\n/g, '<br>')).join('</p><p>') + '</p>'
+}
+
 function escXml(s: string): string {
   return s
     .replace(/&/g, '&amp;')
@@ -76,7 +80,11 @@ export function toBulkMarkdown(questions: ExportQuestion[]): string {
       body = stripHtml(q.questionText)
     }
 
-    return `## ${title}\n\n${meta.join(' | ')}\n\n${body}`
+    const graderSection = (q.type === 'SA' || q.type === 'CL') && q.graderInfo
+      ? `\n\n**Grader info (model answer):**\n\n${q.graderInfo}`
+      : ''
+
+    return `## ${title}\n\n${meta.join(' | ')}\n\n${body}${graderSection}`
   }).join('\n\n---\n\n')
 }
 
@@ -111,7 +119,7 @@ ${answers}
     }
 
     const graderInfoBlock = (q.type === 'SA' || q.type === 'CL')
-      ? `\n    <graderinfo format="html">\n      <text>${q.graderInfo ? `<![CDATA[${q.graderInfo}]]>` : ''}</text>\n    </graderinfo>`
+      ? `\n    <graderinfo format="html">\n      <text>${q.graderInfo ? `<![CDATA[${plainToHtml(q.graderInfo)}]]>` : ''}</text>\n    </graderinfo>`
       : ''
 
     return `  <question type="essay">

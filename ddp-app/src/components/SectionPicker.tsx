@@ -14,12 +14,14 @@ interface SectionResult {
 interface SectionPickerProps {
   value: SectionResult | null
   onChange: (section: SectionResult | null) => void
+  actId?: number
   placeholder?: string
 }
 
 export default function SectionPicker({
   value,
   onChange,
+  actId,
   placeholder = 'Search by number or heading…',
 }: SectionPickerProps) {
   const [query, setQuery] = useState('')
@@ -46,7 +48,9 @@ export default function SectionPicker({
     setLoading(true)
     setOpen(true)
     try {
-      const res = await fetch(apiUrl(`/api/sections?q=${encodeURIComponent(q)}`))
+      const params = new URLSearchParams({ q })
+      if (actId) params.set('actId', String(actId))
+      const res = await fetch(apiUrl(`/api/sections?${params}`))
       if (!res.ok) {
         setSearchError(`Search failed (${res.status}) — check Heroku logs`)
         setResults([])

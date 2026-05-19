@@ -14,6 +14,11 @@ interface SectionResult {
   actShortTitle: string
 }
 
+interface Act {
+  id: number
+  shortTitle: string
+}
+
 interface DraftQuestion {
   name: string
   questionText: string
@@ -32,6 +37,8 @@ export default function GeneratePage() {
   const [focusNote, setFocusNote] = useState('')
 
   // Legislation source
+  const [acts, setActs] = useState<Act[]>([])
+  const [actId, setActId] = useState<number | null>(null)
   const [section, setSection] = useState<SectionResult | null>(null)
 
   // Module source
@@ -39,6 +46,13 @@ export default function GeneratePage() {
   const [moduleId, setModuleId] = useState('')
   const [moduleSections, setModuleSections] = useState<ModuleSection[]>([])
   const [moduleSection, setModuleSection] = useState('')
+
+  useEffect(() => {
+    fetch(apiUrl('/api/acts'))
+      .then((r) => r.json())
+      .then(setActs)
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     fetch(apiUrl('/api/modules'))
@@ -151,7 +165,7 @@ export default function GeneratePage() {
   }
 
   const canGenerate = !streaming && (
-    (sourceType === 'legislation' && !!section) ||
+    (sourceType === 'legislation' && !!actId && !!section) ||
     (sourceType === 'module' && !!moduleId)
   )
 
@@ -216,12 +230,36 @@ export default function GeneratePage() {
 
         {/* Legislation picker */}
         {sourceType === 'legislation' && (
-          <div>
-            <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
-              Legislation section
-            </label>
-            <SectionPicker value={section} onChange={setSection} />
-          </div>
+          <>
+            <div>
+              <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
+                Legislation
+              </label>
+              <select
+                value={actId ?? ''}
+                onChange={(e) => {
+                  const val = e.target.value ? Number(e.target.value) : null
+                  setActId(val)
+                  setSection(null)
+                }}
+                className="w-full bg-surface2 border border-edge rounded-lg px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+              >
+                <option value="">— Select legislation —</option>
+                {acts.map((a) => (
+                  <option key={a.id} value={a.id}>{a.shortTitle}</option>
+                ))}
+              </select>
+            </div>
+
+            {actId && (
+              <div>
+                <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-1">
+                  Section
+                </label>
+                <SectionPicker value={section} onChange={setSection} actId={actId} />
+              </div>
+            )}
+          </>
         )}
 
         {/* Module picker */}

@@ -22,16 +22,18 @@ export async function GET(req: NextRequest) {
   }
 
   const q = req.nextUrl.searchParams.get('q') ?? ''
+  const actId = req.nextUrl.searchParams.get('actId')
   const sections = await prisma.section.findMany({
-    where: q
-      ? {
-          OR: [
-            { number: { contains: q, mode: 'insensitive' } },
-            { heading: { contains: q, mode: 'insensitive' } },
-            { fullText: { contains: q, mode: 'insensitive' } },
-          ],
-        }
-      : undefined,
+    where: {
+      ...(actId ? { actId: Number(actId) } : {}),
+      ...(q ? {
+        OR: [
+          { number: { contains: q, mode: 'insensitive' } },
+          { heading: { contains: q, mode: 'insensitive' } },
+          { fullText: { contains: q, mode: 'insensitive' } },
+        ],
+      } : {}),
+    },
     select,
     orderBy: [{ actId: 'asc' }, { number: 'asc' }],
     take: 50,

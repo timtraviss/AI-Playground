@@ -118,6 +118,7 @@ export default function SectionPicker({
               <span className="font-mono text-accent">s{s.number}</span>
               <span className="mx-2 text-edge">—</span>
               <span className="font-medium">{s.heading}</span>
+              <span className="ml-2 text-xs text-muted">{s.actShortTitle}</span>
             </li>
           ))}
         </ul>

@@ -19,6 +19,16 @@ const ACTS: ActConfig[] = [
     url: 'https://legislation.govt.nz/act/public/1961/43/en/latest.xml',
     workId: 'public/1961/43',
   },
+  {
+    shortTitle: 'Search and Surveillance Act 2012',
+    url: 'https://legislation.govt.nz/act/public/2012/24/en/latest.xml',
+    workId: 'public/2012/24',
+  },
+  {
+    shortTitle: 'Misuse of Drugs Act 1975',
+    url: 'https://legislation.govt.nz/act/public/1975/116/en/latest.xml',
+    workId: 'public/1975/116',
+  },
 ]
 
 // ── Text extraction ────────────────────────────────────────────────────────────

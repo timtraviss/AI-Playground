@@ -29,6 +29,16 @@ const ACTS: ActConfig[] = [
     url: 'https://legislation.govt.nz/act/public/1975/116/en/latest.xml',
     workId: 'public/1975/116',
   },
+  {
+    shortTitle: 'Evidence Act 2006',
+    url: 'https://legislation.govt.nz/act/public/2006/69/en/latest.xml',
+    workId: 'public/2006/69',
+  },
+  {
+    shortTitle: 'Arms Act 1983',
+    url: 'https://legislation.govt.nz/act/public/1983/44/en/latest.xml',
+    workId: 'public/1983/44',
+  },
 ]
 
 // ── Text extraction ────────────────────────────────────────────────────────────

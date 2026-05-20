@@ -48,11 +48,11 @@ function MCDisplay({ questionText }: { questionText: string }) {
   if (!data) return <p className="text-sm text-sub whitespace-pre-wrap">{questionText}</p>
   return (
     <div className="space-y-3">
-      <p className="font-medium text-ink text-sm">{data.stem}</p>
+      <p className="font-medium text-ink text-sm" dangerouslySetInnerHTML={{ __html: data.stem }} />
       <ol className="space-y-2 list-[upper-alpha] list-inside text-sm">
         {data.options.map((opt, i) => (
           <li key={i} className={opt.correct ? 'text-green-400 font-medium' : 'text-sub'}>
-            {opt.text}
+            <span dangerouslySetInnerHTML={{ __html: opt.text }} />
             {opt.correct && <span className="ml-1 text-xs opacity-70">(correct)</span>}
           </li>
         ))}

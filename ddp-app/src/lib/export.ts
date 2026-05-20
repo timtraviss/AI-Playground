@@ -70,11 +70,11 @@ export function toBulkMarkdown(questions: ExportQuestion[]): string {
       try {
         const mc = JSON.parse(q.questionText) as { stem: string; options: { text: string; correct: boolean }[] }
         const opts = mc.options
-          .map((o, i) => `${String.fromCharCode(65 + i)}. ${o.text}${o.correct ? ' ✓' : ''}`)
+          .map((o, i) => `${String.fromCharCode(65 + i)}. ${stripHtml(o.text)}${o.correct ? ' ✓' : ''}`)
           .join('\n')
-        body = `${mc.stem}\n\n${opts}`
+        body = `${stripHtml(mc.stem)}\n\n${opts}`
       } catch {
-        body = q.questionText
+        body = stripHtml(q.questionText)
       }
     } else {
       body = stripHtml(q.questionText)
@@ -98,15 +98,16 @@ export function toTotaraXml(questions: ExportQuestion[]): string {
 
       const answers = mc.options.map((o) =>
         `    <answer fraction="${o.correct ? 100 : 0}" format="html">
-      <text><![CDATA[${escXml(o.text)}]]></text>
+      <text><![CDATA[${/<[a-z]/i.test(o.text) ? o.text : escXml(o.text)}]]></text>
       <feedback format="html"><text></text></feedback>
     </answer>`
       ).join('\n')
 
+      const stemHtml = /<[a-z]/i.test(mc.stem) ? mc.stem : `<p>${escXml(mc.stem)}</p>`
       return `  <question type="multichoice">
     <name><text>${fullName}</text></name>
     <questiontext format="html">
-      <text><![CDATA[<p>${escXml(mc.stem)}</p>]]></text>
+      <text><![CDATA[${stemHtml}]]></text>
     </questiontext>
     <defaultgrade>${q.defaultGrade}</defaultgrade>
     <penalty>0.3333333</penalty>
